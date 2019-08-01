@@ -6,7 +6,8 @@ Import "ubii.unitypackage" to get all scripts and plugins. Create a gameobject a
 
 ## Example Unity project
 
-Open the scene "Test" in the unity project under /Ubi-Interact-Client
+Open the scene "Test" in the unity project under /Ubi-Interact-Client/Assets/Scenes
+
 
 ## Update dependencies
 
