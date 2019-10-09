@@ -27,14 +27,16 @@ namespace Ubii.DataStructure {
             "Cjxwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1",
             "cmUvb2JqZWN0MmQucHJvdG8SEnViaWkuZGF0YVN0cnVjdHVyZRo6cHJvdG8v",
             "dG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9kYXRhU3RydWN0dXJlL3Bvc2Uy",
-            "ZC5wcm90byJACghPYmplY3QyRBIKCgJpZBgBIAEoCRIoCgRwb3NlGAIgASgL",
-            "MhoudWJpaS5kYXRhU3RydWN0dXJlLlBvc2UyRCI+CgxPYmplY3QyRExpc3QS",
-            "LgoIZWxlbWVudHMYASADKAsyHC51YmlpLmRhdGFTdHJ1Y3R1cmUuT2JqZWN0",
-            "MkRiBnByb3RvMw=="));
+            "ZC5wcm90bxo7cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9kYXRh",
+            "U3RydWN0dXJlL3ZlY3RvcjIucHJvdG8iawoIT2JqZWN0MkQSCgoCaWQYASAB",
+            "KAkSKAoEcG9zZRgCIAEoCzIaLnViaWkuZGF0YVN0cnVjdHVyZS5Qb3NlMkQS",
+            "KQoEc2l6ZRgDIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVyZS5WZWN0b3IyIj4K",
+            "DE9iamVjdDJETGlzdBIuCghlbGVtZW50cxgBIAMoCzIcLnViaWkuZGF0YVN0",
+            "cnVjdHVyZS5PYmplY3QyRGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.DataStructure.Pose2DReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2D), global::Ubii.DataStructure.Object2D.Parser, new[]{ "Id", "Pose" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2D), global::Ubii.DataStructure.Object2D.Parser, new[]{ "Id", "Pose", "Size" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2DList), global::Ubii.DataStructure.Object2DList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -69,6 +71,7 @@ namespace Ubii.DataStructure {
     public Object2D(Object2D other) : this() {
       id_ = other.id_;
       pose_ = other.pose_ != null ? other.pose_.Clone() : null;
+      size_ = other.size_ != null ? other.size_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -99,6 +102,17 @@ namespace Ubii.DataStructure {
       }
     }
 
+    /// <summary>Field number for the "size" field.</summary>
+    public const int SizeFieldNumber = 3;
+    private global::Ubii.DataStructure.Vector2 size_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.Vector2 Size {
+      get { return size_; }
+      set {
+        size_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Object2D);
@@ -114,6 +128,7 @@ namespace Ubii.DataStructure {
       }
       if (Id != other.Id) return false;
       if (!object.Equals(Pose, other.Pose)) return false;
+      if (!object.Equals(Size, other.Size)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -122,6 +137,7 @@ namespace Ubii.DataStructure {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (pose_ != null) hash ^= Pose.GetHashCode();
+      if (size_ != null) hash ^= Size.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -143,6 +159,10 @@ namespace Ubii.DataStructure {
         output.WriteRawTag(18);
         output.WriteMessage(Pose);
       }
+      if (size_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Size);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -156,6 +176,9 @@ namespace Ubii.DataStructure {
       }
       if (pose_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pose);
+      }
+      if (size_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Size);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -177,6 +200,12 @@ namespace Ubii.DataStructure {
         }
         Pose.MergeFrom(other.Pose);
       }
+      if (other.size_ != null) {
+        if (size_ == null) {
+          size_ = new global::Ubii.DataStructure.Vector2();
+        }
+        Size.MergeFrom(other.Size);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -197,6 +226,13 @@ namespace Ubii.DataStructure {
               pose_ = new global::Ubii.DataStructure.Pose2D();
             }
             input.ReadMessage(pose_);
+            break;
+          }
+          case 26: {
+            if (size_ == null) {
+              size_ = new global::Ubii.DataStructure.Vector2();
+            }
+            input.ReadMessage(size_);
             break;
           }
         }

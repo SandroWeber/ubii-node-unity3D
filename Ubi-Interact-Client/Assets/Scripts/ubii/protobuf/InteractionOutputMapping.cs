@@ -25,15 +25,15 @@ namespace Ubii.Sessions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1wcm90by9zZXNzaW9ucy9pbnRlcmFjdGlvbk91dHB1dE1hcHBpbmcucHJv",
-            "dG8SDXViaWkuc2Vzc2lvbnMaIXByb3RvL2ludGVyYWN0aW9ucy9pb0Zvcm1h",
-            "dC5wcm90bxoecHJvdG8vZGV2aWNlcy90b3BpY0RlbXV4LnByb3RvIn8KGElu",
-            "dGVyYWN0aW9uT3V0cHV0TWFwcGluZxIMCgRuYW1lGAEgASgJEg8KBXRvcGlj",
-            "GAIgASgJSAASLwoLdG9waWNfZGVtdXgYAyABKAsyGC51YmlpLmRldmljZXMu",
-            "VG9waWNEZW11eEgAQhMKEXRvcGljX2Rlc3RpbmF0aW9uIlkKHEludGVyYWN0",
-            "aW9uT3V0cHV0TWFwcGluZ0xpc3QSOQoIZWxlbWVudHMYASADKAsyJy51Ymlp",
-            "LnNlc3Npb25zLkludGVyYWN0aW9uT3V0cHV0TWFwcGluZ2IGcHJvdG8z"));
+            "dG8SDXViaWkuc2Vzc2lvbnMaHnByb3RvL2RldmljZXMvdG9waWNEZW11eC5w",
+            "cm90byJ/ChhJbnRlcmFjdGlvbk91dHB1dE1hcHBpbmcSDAoEbmFtZRgBIAEo",
+            "CRIPCgV0b3BpYxgCIAEoCUgAEi8KC3RvcGljX2RlbXV4GAMgASgLMhgudWJp",
+            "aS5kZXZpY2VzLlRvcGljRGVtdXhIAEITChF0b3BpY19kZXN0aW5hdGlvbiJZ",
+            "ChxJbnRlcmFjdGlvbk91dHB1dE1hcHBpbmdMaXN0EjkKCGVsZW1lbnRzGAEg",
+            "AygLMicudWJpaS5zZXNzaW9ucy5JbnRlcmFjdGlvbk91dHB1dE1hcHBpbmdi",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.Interactions.IoFormatReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.Devices.TopicDemuxReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMapping), global::Ubii.Sessions.InteractionOutputMapping.Parser, new[]{ "Name", "Topic", "TopicDemux" }, new[]{ "TopicDestination" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMappingList), global::Ubii.Sessions.InteractionOutputMappingList.Parser, new[]{ "Elements" }, null, null, null)

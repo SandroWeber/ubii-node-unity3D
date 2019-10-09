@@ -26,56 +26,68 @@ namespace Ubii.TopicData {
           string.Concat(
             "CjVwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL3RvcGljRGF0YVJl",
             "Y29yZC5wcm90bxIOdWJpaS50b3BpY0RhdGEaL3Byb3RvL3RvcGljRGF0YS90",
-            "b3BpY0RhdGFSZWNvcmQvdGltZXN0YW1wLnByb3RvGjtwcm90by90b3BpY0Rh",
-            "dGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvdmVjdG9yMi5wcm90",
-            "bxo7cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9kYXRhU3RydWN0",
-            "dXJlL3ZlY3RvcjMucHJvdG8aO3Byb3RvL3RvcGljRGF0YS90b3BpY0RhdGFS",
-            "ZWNvcmQvZGF0YVN0cnVjdHVyZS92ZWN0b3I0LnByb3RvGj5wcm90by90b3Bp",
-            "Y0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvcXVhdGVybmlv",
-            "bi5wcm90bxo9cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9kYXRh",
-            "U3RydWN0dXJlL21hdHJpeDN4Mi5wcm90bxo9cHJvdG8vdG9waWNEYXRhL3Rv",
-            "cGljRGF0YVJlY29yZC9kYXRhU3RydWN0dXJlL21hdHJpeDR4NC5wcm90bxo5",
-            "cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9kYXRhU3RydWN0dXJl",
-            "L2NvbG9yLnByb3RvGj5wcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3Jk",
-            "L2RhdGFTdHJ1Y3R1cmUvdG91Y2hFdmVudC5wcm90bxo8cHJvdG8vdG9waWNE",
-            "YXRhL3RvcGljRGF0YVJlY29yZC9kYXRhU3RydWN0dXJlL2tleUV2ZW50LnBy",
-            "b3RvGj5wcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1",
-            "Y3R1cmUvbW91c2VFdmVudC5wcm90bxo8cHJvdG8vdG9waWNEYXRhL3RvcGlj",
-            "RGF0YVJlY29yZC9kYXRhU3RydWN0dXJlL215b0V2ZW50LnByb3RvGjpwcm90",
-            "by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvcG9z",
-            "ZTJkLnByb3RvGjpwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2Rh",
-            "dGFTdHJ1Y3R1cmUvcG9zZTNkLnByb3RvGjxwcm90by90b3BpY0RhdGEvdG9w",
-            "aWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvb2JqZWN0MmQucHJvdG8aPHBy",
-            "b3RvL3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVyZS9v",
-            "YmplY3QzZC5wcm90byLuBwoPVG9waWNEYXRhUmVjb3JkEg0KBXRvcGljGAEg",
-            "ASgJEiwKCXRpbWVzdGFtcBgCIAEoCzIZLnViaWkudG9waWNEYXRhLlRpbWVz",
-            "dGFtcBIQCgZkb3VibGUYAyABKAFIABIOCgRib29sGAQgASgISAASEAoGc3Ry",
-            "aW5nGAUgASgJSAASLgoHdmVjdG9yMhgGIAEoCzIbLnViaWkuZGF0YVN0cnVj",
-            "dHVyZS5WZWN0b3IySAASLgoHdmVjdG9yMxgHIAEoCzIbLnViaWkuZGF0YVN0",
-            "cnVjdHVyZS5WZWN0b3IzSAASLgoHdmVjdG9yNBgIIAEoCzIbLnViaWkuZGF0",
-            "YVN0cnVjdHVyZS5WZWN0b3I0SAASNAoKcXVhdGVybmlvbhgJIAEoCzIeLnVi",
-            "aWkuZGF0YVN0cnVjdHVyZS5RdWF0ZXJuaW9uSAASMgoJbWF0cml4M3gyGAog",
-            "ASgLMh0udWJpaS5kYXRhU3RydWN0dXJlLk1hdHJpeDN4MkgAEjIKCW1hdHJp",
-            "eDR4NBgLIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5NYXRyaXg0eDRIABIq",
-            "CgVjb2xvchgMIAEoCzIZLnViaWkuZGF0YVN0cnVjdHVyZS5Db2xvckgAEjUK",
-            "C3RvdWNoX2V2ZW50GA0gASgLMh4udWJpaS5kYXRhU3RydWN0dXJlLlRvdWNo",
-            "RXZlbnRIABIxCglrZXlfZXZlbnQYDiABKAsyHC51YmlpLmRhdGFTdHJ1Y3R1",
-            "cmUuS2V5RXZlbnRIABI1Cgttb3VzZV9ldmVudBgPIAEoCzIeLnViaWkuZGF0",
-            "YVN0cnVjdHVyZS5Nb3VzZUV2ZW50SAASMQoJbXlvX2V2ZW50GBAgASgLMhwu",
-            "dWJpaS5kYXRhU3RydWN0dXJlLk15b0V2ZW50SAASLAoGcG9zZTJEGBEgASgL",
-            "MhoudWJpaS5kYXRhU3RydWN0dXJlLlBvc2UyREgAEiwKBnBvc2UzRBgSIAEo",
-            "CzIaLnViaWkuZGF0YVN0cnVjdHVyZS5Qb3NlM0RIABIwCghvYmplY3QyRBgT",
-            "IAEoCzIcLnViaWkuZGF0YVN0cnVjdHVyZS5PYmplY3QyREgAEjAKCG9iamVj",
-            "dDNEGBQgASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk9iamVjdDNESAASOQoN",
-            "b2JqZWN0MkRfbGlzdBgVIAEoCzIgLnViaWkuZGF0YVN0cnVjdHVyZS5PYmpl",
-            "Y3QyRExpc3RIABI5Cg1vYmplY3QzRF9saXN0GBYgASgLMiAudWJpaS5kYXRh",
-            "U3RydWN0dXJlLk9iamVjdDNETGlzdEgAQgYKBHR5cGUiSAoTVG9waWNEYXRh",
-            "UmVjb3JkTGlzdBIxCghlbGVtZW50cxgBIAMoCzIfLnViaWkudG9waWNEYXRh",
-            "LlRvcGljRGF0YVJlY29yZGIGcHJvdG8z"));
+            "b3BpY0RhdGFSZWNvcmQvdGltZXN0YW1wLnByb3RvGjlwcm90by90b3BpY0Rh",
+            "dGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvbGlzdHMucHJvdG8a",
+            "O3Byb3RvL3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVy",
+            "ZS92ZWN0b3IyLnByb3RvGjtwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVj",
+            "b3JkL2RhdGFTdHJ1Y3R1cmUvdmVjdG9yMy5wcm90bxo7cHJvdG8vdG9waWNE",
+            "YXRhL3RvcGljRGF0YVJlY29yZC9kYXRhU3RydWN0dXJlL3ZlY3RvcjQucHJv",
+            "dG8aPnByb3RvL3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVj",
+            "dHVyZS9xdWF0ZXJuaW9uLnByb3RvGj1wcm90by90b3BpY0RhdGEvdG9waWNE",
+            "YXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvbWF0cml4M3gyLnByb3RvGj1wcm90",
+            "by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvbWF0",
+            "cml4NHg0LnByb3RvGjlwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3Jk",
+            "L2RhdGFTdHJ1Y3R1cmUvY29sb3IucHJvdG8aPnByb3RvL3RvcGljRGF0YS90",
+            "b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVyZS90b3VjaEV2ZW50LnByb3Rv",
+            "Gjxwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1",
+            "cmUva2V5RXZlbnQucHJvdG8aPnByb3RvL3RvcGljRGF0YS90b3BpY0RhdGFS",
+            "ZWNvcmQvZGF0YVN0cnVjdHVyZS9tb3VzZUV2ZW50LnByb3RvGjxwcm90by90",
+            "b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvbXlvRXZl",
+            "bnQucHJvdG8aOnByb3RvL3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0",
+            "YVN0cnVjdHVyZS9wb3NlMmQucHJvdG8aOnByb3RvL3RvcGljRGF0YS90b3Bp",
+            "Y0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVyZS9wb3NlM2QucHJvdG8aPHByb3Rv",
+            "L3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVyZS9vYmpl",
+            "Y3QyZC5wcm90bxo8cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9k",
+            "YXRhU3RydWN0dXJlL29iamVjdDNkLnByb3RvGjlwcm90by90b3BpY0RhdGEv",
+            "dG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvaW1hZ2UucHJvdG8ihAsK",
+            "D1RvcGljRGF0YVJlY29yZBINCgV0b3BpYxgBIAEoCRIsCgl0aW1lc3RhbXAY",
+            "AiABKAsyGS51YmlpLnRvcGljRGF0YS5UaW1lc3RhbXASEAoGZG91YmxlGAMg",
+            "ASgBSAASDgoEYm9vbBgEIAEoCEgAEhAKBnN0cmluZxgFIAEoCUgAEi4KB3Zl",
+            "Y3RvcjIYBiABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yMkgAEi4K",
+            "B3ZlY3RvcjMYByABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yM0gA",
+            "Ei4KB3ZlY3RvcjQYCCABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9y",
+            "NEgAEjQKCnF1YXRlcm5pb24YCSABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUu",
+            "UXVhdGVybmlvbkgAEjIKCW1hdHJpeDN4MhgKIAEoCzIdLnViaWkuZGF0YVN0",
+            "cnVjdHVyZS5NYXRyaXgzeDJIABIyCgltYXRyaXg0eDQYCyABKAsyHS51Ymlp",
+            "LmRhdGFTdHJ1Y3R1cmUuTWF0cml4NHg0SAASKgoFY29sb3IYDCABKAsyGS51",
+            "YmlpLmRhdGFTdHJ1Y3R1cmUuQ29sb3JIABI1Cgt0b3VjaF9ldmVudBgNIAEo",
+            "CzIeLnViaWkuZGF0YVN0cnVjdHVyZS5Ub3VjaEV2ZW50SAASMQoJa2V5X2V2",
+            "ZW50GA4gASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLktleUV2ZW50SAASNQoL",
+            "bW91c2VfZXZlbnQYDyABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUuTW91c2VF",
+            "dmVudEgAEjEKCW15b19ldmVudBgQIAEoCzIcLnViaWkuZGF0YVN0cnVjdHVy",
+            "ZS5NeW9FdmVudEgAEiwKBnBvc2UyRBgRIAEoCzIaLnViaWkuZGF0YVN0cnVj",
+            "dHVyZS5Qb3NlMkRIABIsCgZwb3NlM0QYEiABKAsyGi51YmlpLmRhdGFTdHJ1",
+            "Y3R1cmUuUG9zZTNESAASMAoIb2JqZWN0MkQYEyABKAsyHC51YmlpLmRhdGFT",
+            "dHJ1Y3R1cmUuT2JqZWN0MkRIABIwCghvYmplY3QzRBgUIAEoCzIcLnViaWku",
+            "ZGF0YVN0cnVjdHVyZS5PYmplY3QzREgAEjkKDW9iamVjdDJEX2xpc3QYFSAB",
+            "KAsyIC51YmlpLmRhdGFTdHJ1Y3R1cmUuT2JqZWN0MkRMaXN0SAASOQoNb2Jq",
+            "ZWN0M0RfbGlzdBgWIAEoCzIgLnViaWkuZGF0YVN0cnVjdHVyZS5PYmplY3Qz",
+            "RExpc3RIABIPCgVpbnQzMhgXIAEoBUgAEg8KBWZsb2F0GBggASgCSAASMwoK",
+            "aW50MzJfbGlzdBgZIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5JbnQzMkxp",
+            "c3RIABIzCgpmbG9hdF9saXN0GBogASgLMh0udWJpaS5kYXRhU3RydWN0dXJl",
+            "LkZsb2F0TGlzdEgAEjUKC2RvdWJsZV9saXN0GBsgASgLMh4udWJpaS5kYXRh",
+            "U3RydWN0dXJlLkRvdWJsZUxpc3RIABI1CgtzdHJpbmdfbGlzdBgcIAEoCzIe",
+            "LnViaWkuZGF0YVN0cnVjdHVyZS5TdHJpbmdMaXN0SAASMQoJYm9vbF9saXN0",
+            "GB0gASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLkJvb2xMaXN0SAASLgoHaW1h",
+            "Z2UyRBgeIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVyZS5JbWFnZTJESAASNwoM",
+            "aW1hZ2UyRF9saXN0GB8gASgLMh8udWJpaS5kYXRhU3RydWN0dXJlLkltYWdl",
+            "MkRMaXN0SABCBgoEdHlwZSJIChNUb3BpY0RhdGFSZWNvcmRMaXN0EjEKCGVs",
+            "ZW1lbnRzGAEgAygLMh8udWJpaS50b3BpY0RhdGEuVG9waWNEYXRhUmVjb3Jk",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, global::Ubii.DataStructure.ImageReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "Double", "Bool", "String", "Vector2", "Vector3", "Vector4", "Quaternion", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList" }, new[]{ "Type" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "Double", "Bool", "String", "Vector2", "Vector3", "Vector4", "Quaternion", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList", "Int32", "Float", "Int32List", "FloatList", "DoubleList", "StringList", "BoolList", "Image2D", "Image2DList" }, new[]{ "Type" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecordList), global::Ubii.TopicData.TopicDataRecordList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -170,6 +182,33 @@ namespace Ubii.TopicData {
           break;
         case TypeOneofCase.Object3DList:
           Object3DList = other.Object3DList.Clone();
+          break;
+        case TypeOneofCase.Int32:
+          Int32 = other.Int32;
+          break;
+        case TypeOneofCase.Float:
+          Float = other.Float;
+          break;
+        case TypeOneofCase.Int32List:
+          Int32List = other.Int32List.Clone();
+          break;
+        case TypeOneofCase.FloatList:
+          FloatList = other.FloatList.Clone();
+          break;
+        case TypeOneofCase.DoubleList:
+          DoubleList = other.DoubleList.Clone();
+          break;
+        case TypeOneofCase.StringList:
+          StringList = other.StringList.Clone();
+          break;
+        case TypeOneofCase.BoolList:
+          BoolList = other.BoolList.Clone();
+          break;
+        case TypeOneofCase.Image2D:
+          Image2D = other.Image2D.Clone();
+          break;
+        case TypeOneofCase.Image2DList:
+          Image2DList = other.Image2DList.Clone();
           break;
       }
 
@@ -423,6 +462,105 @@ namespace Ubii.TopicData {
       }
     }
 
+    /// <summary>Field number for the "int32" field.</summary>
+    public const int Int32FieldNumber = 23;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Int32 {
+      get { return typeCase_ == TypeOneofCase.Int32 ? (int) type_ : 0; }
+      set {
+        type_ = value;
+        typeCase_ = TypeOneofCase.Int32;
+      }
+    }
+
+    /// <summary>Field number for the "float" field.</summary>
+    public const int FloatFieldNumber = 24;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float Float {
+      get { return typeCase_ == TypeOneofCase.Float ? (float) type_ : 0F; }
+      set {
+        type_ = value;
+        typeCase_ = TypeOneofCase.Float;
+      }
+    }
+
+    /// <summary>Field number for the "int32_list" field.</summary>
+    public const int Int32ListFieldNumber = 25;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.Int32List Int32List {
+      get { return typeCase_ == TypeOneofCase.Int32List ? (global::Ubii.DataStructure.Int32List) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Int32List;
+      }
+    }
+
+    /// <summary>Field number for the "float_list" field.</summary>
+    public const int FloatListFieldNumber = 26;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.FloatList FloatList {
+      get { return typeCase_ == TypeOneofCase.FloatList ? (global::Ubii.DataStructure.FloatList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.FloatList;
+      }
+    }
+
+    /// <summary>Field number for the "double_list" field.</summary>
+    public const int DoubleListFieldNumber = 27;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.DoubleList DoubleList {
+      get { return typeCase_ == TypeOneofCase.DoubleList ? (global::Ubii.DataStructure.DoubleList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.DoubleList;
+      }
+    }
+
+    /// <summary>Field number for the "string_list" field.</summary>
+    public const int StringListFieldNumber = 28;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.StringList StringList {
+      get { return typeCase_ == TypeOneofCase.StringList ? (global::Ubii.DataStructure.StringList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.StringList;
+      }
+    }
+
+    /// <summary>Field number for the "bool_list" field.</summary>
+    public const int BoolListFieldNumber = 29;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.BoolList BoolList {
+      get { return typeCase_ == TypeOneofCase.BoolList ? (global::Ubii.DataStructure.BoolList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.BoolList;
+      }
+    }
+
+    /// <summary>Field number for the "image2D" field.</summary>
+    public const int Image2DFieldNumber = 30;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.Image2D Image2D {
+      get { return typeCase_ == TypeOneofCase.Image2D ? (global::Ubii.DataStructure.Image2D) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Image2D;
+      }
+    }
+
+    /// <summary>Field number for the "image2D_list" field.</summary>
+    public const int Image2DListFieldNumber = 31;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.DataStructure.Image2DList Image2DList {
+      get { return typeCase_ == TypeOneofCase.Image2DList ? (global::Ubii.DataStructure.Image2DList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Image2DList;
+      }
+    }
+
     private object type_;
     /// <summary>Enum of possible cases for the "type" oneof.</summary>
     public enum TypeOneofCase {
@@ -447,6 +585,15 @@ namespace Ubii.TopicData {
       Object3D = 20,
       Object2DList = 21,
       Object3DList = 22,
+      Int32 = 23,
+      Float = 24,
+      Int32List = 25,
+      FloatList = 26,
+      DoubleList = 27,
+      StringList = 28,
+      BoolList = 29,
+      Image2D = 30,
+      Image2DList = 31,
     }
     private TypeOneofCase typeCase_ = TypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -495,6 +642,15 @@ namespace Ubii.TopicData {
       if (!object.Equals(Object3D, other.Object3D)) return false;
       if (!object.Equals(Object2DList, other.Object2DList)) return false;
       if (!object.Equals(Object3DList, other.Object3DList)) return false;
+      if (Int32 != other.Int32) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Float, other.Float)) return false;
+      if (!object.Equals(Int32List, other.Int32List)) return false;
+      if (!object.Equals(FloatList, other.FloatList)) return false;
+      if (!object.Equals(DoubleList, other.DoubleList)) return false;
+      if (!object.Equals(StringList, other.StringList)) return false;
+      if (!object.Equals(BoolList, other.BoolList)) return false;
+      if (!object.Equals(Image2D, other.Image2D)) return false;
+      if (!object.Equals(Image2DList, other.Image2DList)) return false;
       if (TypeCase != other.TypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -524,6 +680,15 @@ namespace Ubii.TopicData {
       if (typeCase_ == TypeOneofCase.Object3D) hash ^= Object3D.GetHashCode();
       if (typeCase_ == TypeOneofCase.Object2DList) hash ^= Object2DList.GetHashCode();
       if (typeCase_ == TypeOneofCase.Object3DList) hash ^= Object3DList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Int32) hash ^= Int32.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Float) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Float);
+      if (typeCase_ == TypeOneofCase.Int32List) hash ^= Int32List.GetHashCode();
+      if (typeCase_ == TypeOneofCase.FloatList) hash ^= FloatList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.DoubleList) hash ^= DoubleList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.StringList) hash ^= StringList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.BoolList) hash ^= BoolList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Image2D) hash ^= Image2D.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Image2DList) hash ^= Image2DList.GetHashCode();
       hash ^= (int) typeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -626,6 +791,42 @@ namespace Ubii.TopicData {
         output.WriteRawTag(178, 1);
         output.WriteMessage(Object3DList);
       }
+      if (typeCase_ == TypeOneofCase.Int32) {
+        output.WriteRawTag(184, 1);
+        output.WriteInt32(Int32);
+      }
+      if (typeCase_ == TypeOneofCase.Float) {
+        output.WriteRawTag(197, 1);
+        output.WriteFloat(Float);
+      }
+      if (typeCase_ == TypeOneofCase.Int32List) {
+        output.WriteRawTag(202, 1);
+        output.WriteMessage(Int32List);
+      }
+      if (typeCase_ == TypeOneofCase.FloatList) {
+        output.WriteRawTag(210, 1);
+        output.WriteMessage(FloatList);
+      }
+      if (typeCase_ == TypeOneofCase.DoubleList) {
+        output.WriteRawTag(218, 1);
+        output.WriteMessage(DoubleList);
+      }
+      if (typeCase_ == TypeOneofCase.StringList) {
+        output.WriteRawTag(226, 1);
+        output.WriteMessage(StringList);
+      }
+      if (typeCase_ == TypeOneofCase.BoolList) {
+        output.WriteRawTag(234, 1);
+        output.WriteMessage(BoolList);
+      }
+      if (typeCase_ == TypeOneofCase.Image2D) {
+        output.WriteRawTag(242, 1);
+        output.WriteMessage(Image2D);
+      }
+      if (typeCase_ == TypeOneofCase.Image2DList) {
+        output.WriteRawTag(250, 1);
+        output.WriteMessage(Image2DList);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -699,6 +900,33 @@ namespace Ubii.TopicData {
       }
       if (typeCase_ == TypeOneofCase.Object3DList) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Object3DList);
+      }
+      if (typeCase_ == TypeOneofCase.Int32) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Int32);
+      }
+      if (typeCase_ == TypeOneofCase.Float) {
+        size += 2 + 4;
+      }
+      if (typeCase_ == TypeOneofCase.Int32List) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Int32List);
+      }
+      if (typeCase_ == TypeOneofCase.FloatList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(FloatList);
+      }
+      if (typeCase_ == TypeOneofCase.DoubleList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(DoubleList);
+      }
+      if (typeCase_ == TypeOneofCase.StringList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(StringList);
+      }
+      if (typeCase_ == TypeOneofCase.BoolList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(BoolList);
+      }
+      if (typeCase_ == TypeOneofCase.Image2D) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Image2D);
+      }
+      if (typeCase_ == TypeOneofCase.Image2DList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Image2DList);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -831,6 +1059,54 @@ namespace Ubii.TopicData {
             Object3DList = new global::Ubii.DataStructure.Object3DList();
           }
           Object3DList.MergeFrom(other.Object3DList);
+          break;
+        case TypeOneofCase.Int32:
+          Int32 = other.Int32;
+          break;
+        case TypeOneofCase.Float:
+          Float = other.Float;
+          break;
+        case TypeOneofCase.Int32List:
+          if (Int32List == null) {
+            Int32List = new global::Ubii.DataStructure.Int32List();
+          }
+          Int32List.MergeFrom(other.Int32List);
+          break;
+        case TypeOneofCase.FloatList:
+          if (FloatList == null) {
+            FloatList = new global::Ubii.DataStructure.FloatList();
+          }
+          FloatList.MergeFrom(other.FloatList);
+          break;
+        case TypeOneofCase.DoubleList:
+          if (DoubleList == null) {
+            DoubleList = new global::Ubii.DataStructure.DoubleList();
+          }
+          DoubleList.MergeFrom(other.DoubleList);
+          break;
+        case TypeOneofCase.StringList:
+          if (StringList == null) {
+            StringList = new global::Ubii.DataStructure.StringList();
+          }
+          StringList.MergeFrom(other.StringList);
+          break;
+        case TypeOneofCase.BoolList:
+          if (BoolList == null) {
+            BoolList = new global::Ubii.DataStructure.BoolList();
+          }
+          BoolList.MergeFrom(other.BoolList);
+          break;
+        case TypeOneofCase.Image2D:
+          if (Image2D == null) {
+            Image2D = new global::Ubii.DataStructure.Image2D();
+          }
+          Image2D.MergeFrom(other.Image2D);
+          break;
+        case TypeOneofCase.Image2DList:
+          if (Image2DList == null) {
+            Image2DList = new global::Ubii.DataStructure.Image2DList();
+          }
+          Image2DList.MergeFrom(other.Image2DList);
           break;
       }
 
@@ -1019,6 +1295,77 @@ namespace Ubii.TopicData {
             }
             input.ReadMessage(subBuilder);
             Object3DList = subBuilder;
+            break;
+          }
+          case 184: {
+            Int32 = input.ReadInt32();
+            break;
+          }
+          case 197: {
+            Float = input.ReadFloat();
+            break;
+          }
+          case 202: {
+            global::Ubii.DataStructure.Int32List subBuilder = new global::Ubii.DataStructure.Int32List();
+            if (typeCase_ == TypeOneofCase.Int32List) {
+              subBuilder.MergeFrom(Int32List);
+            }
+            input.ReadMessage(subBuilder);
+            Int32List = subBuilder;
+            break;
+          }
+          case 210: {
+            global::Ubii.DataStructure.FloatList subBuilder = new global::Ubii.DataStructure.FloatList();
+            if (typeCase_ == TypeOneofCase.FloatList) {
+              subBuilder.MergeFrom(FloatList);
+            }
+            input.ReadMessage(subBuilder);
+            FloatList = subBuilder;
+            break;
+          }
+          case 218: {
+            global::Ubii.DataStructure.DoubleList subBuilder = new global::Ubii.DataStructure.DoubleList();
+            if (typeCase_ == TypeOneofCase.DoubleList) {
+              subBuilder.MergeFrom(DoubleList);
+            }
+            input.ReadMessage(subBuilder);
+            DoubleList = subBuilder;
+            break;
+          }
+          case 226: {
+            global::Ubii.DataStructure.StringList subBuilder = new global::Ubii.DataStructure.StringList();
+            if (typeCase_ == TypeOneofCase.StringList) {
+              subBuilder.MergeFrom(StringList);
+            }
+            input.ReadMessage(subBuilder);
+            StringList = subBuilder;
+            break;
+          }
+          case 234: {
+            global::Ubii.DataStructure.BoolList subBuilder = new global::Ubii.DataStructure.BoolList();
+            if (typeCase_ == TypeOneofCase.BoolList) {
+              subBuilder.MergeFrom(BoolList);
+            }
+            input.ReadMessage(subBuilder);
+            BoolList = subBuilder;
+            break;
+          }
+          case 242: {
+            global::Ubii.DataStructure.Image2D subBuilder = new global::Ubii.DataStructure.Image2D();
+            if (typeCase_ == TypeOneofCase.Image2D) {
+              subBuilder.MergeFrom(Image2D);
+            }
+            input.ReadMessage(subBuilder);
+            Image2D = subBuilder;
+            break;
+          }
+          case 250: {
+            global::Ubii.DataStructure.Image2DList subBuilder = new global::Ubii.DataStructure.Image2DList();
+            if (typeCase_ == TypeOneofCase.Image2DList) {
+              subBuilder.MergeFrom(Image2DList);
+            }
+            input.ReadMessage(subBuilder);
+            Image2DList = subBuilder;
             break;
           }
         }
