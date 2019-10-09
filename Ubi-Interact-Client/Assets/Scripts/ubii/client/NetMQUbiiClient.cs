@@ -145,7 +145,7 @@ public class NetMQUbiiClient
     // CallService function called from upper layer (i.e. some MonoBehavior), returns a Task
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        Debug.Log("CallService: " + srq.Topic);
+        //Debug.Log("CallService: " + srq.Topic);
         return Task.Run(() => netmqServiceClient.CallService(srq));
     }
 
@@ -154,14 +154,13 @@ public class NetMQUbiiClient
     {
         netmqTopicDataClient.SendTopicData(topicData);
     }
-
-    // Topic subscription, called from upper layer (i.e. some MonoBahavior
+    
     public async Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> function)
     {
         // Repeated fields cannot be instantiated in SerivceRequest creation
         RepeatedField<string> subscribeTopics = new RepeatedField<string>();
         subscribeTopics.Add(topic);
-        Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
+        //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
             Topic = DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
@@ -187,13 +186,38 @@ public class NetMQUbiiClient
         return subReply;
     }
 
+    public async Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> function)
+    {
+        //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
+        ServiceRequest topicSubscription = new ServiceRequest
+        {
+            Topic = DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            TopicSubscription = new TopicSubscription
+            {
+                ClientId = clientSpecification.Id,
+                SubscribeTopicRegexp = regex
+            }
+        };
+        
+        ServiceReply subReply = await CallService(topicSubscription);
+
+        if (subReply.Error != null)
+        {
+            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            return null;
+        }
+
+        // adding callback function to dictionary
+        netmqTopicDataClient.AddTopicDataRegexCallback(regex, function);
+
+        return subReply;
+    }
+
     public async Task<ServiceReply> Unsubscribe(string topic)
     {
         // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
         RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
         unsubscribeTopics.Add(topic);
-
-        Debug.Log("Unsubscribe from topic: " + topic + " (backend) + unsubscribeRepeatedField: " + unsubscribeTopics.Count);
 
         ServiceRequest topicUnsubscription = new ServiceRequest
         {

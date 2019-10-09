@@ -11,6 +11,7 @@ using NetMQ.Sockets;
 using Google.Protobuf;
 using System.Threading;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class NetMQTopicDataClient
 {
@@ -22,6 +23,7 @@ public class NetMQTopicDataClient
     private bool connected = false;
 
     private Dictionary<string, Action<TopicDataRecord>> topicdataCallbacks = null;
+    private Dictionary<string, Action<TopicDataRecord>> topicdataRegexCallbacks = null;
     private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
@@ -41,6 +43,7 @@ public class NetMQTopicDataClient
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
 
         topicdataCallbacks = new Dictionary<string, Action<TopicDataRecord>>();
+        topicdataRegexCallbacks = new Dictionary<string, Action<TopicDataRecord>>();
 
         Initialize();
     }
@@ -99,10 +102,21 @@ public class NetMQTopicDataClient
         this.topicdataCallbacks.Add(topic, callback);
     }
 
+    public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    {
+        this.topicdataRegexCallbacks.Add(regex, callback);
+    }
+
     public void RemoveTopicDataCallback(string topic)
     {
-        Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
+        //Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
         this.topicdataCallbacks.Remove(topic);
+    }
+
+    public void RemoveTopicDataRegexCallback(string regex)
+    {
+        //Debug.Log("removing topicDataRegexCallBack for regex: " + regex + " (backend)");
+        this.topicdataRegexCallbacks.Remove(regex);
     }
 
     public void SendTopicData(TopicData td)
@@ -124,8 +138,22 @@ public class NetMQTopicDataClient
         // Invoke callback 
         if (topicData.TopicDataRecord != null)
         {
-
-            topicdataCallbacks[topicData.TopicDataRecord.Topic]?.Invoke(topicData.TopicDataRecord);
+            string topic = topicData.TopicDataRecord.Topic;
+            if (topicdataCallbacks.ContainsKey(topic))
+            {
+                topicdataCallbacks[topic].Invoke(topicData.TopicDataRecord);
+            }
+            else
+            {
+                foreach (KeyValuePair<string, Action<TopicDataRecord>> entry in topicdataRegexCallbacks)
+                {
+                    Match m = Regex.Match(topic, entry.Key);
+                    if (m.Success)
+                    {
+                        entry.Value.Invoke(topicData.TopicDataRecord);
+                    }
+                }
+            }
         }
         // catch possible error
         else if (topicData.Error != null)

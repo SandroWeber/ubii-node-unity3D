@@ -142,6 +142,11 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         return client.Subscribe(topic, callback);
     }
 
+    public Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    {
+        return client.SubscribeRegex(regex, callback);
+    }
+
     public Task<ServiceReply> Unsubscribe(string topic)
     {
         return client.Unsubscribe(topic);

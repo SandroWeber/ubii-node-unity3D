@@ -92,7 +92,6 @@ public class TestObjectMovement : MonoBehaviour
 
     private void CreateUbiiSpecs()
     {
-        Debug.Log(ubiiClient.GetID());
         topicTestPublishSubscribe = "/" + ubiiClient.GetID() + "/test_publish_subscribe/object_movement";
 
         ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiClient.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };

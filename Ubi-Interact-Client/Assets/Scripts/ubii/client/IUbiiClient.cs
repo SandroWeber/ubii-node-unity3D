@@ -12,5 +12,6 @@ interface IUbiiClient
     // topic data related functions
     void Publish(TopicData topicdata);
     Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback);
+    Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
     Task<ServiceReply> Unsubscribe(string topic);
 }

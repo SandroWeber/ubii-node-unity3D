@@ -126,6 +126,13 @@ public class UbiiWebClient : MonoBehaviour, IUbiiClient
 		return reply;
     }
 
+    public async Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> function)
+    {
+        //TODO: implement, merge functionality with NetMQ client
+
+        return null;
+    }
+
     public Task<ServiceReply> Unsubscribe(string topic)
     {
 		return null;
