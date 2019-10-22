@@ -25,15 +25,16 @@ namespace Ubii.DataStructure {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cjlwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1",
-            "cmUvaW1hZ2UucHJvdG8SEnViaWkuZGF0YVN0cnVjdHVyZSJLCgdJbWFnZTJE",
-            "Eg0KBXdpZHRoGAEgASgFEg4KBmhlaWdodBgCIAEoBRITCgtkYXRhX2Zvcm1h",
-            "dBgDIAEoCRIMCgRkYXRhGAQgASgMIjwKC0ltYWdlMkRMaXN0Ei0KCGVsZW1l",
-            "bnRzGAEgAygLMhsudWJpaS5kYXRhU3RydWN0dXJlLkltYWdlMkRiBnByb3Rv",
-            "Mw=="));
+            "cmUvaW1hZ2UucHJvdG8SEnViaWkuZGF0YVN0cnVjdHVyZSKhAQoHSW1hZ2Uy",
+            "RBINCgV3aWR0aBgBIAEoBRIOCgZoZWlnaHQYAiABKAUSOwoLZGF0YV9mb3Jt",
+            "YXQYAyABKA4yJi51YmlpLmRhdGFTdHJ1Y3R1cmUuSW1hZ2UyRC5EYXRhRm9y",
+            "bWF0EgwKBGRhdGEYBCABKAwiLAoKRGF0YUZvcm1hdBIJCgVHUkFZOBAAEggK",
+            "BFJHQjgQARIJCgVSR0JBOBACIjwKC0ltYWdlMkRMaXN0Ei0KCGVsZW1lbnRz",
+            "GAEgAygLMhsudWJpaS5kYXRhU3RydWN0dXJlLkltYWdlMkRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2D), global::Ubii.DataStructure.Image2D.Parser, new[]{ "Width", "Height", "DataFormat", "Data" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2D), global::Ubii.DataStructure.Image2D.Parser, new[]{ "Width", "Height", "DataFormat", "Data" }, null, new[]{ typeof(global::Ubii.DataStructure.Image2D.Types.DataFormat) }, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2DList), global::Ubii.DataStructure.Image2DList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -102,12 +103,12 @@ namespace Ubii.DataStructure {
 
     /// <summary>Field number for the "data_format" field.</summary>
     public const int DataFormatFieldNumber = 3;
-    private string dataFormat_ = "";
+    private global::Ubii.DataStructure.Image2D.Types.DataFormat dataFormat_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string DataFormat {
+    public global::Ubii.DataStructure.Image2D.Types.DataFormat DataFormat {
       get { return dataFormat_; }
       set {
-        dataFormat_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        dataFormat_ = value;
       }
     }
 
@@ -147,7 +148,7 @@ namespace Ubii.DataStructure {
       int hash = 1;
       if (Width != 0) hash ^= Width.GetHashCode();
       if (Height != 0) hash ^= Height.GetHashCode();
-      if (DataFormat.Length != 0) hash ^= DataFormat.GetHashCode();
+      if (DataFormat != 0) hash ^= DataFormat.GetHashCode();
       if (Data.Length != 0) hash ^= Data.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -170,9 +171,9 @@ namespace Ubii.DataStructure {
         output.WriteRawTag(16);
         output.WriteInt32(Height);
       }
-      if (DataFormat.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(DataFormat);
+      if (DataFormat != 0) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) DataFormat);
       }
       if (Data.Length != 0) {
         output.WriteRawTag(34);
@@ -192,8 +193,8 @@ namespace Ubii.DataStructure {
       if (Height != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Height);
       }
-      if (DataFormat.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(DataFormat);
+      if (DataFormat != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) DataFormat);
       }
       if (Data.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
@@ -215,7 +216,7 @@ namespace Ubii.DataStructure {
       if (other.Height != 0) {
         Height = other.Height;
       }
-      if (other.DataFormat.Length != 0) {
+      if (other.DataFormat != 0) {
         DataFormat = other.DataFormat;
       }
       if (other.Data.Length != 0) {
@@ -240,8 +241,8 @@ namespace Ubii.DataStructure {
             Height = input.ReadInt32();
             break;
           }
-          case 26: {
-            DataFormat = input.ReadString();
+          case 24: {
+            dataFormat_ = (global::Ubii.DataStructure.Image2D.Types.DataFormat) input.ReadEnum();
             break;
           }
           case 34: {
@@ -251,6 +252,19 @@ namespace Ubii.DataStructure {
         }
       }
     }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the Image2D message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public enum DataFormat {
+        [pbr::OriginalName("GRAY8")] Gray8 = 0,
+        [pbr::OriginalName("RGB8")] Rgb8 = 1,
+        [pbr::OriginalName("RGBA8")] Rgba8 = 2,
+      }
+
+    }
+    #endregion
 
   }
 

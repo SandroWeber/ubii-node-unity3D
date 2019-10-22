@@ -26,24 +26,37 @@ namespace Ubii.Interactions {
           string.Concat(
             "CiRwcm90by9pbnRlcmFjdGlvbnMvaW50ZXJhY3Rpb24ucHJvdG8SEXViaWku",
             "aW50ZXJhY3Rpb25zGiFwcm90by9pbnRlcmFjdGlvbnMvaW9Gb3JtYXQucHJv",
-            "dG8ikAIKC0ludGVyYWN0aW9uEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkS",
+            "dG8ixgIKC0ludGVyYWN0aW9uEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkS",
             "GwoTcHJvY2Vzc2luZ19jYWxsYmFjaxgDIAEoCRIyCg1pbnB1dF9mb3JtYXRz",
             "GAQgAygLMhsudWJpaS5pbnRlcmFjdGlvbnMuSU9Gb3JtYXQSMwoOb3V0cHV0",
             "X2Zvcm1hdHMYBSADKAsyGy51YmlpLmludGVyYWN0aW9ucy5JT0Zvcm1hdBIS",
             "Cgpvbl9jcmVhdGVkGAYgASgJEhkKEXByb2Nlc3NfZnJlcXVlbmN5GAcgASgC",
             "Eg8KB2F1dGhvcnMYCCADKAkSDAoEdGFncxgJIAMoCRITCgtkZXNjcmlwdGlv",
-            "bhgKIAEoCSJDCg9JbnRlcmFjdGlvbkxpc3QSMAoIZWxlbWVudHMYASADKAsy",
-            "Hi51YmlpLmludGVyYWN0aW9ucy5JbnRlcmFjdGlvbmIGcHJvdG8z"));
+            "bhgKIAEoCRI0CgZzdGF0dXMYCyABKA4yJC51YmlpLmludGVyYWN0aW9ucy5J",
+            "bnRlcmFjdGlvblN0YXR1cyJDCg9JbnRlcmFjdGlvbkxpc3QSMAoIZWxlbWVu",
+            "dHMYASADKAsyHi51YmlpLmludGVyYWN0aW9ucy5JbnRlcmFjdGlvbipNChFJ",
+            "bnRlcmFjdGlvblN0YXR1cxILCgdDUkVBVEVEEAASDwoLSU5JVElBTElaRUQQ",
+            "ARIOCgpQUk9DRVNTSU5HEAISCgoGSEFMVEVEEANiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Interactions.IoFormatReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.InteractionStatus), }, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description", "Status" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.InteractionList), global::Ubii.Interactions.InteractionList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum InteractionStatus {
+    [pbr::OriginalName("CREATED")] Created = 0,
+    [pbr::OriginalName("INITIALIZED")] Initialized = 1,
+    [pbr::OriginalName("PROCESSING")] Processing = 2,
+    [pbr::OriginalName("HALTED")] Halted = 3,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class Interaction : pb::IMessage<Interaction> {
     private static readonly pb::MessageParser<Interaction> _parser = new pb::MessageParser<Interaction>(() => new Interaction());
@@ -80,6 +93,7 @@ namespace Ubii.Interactions {
       authors_ = other.authors_.Clone();
       tags_ = other.tags_.Clone();
       description_ = other.description_;
+      status_ = other.status_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -194,6 +208,17 @@ namespace Ubii.Interactions {
       }
     }
 
+    /// <summary>Field number for the "status" field.</summary>
+    public const int StatusFieldNumber = 11;
+    private global::Ubii.Interactions.InteractionStatus status_ = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Interactions.InteractionStatus Status {
+      get { return status_; }
+      set {
+        status_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Interaction);
@@ -217,6 +242,7 @@ namespace Ubii.Interactions {
       if(!authors_.Equals(other.authors_)) return false;
       if(!tags_.Equals(other.tags_)) return false;
       if (Description != other.Description) return false;
+      if (Status != other.Status) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -233,6 +259,7 @@ namespace Ubii.Interactions {
       hash ^= authors_.GetHashCode();
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
+      if (Status != 0) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -274,6 +301,10 @@ namespace Ubii.Interactions {
         output.WriteRawTag(82);
         output.WriteString(Description);
       }
+      if (Status != 0) {
+        output.WriteRawTag(88);
+        output.WriteEnum((int) Status);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -303,6 +334,9 @@ namespace Ubii.Interactions {
       size += tags_.CalculateSize(_repeated_tags_codec);
       if (Description.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
+      }
+      if (Status != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -336,6 +370,9 @@ namespace Ubii.Interactions {
       tags_.Add(other.tags_);
       if (other.Description.Length != 0) {
         Description = other.Description;
+      }
+      if (other.Status != 0) {
+        Status = other.Status;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -386,6 +423,10 @@ namespace Ubii.Interactions {
           }
           case 82: {
             Description = input.ReadString();
+            break;
+          }
+          case 88: {
+            status_ = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
             break;
           }
         }

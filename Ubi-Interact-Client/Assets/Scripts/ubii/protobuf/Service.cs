@@ -25,14 +25,15 @@ namespace Ubii.Services {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Chxwcm90by9zZXJ2aWNlcy9zZXJ2aWNlLnByb3RvEg11YmlpLnNlcnZpY2Vz",
-            "IlkKB1NlcnZpY2USDQoFdG9waWMYASABKAkSHgoWcmVxdWVzdF9tZXNzYWdl",
+            "InwKB1NlcnZpY2USDQoFdG9waWMYASABKAkSHgoWcmVxdWVzdF9tZXNzYWdl",
             "X2Zvcm1hdBgCIAEoCRIfChdyZXNwb25zZV9tZXNzYWdlX2Zvcm1hdBgDIAEo",
-            "CSI3CgtTZXJ2aWNlTGlzdBIoCghlbGVtZW50cxgBIAMoCzIWLnViaWkuc2Vy",
-            "dmljZXMuU2VydmljZWIGcHJvdG8z"));
+            "CRIMCgR0YWdzGAQgAygJEhMKC2Rlc2NyaXB0aW9uGAUgASgJIjcKC1NlcnZp",
+            "Y2VMaXN0EigKCGVsZW1lbnRzGAEgAygLMhYudWJpaS5zZXJ2aWNlcy5TZXJ2",
+            "aWNlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.Service), global::Ubii.Services.Service.Parser, new[]{ "Topic", "RequestMessageFormat", "ResponseMessageFormat" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.Service), global::Ubii.Services.Service.Parser, new[]{ "Topic", "RequestMessageFormat", "ResponseMessageFormat", "Tags", "Description" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceList), global::Ubii.Services.ServiceList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -68,6 +69,8 @@ namespace Ubii.Services {
       topic_ = other.topic_;
       requestMessageFormat_ = other.requestMessageFormat_;
       responseMessageFormat_ = other.responseMessageFormat_;
+      tags_ = other.tags_.Clone();
+      description_ = other.description_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -109,6 +112,27 @@ namespace Ubii.Services {
       }
     }
 
+    /// <summary>Field number for the "tags" field.</summary>
+    public const int TagsFieldNumber = 4;
+    private static readonly pb::FieldCodec<string> _repeated_tags_codec
+        = pb::FieldCodec.ForString(34);
+    private readonly pbc::RepeatedField<string> tags_ = new pbc::RepeatedField<string>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> Tags {
+      get { return tags_; }
+    }
+
+    /// <summary>Field number for the "description" field.</summary>
+    public const int DescriptionFieldNumber = 5;
+    private string description_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Description {
+      get { return description_; }
+      set {
+        description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Service);
@@ -125,6 +149,8 @@ namespace Ubii.Services {
       if (Topic != other.Topic) return false;
       if (RequestMessageFormat != other.RequestMessageFormat) return false;
       if (ResponseMessageFormat != other.ResponseMessageFormat) return false;
+      if(!tags_.Equals(other.tags_)) return false;
+      if (Description != other.Description) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -134,6 +160,8 @@ namespace Ubii.Services {
       if (Topic.Length != 0) hash ^= Topic.GetHashCode();
       if (RequestMessageFormat.Length != 0) hash ^= RequestMessageFormat.GetHashCode();
       if (ResponseMessageFormat.Length != 0) hash ^= ResponseMessageFormat.GetHashCode();
+      hash ^= tags_.GetHashCode();
+      if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -159,6 +187,11 @@ namespace Ubii.Services {
         output.WriteRawTag(26);
         output.WriteString(ResponseMessageFormat);
       }
+      tags_.WriteTo(output, _repeated_tags_codec);
+      if (Description.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Description);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -175,6 +208,10 @@ namespace Ubii.Services {
       }
       if (ResponseMessageFormat.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ResponseMessageFormat);
+      }
+      size += tags_.CalculateSize(_repeated_tags_codec);
+      if (Description.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -195,6 +232,10 @@ namespace Ubii.Services {
       }
       if (other.ResponseMessageFormat.Length != 0) {
         ResponseMessageFormat = other.ResponseMessageFormat;
+      }
+      tags_.Add(other.tags_);
+      if (other.Description.Length != 0) {
+        Description = other.Description;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -217,6 +258,14 @@ namespace Ubii.Services {
           }
           case 26: {
             ResponseMessageFormat = input.ReadString();
+            break;
+          }
+          case 34: {
+            tags_.AddEntriesFrom(input, _repeated_tags_codec);
+            break;
+          }
+          case 42: {
+            Description = input.ReadString();
             break;
           }
         }

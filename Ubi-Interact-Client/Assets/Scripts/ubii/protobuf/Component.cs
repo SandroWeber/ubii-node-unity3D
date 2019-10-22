@@ -25,14 +25,15 @@ namespace Ubii.Devices {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch1wcm90by9kZXZpY2VzL2NvbXBvbmVudC5wcm90bxIMdWJpaS5kZXZpY2Vz",
-            "IoQBCglDb21wb25lbnQSDQoFdG9waWMYASABKAkSFgoObWVzc2FnZV9mb3Jt",
+            "IroBCglDb21wb25lbnQSDQoFdG9waWMYASABKAkSFgoObWVzc2FnZV9mb3Jt",
             "YXQYAiABKAkSLwoHaW9fdHlwZRgDIAEoDjIeLnViaWkuZGV2aWNlcy5Db21w",
-            "b25lbnQuSU9UeXBlIh8KBklPVHlwZRIJCgVJTlBVVBAAEgoKBk9VVFBVVBAB",
-            "YgZwcm90bzM="));
+            "b25lbnQuSU9UeXBlEhEKCWRldmljZV9pZBgEIAEoCRIMCgR0YWdzGAUgAygJ",
+            "EhMKC2Rlc2NyaXB0aW9uGAYgASgJIh8KBklPVHlwZRIJCgVJTlBVVBAAEgoK",
+            "Bk9VVFBVVBABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType", "DeviceId", "Tags", "Description" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null)
           }));
     }
     #endregion
@@ -67,6 +68,9 @@ namespace Ubii.Devices {
       topic_ = other.topic_;
       messageFormat_ = other.messageFormat_;
       ioType_ = other.ioType_;
+      deviceId_ = other.deviceId_;
+      tags_ = other.tags_.Clone();
+      description_ = other.description_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -108,6 +112,38 @@ namespace Ubii.Devices {
       }
     }
 
+    /// <summary>Field number for the "device_id" field.</summary>
+    public const int DeviceIdFieldNumber = 4;
+    private string deviceId_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string DeviceId {
+      get { return deviceId_; }
+      set {
+        deviceId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "tags" field.</summary>
+    public const int TagsFieldNumber = 5;
+    private static readonly pb::FieldCodec<string> _repeated_tags_codec
+        = pb::FieldCodec.ForString(42);
+    private readonly pbc::RepeatedField<string> tags_ = new pbc::RepeatedField<string>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> Tags {
+      get { return tags_; }
+    }
+
+    /// <summary>Field number for the "description" field.</summary>
+    public const int DescriptionFieldNumber = 6;
+    private string description_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Description {
+      get { return description_; }
+      set {
+        description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Component);
@@ -124,6 +160,9 @@ namespace Ubii.Devices {
       if (Topic != other.Topic) return false;
       if (MessageFormat != other.MessageFormat) return false;
       if (IoType != other.IoType) return false;
+      if (DeviceId != other.DeviceId) return false;
+      if(!tags_.Equals(other.tags_)) return false;
+      if (Description != other.Description) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -133,6 +172,9 @@ namespace Ubii.Devices {
       if (Topic.Length != 0) hash ^= Topic.GetHashCode();
       if (MessageFormat.Length != 0) hash ^= MessageFormat.GetHashCode();
       if (IoType != 0) hash ^= IoType.GetHashCode();
+      if (DeviceId.Length != 0) hash ^= DeviceId.GetHashCode();
+      hash ^= tags_.GetHashCode();
+      if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -158,6 +200,15 @@ namespace Ubii.Devices {
         output.WriteRawTag(24);
         output.WriteEnum((int) IoType);
       }
+      if (DeviceId.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(DeviceId);
+      }
+      tags_.WriteTo(output, _repeated_tags_codec);
+      if (Description.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(Description);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -174,6 +225,13 @@ namespace Ubii.Devices {
       }
       if (IoType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) IoType);
+      }
+      if (DeviceId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(DeviceId);
+      }
+      size += tags_.CalculateSize(_repeated_tags_codec);
+      if (Description.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -194,6 +252,13 @@ namespace Ubii.Devices {
       }
       if (other.IoType != 0) {
         IoType = other.IoType;
+      }
+      if (other.DeviceId.Length != 0) {
+        DeviceId = other.DeviceId;
+      }
+      tags_.Add(other.tags_);
+      if (other.Description.Length != 0) {
+        Description = other.Description;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -216,6 +281,18 @@ namespace Ubii.Devices {
           }
           case 24: {
             ioType_ = (global::Ubii.Devices.Component.Types.IOType) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            DeviceId = input.ReadString();
+            break;
+          }
+          case 42: {
+            tags_.AddEntriesFrom(input, _repeated_tags_codec);
+            break;
+          }
+          case 50: {
+            Description = input.ReadString();
             break;
           }
         }

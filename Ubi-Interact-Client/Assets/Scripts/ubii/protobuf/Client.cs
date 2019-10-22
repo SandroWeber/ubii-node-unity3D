@@ -25,14 +25,15 @@ namespace Ubii.Clients {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Chpwcm90by9jbGllbnRzL2NsaWVudC5wcm90bxIMdWJpaS5jbGllbnRzGhpw",
-            "cm90by9kZXZpY2VzL2RldmljZS5wcm90byJJCgZDbGllbnQSCgoCaWQYASAB",
+            "cm90by9kZXZpY2VzL2RldmljZS5wcm90byJsCgZDbGllbnQSCgoCaWQYASAB",
             "KAkSDAoEbmFtZRgCIAEoCRIlCgdkZXZpY2VzGAMgAygLMhQudWJpaS5kZXZp",
-            "Y2VzLkRldmljZSI0CgpDbGllbnRMaXN0EiYKCGVsZW1lbnRzGAEgAygLMhQu",
-            "dWJpaS5jbGllbnRzLkNsaWVudGIGcHJvdG8z"));
+            "Y2VzLkRldmljZRIMCgR0YWdzGAQgAygJEhMKC2Rlc2NyaXB0aW9uGAUgASgJ",
+            "IjQKCkNsaWVudExpc3QSJgoIZWxlbWVudHMYASADKAsyFC51YmlpLmNsaWVu",
+            "dHMuQ2xpZW50YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.DeviceReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices", "Tags", "Description" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.ClientList), global::Ubii.Clients.ClientList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -68,6 +69,8 @@ namespace Ubii.Clients {
       id_ = other.id_;
       name_ = other.name_;
       devices_ = other.devices_.Clone();
+      tags_ = other.tags_.Clone();
+      description_ = other.description_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -108,6 +111,27 @@ namespace Ubii.Clients {
       get { return devices_; }
     }
 
+    /// <summary>Field number for the "tags" field.</summary>
+    public const int TagsFieldNumber = 4;
+    private static readonly pb::FieldCodec<string> _repeated_tags_codec
+        = pb::FieldCodec.ForString(34);
+    private readonly pbc::RepeatedField<string> tags_ = new pbc::RepeatedField<string>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> Tags {
+      get { return tags_; }
+    }
+
+    /// <summary>Field number for the "description" field.</summary>
+    public const int DescriptionFieldNumber = 5;
+    private string description_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Description {
+      get { return description_; }
+      set {
+        description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Client);
@@ -124,6 +148,8 @@ namespace Ubii.Clients {
       if (Id != other.Id) return false;
       if (Name != other.Name) return false;
       if(!devices_.Equals(other.devices_)) return false;
+      if(!tags_.Equals(other.tags_)) return false;
+      if (Description != other.Description) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -133,6 +159,8 @@ namespace Ubii.Clients {
       if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       hash ^= devices_.GetHashCode();
+      hash ^= tags_.GetHashCode();
+      if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -155,6 +183,11 @@ namespace Ubii.Clients {
         output.WriteString(Name);
       }
       devices_.WriteTo(output, _repeated_devices_codec);
+      tags_.WriteTo(output, _repeated_tags_codec);
+      if (Description.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Description);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -170,6 +203,10 @@ namespace Ubii.Clients {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
       size += devices_.CalculateSize(_repeated_devices_codec);
+      size += tags_.CalculateSize(_repeated_tags_codec);
+      if (Description.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -188,6 +225,10 @@ namespace Ubii.Clients {
         Name = other.Name;
       }
       devices_.Add(other.devices_);
+      tags_.Add(other.tags_);
+      if (other.Description.Length != 0) {
+        Description = other.Description;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -209,6 +250,14 @@ namespace Ubii.Clients {
           }
           case 26: {
             devices_.AddEntriesFrom(input, _repeated_devices_codec);
+            break;
+          }
+          case 34: {
+            tags_.AddEntriesFrom(input, _repeated_tags_codec);
+            break;
+          }
+          case 42: {
+            Description = input.ReadString();
             break;
           }
         }
