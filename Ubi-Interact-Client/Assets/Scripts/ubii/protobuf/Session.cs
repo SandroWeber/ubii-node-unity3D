@@ -40,9 +40,9 @@ namespace Ubii.Sessions {
             "RUQQAhILCgdTVE9QUEVEEANiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Sessions.IoMappingReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Sessions.ProcessMode), typeof(global::Ubii.Sessions.SessionStatus), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.Session), global::Ubii.Sessions.Session.Parser, new[]{ "Id", "Name", "Interactions", "IoMappings", "Tags", "Description", "Authors", "ProcessMode", "Status" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.SessionList), global::Ubii.Sessions.SessionList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Sessions.ProcessMode), typeof(global::Ubii.Sessions.SessionStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.Session), global::Ubii.Sessions.Session.Parser, new[]{ "Id", "Name", "Interactions", "IoMappings", "Tags", "Description", "Authors", "ProcessMode", "Status" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.SessionList), global::Ubii.Sessions.SessionList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion
@@ -181,7 +181,7 @@ namespace Ubii.Sessions {
 
     /// <summary>Field number for the "process_mode" field.</summary>
     public const int ProcessModeFieldNumber = 8;
-    private global::Ubii.Sessions.ProcessMode processMode_ = 0;
+    private global::Ubii.Sessions.ProcessMode processMode_ = global::Ubii.Sessions.ProcessMode.CycleInteractions;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Sessions.ProcessMode ProcessMode {
       get { return processMode_; }
@@ -192,7 +192,7 @@ namespace Ubii.Sessions {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 9;
-    private global::Ubii.Sessions.SessionStatus status_ = 0;
+    private global::Ubii.Sessions.SessionStatus status_ = global::Ubii.Sessions.SessionStatus.Created;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Sessions.SessionStatus Status {
       get { return status_; }
@@ -236,8 +236,8 @@ namespace Ubii.Sessions {
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       hash ^= authors_.GetHashCode();
-      if (ProcessMode != 0) hash ^= ProcessMode.GetHashCode();
-      if (Status != 0) hash ^= Status.GetHashCode();
+      if (ProcessMode != global::Ubii.Sessions.ProcessMode.CycleInteractions) hash ^= ProcessMode.GetHashCode();
+      if (Status != global::Ubii.Sessions.SessionStatus.Created) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -267,11 +267,11 @@ namespace Ubii.Sessions {
         output.WriteString(Description);
       }
       authors_.WriteTo(output, _repeated_authors_codec);
-      if (ProcessMode != 0) {
+      if (ProcessMode != global::Ubii.Sessions.ProcessMode.CycleInteractions) {
         output.WriteRawTag(64);
         output.WriteEnum((int) ProcessMode);
       }
-      if (Status != 0) {
+      if (Status != global::Ubii.Sessions.SessionStatus.Created) {
         output.WriteRawTag(72);
         output.WriteEnum((int) Status);
       }
@@ -296,10 +296,10 @@ namespace Ubii.Sessions {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
       size += authors_.CalculateSize(_repeated_authors_codec);
-      if (ProcessMode != 0) {
+      if (ProcessMode != global::Ubii.Sessions.ProcessMode.CycleInteractions) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) ProcessMode);
       }
-      if (Status != 0) {
+      if (Status != global::Ubii.Sessions.SessionStatus.Created) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (_unknownFields != null) {
@@ -326,10 +326,10 @@ namespace Ubii.Sessions {
         Description = other.Description;
       }
       authors_.Add(other.authors_);
-      if (other.ProcessMode != 0) {
+      if (other.ProcessMode != global::Ubii.Sessions.ProcessMode.CycleInteractions) {
         ProcessMode = other.ProcessMode;
       }
-      if (other.Status != 0) {
+      if (other.Status != global::Ubii.Sessions.SessionStatus.Created) {
         Status = other.Status;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -372,11 +372,11 @@ namespace Ubii.Sessions {
             break;
           }
           case 64: {
-            processMode_ = (global::Ubii.Sessions.ProcessMode) input.ReadEnum();
+            ProcessMode = (global::Ubii.Sessions.ProcessMode) input.ReadEnum();
             break;
           }
           case 72: {
-            status_ = (global::Ubii.Sessions.SessionStatus) input.ReadEnum();
+            Status = (global::Ubii.Sessions.SessionStatus) input.ReadEnum();
             break;
           }
         }

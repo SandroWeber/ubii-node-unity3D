@@ -34,8 +34,8 @@ namespace Ubii.DataStructure {
             "dXJlLlZlY3RvcjJiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.ButtonEventTypeReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEvent), global::Ubii.DataStructure.TouchEvent.Parser, new[]{ "Type", "Position" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEvent), global::Ubii.DataStructure.TouchEvent.Parser, new[]{ "Type", "Position" }, null, null, null, null)
           }));
     }
     #endregion
@@ -79,7 +79,7 @@ namespace Ubii.DataStructure {
 
     /// <summary>Field number for the "type" field.</summary>
     public const int TypeFieldNumber = 1;
-    private global::Ubii.DataStructure.ButtonEventType type_ = 0;
+    private global::Ubii.DataStructure.ButtonEventType type_ = global::Ubii.DataStructure.ButtonEventType.Up;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.DataStructure.ButtonEventType Type {
       get { return type_; }
@@ -120,7 +120,7 @@ namespace Ubii.DataStructure {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Type != 0) hash ^= Type.GetHashCode();
+      if (Type != global::Ubii.DataStructure.ButtonEventType.Up) hash ^= Type.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -135,7 +135,7 @@ namespace Ubii.DataStructure {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Type != 0) {
+      if (Type != global::Ubii.DataStructure.ButtonEventType.Up) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Type);
       }
@@ -151,7 +151,7 @@ namespace Ubii.DataStructure {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Type != 0) {
+      if (Type != global::Ubii.DataStructure.ButtonEventType.Up) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
       }
       if (position_ != null) {
@@ -168,12 +168,12 @@ namespace Ubii.DataStructure {
       if (other == null) {
         return;
       }
-      if (other.Type != 0) {
+      if (other.Type != global::Ubii.DataStructure.ButtonEventType.Up) {
         Type = other.Type;
       }
       if (other.position_ != null) {
         if (position_ == null) {
-          position_ = new global::Ubii.DataStructure.Vector2();
+          Position = new global::Ubii.DataStructure.Vector2();
         }
         Position.MergeFrom(other.Position);
       }
@@ -189,14 +189,14 @@ namespace Ubii.DataStructure {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            type_ = (global::Ubii.DataStructure.ButtonEventType) input.ReadEnum();
+            Type = (global::Ubii.DataStructure.ButtonEventType) input.ReadEnum();
             break;
           }
           case 18: {
             if (position_ == null) {
-              position_ = new global::Ubii.DataStructure.Vector2();
+              Position = new global::Ubii.DataStructure.Vector2();
             }
-            input.ReadMessage(position_);
+            input.ReadMessage(Position);
             break;
           }
         }

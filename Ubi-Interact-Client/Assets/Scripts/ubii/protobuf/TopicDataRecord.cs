@@ -49,46 +49,49 @@ namespace Ubii.TopicData {
             "L3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQvZGF0YVN0cnVjdHVyZS9vYmpl",
             "Y3QyZC5wcm90bxo8cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC9k",
             "YXRhU3RydWN0dXJlL29iamVjdDNkLnByb3RvGjlwcm90by90b3BpY0RhdGEv",
-            "dG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvaW1hZ2UucHJvdG8ihAsK",
-            "D1RvcGljRGF0YVJlY29yZBINCgV0b3BpYxgBIAEoCRIsCgl0aW1lc3RhbXAY",
-            "AiABKAsyGS51YmlpLnRvcGljRGF0YS5UaW1lc3RhbXASEAoGZG91YmxlGAMg",
-            "ASgBSAASDgoEYm9vbBgEIAEoCEgAEhAKBnN0cmluZxgFIAEoCUgAEi4KB3Zl",
-            "Y3RvcjIYBiABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yMkgAEi4K",
-            "B3ZlY3RvcjMYByABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yM0gA",
-            "Ei4KB3ZlY3RvcjQYCCABKAsyGy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9y",
-            "NEgAEjQKCnF1YXRlcm5pb24YCSABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUu",
-            "UXVhdGVybmlvbkgAEjIKCW1hdHJpeDN4MhgKIAEoCzIdLnViaWkuZGF0YVN0",
-            "cnVjdHVyZS5NYXRyaXgzeDJIABIyCgltYXRyaXg0eDQYCyABKAsyHS51Ymlp",
-            "LmRhdGFTdHJ1Y3R1cmUuTWF0cml4NHg0SAASKgoFY29sb3IYDCABKAsyGS51",
-            "YmlpLmRhdGFTdHJ1Y3R1cmUuQ29sb3JIABI1Cgt0b3VjaF9ldmVudBgNIAEo",
-            "CzIeLnViaWkuZGF0YVN0cnVjdHVyZS5Ub3VjaEV2ZW50SAASMQoJa2V5X2V2",
-            "ZW50GA4gASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLktleUV2ZW50SAASNQoL",
-            "bW91c2VfZXZlbnQYDyABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUuTW91c2VF",
-            "dmVudEgAEjEKCW15b19ldmVudBgQIAEoCzIcLnViaWkuZGF0YVN0cnVjdHVy",
-            "ZS5NeW9FdmVudEgAEiwKBnBvc2UyRBgRIAEoCzIaLnViaWkuZGF0YVN0cnVj",
-            "dHVyZS5Qb3NlMkRIABIsCgZwb3NlM0QYEiABKAsyGi51YmlpLmRhdGFTdHJ1",
-            "Y3R1cmUuUG9zZTNESAASMAoIb2JqZWN0MkQYEyABKAsyHC51YmlpLmRhdGFT",
-            "dHJ1Y3R1cmUuT2JqZWN0MkRIABIwCghvYmplY3QzRBgUIAEoCzIcLnViaWku",
-            "ZGF0YVN0cnVjdHVyZS5PYmplY3QzREgAEjkKDW9iamVjdDJEX2xpc3QYFSAB",
-            "KAsyIC51YmlpLmRhdGFTdHJ1Y3R1cmUuT2JqZWN0MkRMaXN0SAASOQoNb2Jq",
-            "ZWN0M0RfbGlzdBgWIAEoCzIgLnViaWkuZGF0YVN0cnVjdHVyZS5PYmplY3Qz",
-            "RExpc3RIABIPCgVpbnQzMhgXIAEoBUgAEg8KBWZsb2F0GBggASgCSAASMwoK",
-            "aW50MzJfbGlzdBgZIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5JbnQzMkxp",
-            "c3RIABIzCgpmbG9hdF9saXN0GBogASgLMh0udWJpaS5kYXRhU3RydWN0dXJl",
-            "LkZsb2F0TGlzdEgAEjUKC2RvdWJsZV9saXN0GBsgASgLMh4udWJpaS5kYXRh",
-            "U3RydWN0dXJlLkRvdWJsZUxpc3RIABI1CgtzdHJpbmdfbGlzdBgcIAEoCzIe",
-            "LnViaWkuZGF0YVN0cnVjdHVyZS5TdHJpbmdMaXN0SAASMQoJYm9vbF9saXN0",
-            "GB0gASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLkJvb2xMaXN0SAASLgoHaW1h",
-            "Z2UyRBgeIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVyZS5JbWFnZTJESAASNwoM",
-            "aW1hZ2UyRF9saXN0GB8gASgLMh8udWJpaS5kYXRhU3RydWN0dXJlLkltYWdl",
-            "MkRMaXN0SABCBgoEdHlwZSJIChNUb3BpY0RhdGFSZWNvcmRMaXN0EjEKCGVs",
-            "ZW1lbnRzGAEgAygLMh8udWJpaS50b3BpY0RhdGEuVG9waWNEYXRhUmVjb3Jk",
-            "YgZwcm90bzM="));
+            "dG9waWNEYXRhUmVjb3JkL2RhdGFTdHJ1Y3R1cmUvaW1hZ2UucHJvdG8aHHBy",
+            "b3RvL3Nlc3Npb25zL3Nlc3Npb24ucHJvdG8aJHByb3RvL2ludGVyYWN0aW9u",
+            "cy9pbnRlcmFjdGlvbi5wcm90byLmCwoPVG9waWNEYXRhUmVjb3JkEg0KBXRv",
+            "cGljGAEgASgJEiwKCXRpbWVzdGFtcBgCIAEoCzIZLnViaWkudG9waWNEYXRh",
+            "LlRpbWVzdGFtcBIQCgZkb3VibGUYAyABKAFIABIOCgRib29sGAQgASgISAAS",
+            "EAoGc3RyaW5nGAUgASgJSAASLgoHdmVjdG9yMhgGIAEoCzIbLnViaWkuZGF0",
+            "YVN0cnVjdHVyZS5WZWN0b3IySAASLgoHdmVjdG9yMxgHIAEoCzIbLnViaWku",
+            "ZGF0YVN0cnVjdHVyZS5WZWN0b3IzSAASLgoHdmVjdG9yNBgIIAEoCzIbLnVi",
+            "aWkuZGF0YVN0cnVjdHVyZS5WZWN0b3I0SAASNAoKcXVhdGVybmlvbhgJIAEo",
+            "CzIeLnViaWkuZGF0YVN0cnVjdHVyZS5RdWF0ZXJuaW9uSAASMgoJbWF0cml4",
+            "M3gyGAogASgLMh0udWJpaS5kYXRhU3RydWN0dXJlLk1hdHJpeDN4MkgAEjIK",
+            "CW1hdHJpeDR4NBgLIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5NYXRyaXg0",
+            "eDRIABIqCgVjb2xvchgMIAEoCzIZLnViaWkuZGF0YVN0cnVjdHVyZS5Db2xv",
+            "ckgAEjUKC3RvdWNoX2V2ZW50GA0gASgLMh4udWJpaS5kYXRhU3RydWN0dXJl",
+            "LlRvdWNoRXZlbnRIABIxCglrZXlfZXZlbnQYDiABKAsyHC51YmlpLmRhdGFT",
+            "dHJ1Y3R1cmUuS2V5RXZlbnRIABI1Cgttb3VzZV9ldmVudBgPIAEoCzIeLnVi",
+            "aWkuZGF0YVN0cnVjdHVyZS5Nb3VzZUV2ZW50SAASMQoJbXlvX2V2ZW50GBAg",
+            "ASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk15b0V2ZW50SAASLAoGcG9zZTJE",
+            "GBEgASgLMhoudWJpaS5kYXRhU3RydWN0dXJlLlBvc2UyREgAEiwKBnBvc2Uz",
+            "RBgSIAEoCzIaLnViaWkuZGF0YVN0cnVjdHVyZS5Qb3NlM0RIABIwCghvYmpl",
+            "Y3QyRBgTIAEoCzIcLnViaWkuZGF0YVN0cnVjdHVyZS5PYmplY3QyREgAEjAK",
+            "CG9iamVjdDNEGBQgASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk9iamVjdDNE",
+            "SAASOQoNb2JqZWN0MkRfbGlzdBgVIAEoCzIgLnViaWkuZGF0YVN0cnVjdHVy",
+            "ZS5PYmplY3QyRExpc3RIABI5Cg1vYmplY3QzRF9saXN0GBYgASgLMiAudWJp",
+            "aS5kYXRhU3RydWN0dXJlLk9iamVjdDNETGlzdEgAEg8KBWludDMyGBcgASgF",
+            "SAASDwoFZmxvYXQYGCABKAJIABIzCgppbnQzMl9saXN0GBkgASgLMh0udWJp",
+            "aS5kYXRhU3RydWN0dXJlLkludDMyTGlzdEgAEjMKCmZsb2F0X2xpc3QYGiAB",
+            "KAsyHS51YmlpLmRhdGFTdHJ1Y3R1cmUuRmxvYXRMaXN0SAASNQoLZG91Ymxl",
+            "X2xpc3QYGyABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUuRG91YmxlTGlzdEgA",
+            "EjUKC3N0cmluZ19saXN0GBwgASgLMh4udWJpaS5kYXRhU3RydWN0dXJlLlN0",
+            "cmluZ0xpc3RIABIxCglib29sX2xpc3QYHSABKAsyHC51YmlpLmRhdGFTdHJ1",
+            "Y3R1cmUuQm9vbExpc3RIABIuCgdpbWFnZTJEGB4gASgLMhsudWJpaS5kYXRh",
+            "U3RydWN0dXJlLkltYWdlMkRIABI3CgxpbWFnZTJEX2xpc3QYHyABKAsyHy51",
+            "YmlpLmRhdGFTdHJ1Y3R1cmUuSW1hZ2UyRExpc3RIABIpCgdzZXNzaW9uGCAg",
+            "ASgLMhYudWJpaS5zZXNzaW9ucy5TZXNzaW9uSAASNQoLaW50ZXJhY3Rpb24Y",
+            "ISABKAsyHi51YmlpLmludGVyYWN0aW9ucy5JbnRlcmFjdGlvbkgAQgYKBHR5",
+            "cGUiSAoTVG9waWNEYXRhUmVjb3JkTGlzdBIxCghlbGVtZW50cxgBIAMoCzIf",
+            "LnViaWkudG9waWNEYXRhLlRvcGljRGF0YVJlY29yZGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, global::Ubii.DataStructure.ImageReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "Double", "Bool", "String", "Vector2", "Vector3", "Vector4", "Quaternion", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList", "Int32", "Float", "Int32List", "FloatList", "DoubleList", "StringList", "BoolList", "Image2D", "Image2DList" }, new[]{ "Type" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecordList), global::Ubii.TopicData.TopicDataRecordList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, global::Ubii.DataStructure.ImageReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Interactions.InteractionReflection.Descriptor, },
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "Double", "Bool", "String", "Vector2", "Vector3", "Vector4", "Quaternion", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList", "Int32", "Float", "Int32List", "FloatList", "DoubleList", "StringList", "BoolList", "Image2D", "Image2DList", "Session", "Interaction" }, new[]{ "Type" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecordList), global::Ubii.TopicData.TopicDataRecordList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion
@@ -209,6 +212,12 @@ namespace Ubii.TopicData {
           break;
         case TypeOneofCase.Image2DList:
           Image2DList = other.Image2DList.Clone();
+          break;
+        case TypeOneofCase.Session:
+          Session = other.Session.Clone();
+          break;
+        case TypeOneofCase.Interaction:
+          Interaction = other.Interaction.Clone();
           break;
       }
 
@@ -561,6 +570,28 @@ namespace Ubii.TopicData {
       }
     }
 
+    /// <summary>Field number for the "session" field.</summary>
+    public const int SessionFieldNumber = 32;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Sessions.Session Session {
+      get { return typeCase_ == TypeOneofCase.Session ? (global::Ubii.Sessions.Session) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Session;
+      }
+    }
+
+    /// <summary>Field number for the "interaction" field.</summary>
+    public const int InteractionFieldNumber = 33;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Interactions.Interaction Interaction {
+      get { return typeCase_ == TypeOneofCase.Interaction ? (global::Ubii.Interactions.Interaction) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Interaction;
+      }
+    }
+
     private object type_;
     /// <summary>Enum of possible cases for the "type" oneof.</summary>
     public enum TypeOneofCase {
@@ -594,6 +625,8 @@ namespace Ubii.TopicData {
       BoolList = 29,
       Image2D = 30,
       Image2DList = 31,
+      Session = 32,
+      Interaction = 33,
     }
     private TypeOneofCase typeCase_ = TypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -651,6 +684,8 @@ namespace Ubii.TopicData {
       if (!object.Equals(BoolList, other.BoolList)) return false;
       if (!object.Equals(Image2D, other.Image2D)) return false;
       if (!object.Equals(Image2DList, other.Image2DList)) return false;
+      if (!object.Equals(Session, other.Session)) return false;
+      if (!object.Equals(Interaction, other.Interaction)) return false;
       if (TypeCase != other.TypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -689,6 +724,8 @@ namespace Ubii.TopicData {
       if (typeCase_ == TypeOneofCase.BoolList) hash ^= BoolList.GetHashCode();
       if (typeCase_ == TypeOneofCase.Image2D) hash ^= Image2D.GetHashCode();
       if (typeCase_ == TypeOneofCase.Image2DList) hash ^= Image2DList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Session) hash ^= Session.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Interaction) hash ^= Interaction.GetHashCode();
       hash ^= (int) typeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -827,6 +864,14 @@ namespace Ubii.TopicData {
         output.WriteRawTag(250, 1);
         output.WriteMessage(Image2DList);
       }
+      if (typeCase_ == TypeOneofCase.Session) {
+        output.WriteRawTag(130, 2);
+        output.WriteMessage(Session);
+      }
+      if (typeCase_ == TypeOneofCase.Interaction) {
+        output.WriteRawTag(138, 2);
+        output.WriteMessage(Interaction);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -928,6 +973,12 @@ namespace Ubii.TopicData {
       if (typeCase_ == TypeOneofCase.Image2DList) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Image2DList);
       }
+      if (typeCase_ == TypeOneofCase.Session) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Session);
+      }
+      if (typeCase_ == TypeOneofCase.Interaction) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Interaction);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -944,7 +995,7 @@ namespace Ubii.TopicData {
       }
       if (other.timestamp_ != null) {
         if (timestamp_ == null) {
-          timestamp_ = new global::Ubii.TopicData.Timestamp();
+          Timestamp = new global::Ubii.TopicData.Timestamp();
         }
         Timestamp.MergeFrom(other.Timestamp);
       }
@@ -1108,6 +1159,18 @@ namespace Ubii.TopicData {
           }
           Image2DList.MergeFrom(other.Image2DList);
           break;
+        case TypeOneofCase.Session:
+          if (Session == null) {
+            Session = new global::Ubii.Sessions.Session();
+          }
+          Session.MergeFrom(other.Session);
+          break;
+        case TypeOneofCase.Interaction:
+          if (Interaction == null) {
+            Interaction = new global::Ubii.Interactions.Interaction();
+          }
+          Interaction.MergeFrom(other.Interaction);
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -1127,9 +1190,9 @@ namespace Ubii.TopicData {
           }
           case 18: {
             if (timestamp_ == null) {
-              timestamp_ = new global::Ubii.TopicData.Timestamp();
+              Timestamp = new global::Ubii.TopicData.Timestamp();
             }
-            input.ReadMessage(timestamp_);
+            input.ReadMessage(Timestamp);
             break;
           }
           case 25: {
@@ -1366,6 +1429,24 @@ namespace Ubii.TopicData {
             }
             input.ReadMessage(subBuilder);
             Image2DList = subBuilder;
+            break;
+          }
+          case 258: {
+            global::Ubii.Sessions.Session subBuilder = new global::Ubii.Sessions.Session();
+            if (typeCase_ == TypeOneofCase.Session) {
+              subBuilder.MergeFrom(Session);
+            }
+            input.ReadMessage(subBuilder);
+            Session = subBuilder;
+            break;
+          }
+          case 266: {
+            global::Ubii.Interactions.Interaction subBuilder = new global::Ubii.Interactions.Interaction();
+            if (typeCase_ == TypeOneofCase.Interaction) {
+              subBuilder.MergeFrom(Interaction);
+            }
+            input.ReadMessage(subBuilder);
+            Interaction = subBuilder;
             break;
           }
         }

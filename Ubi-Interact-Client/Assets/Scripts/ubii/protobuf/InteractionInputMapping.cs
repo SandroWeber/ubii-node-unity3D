@@ -33,9 +33,9 @@ namespace Ubii.Sessions {
             "c2lvbnMuSW50ZXJhY3Rpb25JbnB1dE1hcHBpbmdiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.TopicMuxReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionInputMapping), global::Ubii.Sessions.InteractionInputMapping.Parser, new[]{ "Name", "Topic", "TopicMux" }, new[]{ "TopicSource" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionInputMappingList), global::Ubii.Sessions.InteractionInputMappingList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionInputMapping), global::Ubii.Sessions.InteractionInputMapping.Parser, new[]{ "Name", "Topic", "TopicMux" }, new[]{ "TopicSource" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionInputMappingList), global::Ubii.Sessions.InteractionInputMappingList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion

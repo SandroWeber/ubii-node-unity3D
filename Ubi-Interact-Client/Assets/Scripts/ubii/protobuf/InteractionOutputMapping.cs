@@ -34,9 +34,9 @@ namespace Ubii.Sessions {
             "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.TopicDemuxReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMapping), global::Ubii.Sessions.InteractionOutputMapping.Parser, new[]{ "Name", "Topic", "TopicDemux" }, new[]{ "TopicDestination" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMappingList), global::Ubii.Sessions.InteractionOutputMappingList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMapping), global::Ubii.Sessions.InteractionOutputMapping.Parser, new[]{ "Name", "Topic", "TopicDemux" }, new[]{ "TopicDestination" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.InteractionOutputMappingList), global::Ubii.Sessions.InteractionOutputMappingList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion

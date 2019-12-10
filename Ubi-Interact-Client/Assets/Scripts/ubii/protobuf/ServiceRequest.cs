@@ -49,8 +49,8 @@ namespace Ubii.Services {
             "QgYKBHR5cGViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Services.Request.TopicSubscriptionReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceRequest), global::Ubii.Services.ServiceRequest.Parser, new[]{ "Topic", "Client", "Device", "TopicSubscription", "Session", "SessionList", "Interaction", "InteractionList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList" }, new[]{ "Type" }, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceRequest), global::Ubii.Services.ServiceRequest.Parser, new[]{ "Topic", "Client", "Device", "TopicSubscription", "Session", "SessionList", "Interaction", "InteractionList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList" }, new[]{ "Type" }, null, null, null)
           }));
     }
     #endregion

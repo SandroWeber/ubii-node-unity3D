@@ -36,9 +36,9 @@ namespace Ubii.DataStructure {
             "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object3D), global::Ubii.DataStructure.Object3D.Parser, new[]{ "Id", "Pose", "Size", "UserDataJson" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object3DList), global::Ubii.DataStructure.Object3DList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object3D), global::Ubii.DataStructure.Object3D.Parser, new[]{ "Id", "Pose", "Size", "UserDataJson" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object3DList), global::Ubii.DataStructure.Object3DList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion
@@ -218,13 +218,13 @@ namespace Ubii.DataStructure {
       }
       if (other.pose_ != null) {
         if (pose_ == null) {
-          pose_ = new global::Ubii.DataStructure.Pose3D();
+          Pose = new global::Ubii.DataStructure.Pose3D();
         }
         Pose.MergeFrom(other.Pose);
       }
       if (other.size_ != null) {
         if (size_ == null) {
-          size_ = new global::Ubii.DataStructure.Vector3();
+          Size = new global::Ubii.DataStructure.Vector3();
         }
         Size.MergeFrom(other.Size);
       }
@@ -248,16 +248,16 @@ namespace Ubii.DataStructure {
           }
           case 18: {
             if (pose_ == null) {
-              pose_ = new global::Ubii.DataStructure.Pose3D();
+              Pose = new global::Ubii.DataStructure.Pose3D();
             }
-            input.ReadMessage(pose_);
+            input.ReadMessage(Pose);
             break;
           }
           case 26: {
             if (size_ == null) {
-              size_ = new global::Ubii.DataStructure.Vector3();
+              Size = new global::Ubii.DataStructure.Vector3();
             }
-            input.ReadMessage(size_);
+            input.ReadMessage(Size);
             break;
           }
           case 34: {

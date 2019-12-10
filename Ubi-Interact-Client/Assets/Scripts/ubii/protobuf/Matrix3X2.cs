@@ -31,8 +31,8 @@ namespace Ubii.DataStructure {
             "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Matrix3x2), global::Ubii.DataStructure.Matrix3x2.Parser, new[]{ "M00", "M01", "M10", "M11", "M20", "M21" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Matrix3x2), global::Ubii.DataStructure.Matrix3x2.Parser, new[]{ "M00", "M01", "M10", "M11", "M20", "M21" }, null, null, null, null)
           }));
     }
     #endregion

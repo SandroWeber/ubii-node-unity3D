@@ -31,8 +31,8 @@ namespace Ubii.DataStructure {
             "djcYCCABKAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Vector8), global::Ubii.DataStructure.Vector8.Parser, new[]{ "V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Vector8), global::Ubii.DataStructure.Vector8.Parser, new[]{ "V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7" }, null, null, null, null)
           }));
     }
     #endregion
