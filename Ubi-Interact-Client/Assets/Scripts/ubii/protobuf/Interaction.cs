@@ -39,9 +39,9 @@ namespace Ubii.Interactions {
             "ARIOCgpQUk9DRVNTSU5HEAISCgoGSEFMVEVEEANiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Interactions.IoFormatReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.InteractionStatus), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description", "Status" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.InteractionList), global::Ubii.Interactions.InteractionList.Parser, new[]{ "Elements" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.InteractionStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description", "Status" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.InteractionList), global::Ubii.Interactions.InteractionList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion
@@ -210,7 +210,7 @@ namespace Ubii.Interactions {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 11;
-    private global::Ubii.Interactions.InteractionStatus status_ = 0;
+    private global::Ubii.Interactions.InteractionStatus status_ = global::Ubii.Interactions.InteractionStatus.Created;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Interactions.InteractionStatus Status {
       get { return status_; }
@@ -259,7 +259,7 @@ namespace Ubii.Interactions {
       hash ^= authors_.GetHashCode();
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
-      if (Status != 0) hash ^= Status.GetHashCode();
+      if (Status != global::Ubii.Interactions.InteractionStatus.Created) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -301,7 +301,7 @@ namespace Ubii.Interactions {
         output.WriteRawTag(82);
         output.WriteString(Description);
       }
-      if (Status != 0) {
+      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
         output.WriteRawTag(88);
         output.WriteEnum((int) Status);
       }
@@ -335,7 +335,7 @@ namespace Ubii.Interactions {
       if (Description.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
-      if (Status != 0) {
+      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (_unknownFields != null) {
@@ -371,7 +371,7 @@ namespace Ubii.Interactions {
       if (other.Description.Length != 0) {
         Description = other.Description;
       }
-      if (other.Status != 0) {
+      if (other.Status != global::Ubii.Interactions.InteractionStatus.Created) {
         Status = other.Status;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -426,7 +426,7 @@ namespace Ubii.Interactions {
             break;
           }
           case 88: {
-            status_ = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
+            Status = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
             break;
           }
         }

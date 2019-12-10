@@ -40,8 +40,8 @@ namespace Ubii.DataStructure {
             "YW5kR2VzdHVyZVR5cGViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.Vector8Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.HandGestureTypeReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.MyoEvent), global::Ubii.DataStructure.MyoEvent.Parser, new[]{ "Emg", "Orientation", "Gyroscope", "Accelerometer", "Gesture" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.MyoEvent), global::Ubii.DataStructure.MyoEvent.Parser, new[]{ "Emg", "Orientation", "Gyroscope", "Accelerometer", "Gesture" }, null, null, null, null)
           }));
     }
     #endregion
@@ -132,7 +132,7 @@ namespace Ubii.DataStructure {
 
     /// <summary>Field number for the "gesture" field.</summary>
     public const int GestureFieldNumber = 5;
-    private global::Ubii.DataStructure.HandGestureType gesture_ = 0;
+    private global::Ubii.DataStructure.HandGestureType gesture_ = global::Ubii.DataStructure.HandGestureType.Rest;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.DataStructure.HandGestureType Gesture {
       get { return gesture_; }
@@ -169,7 +169,7 @@ namespace Ubii.DataStructure {
       if (orientation_ != null) hash ^= Orientation.GetHashCode();
       if (gyroscope_ != null) hash ^= Gyroscope.GetHashCode();
       if (accelerometer_ != null) hash ^= Accelerometer.GetHashCode();
-      if (Gesture != 0) hash ^= Gesture.GetHashCode();
+      if (Gesture != global::Ubii.DataStructure.HandGestureType.Rest) hash ^= Gesture.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -199,7 +199,7 @@ namespace Ubii.DataStructure {
         output.WriteRawTag(34);
         output.WriteMessage(Accelerometer);
       }
-      if (Gesture != 0) {
+      if (Gesture != global::Ubii.DataStructure.HandGestureType.Rest) {
         output.WriteRawTag(40);
         output.WriteEnum((int) Gesture);
       }
@@ -223,7 +223,7 @@ namespace Ubii.DataStructure {
       if (accelerometer_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Accelerometer);
       }
-      if (Gesture != 0) {
+      if (Gesture != global::Ubii.DataStructure.HandGestureType.Rest) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Gesture);
       }
       if (_unknownFields != null) {
@@ -239,29 +239,29 @@ namespace Ubii.DataStructure {
       }
       if (other.emg_ != null) {
         if (emg_ == null) {
-          emg_ = new global::Ubii.DataStructure.Vector8();
+          Emg = new global::Ubii.DataStructure.Vector8();
         }
         Emg.MergeFrom(other.Emg);
       }
       if (other.orientation_ != null) {
         if (orientation_ == null) {
-          orientation_ = new global::Ubii.DataStructure.Quaternion();
+          Orientation = new global::Ubii.DataStructure.Quaternion();
         }
         Orientation.MergeFrom(other.Orientation);
       }
       if (other.gyroscope_ != null) {
         if (gyroscope_ == null) {
-          gyroscope_ = new global::Ubii.DataStructure.Vector3();
+          Gyroscope = new global::Ubii.DataStructure.Vector3();
         }
         Gyroscope.MergeFrom(other.Gyroscope);
       }
       if (other.accelerometer_ != null) {
         if (accelerometer_ == null) {
-          accelerometer_ = new global::Ubii.DataStructure.Vector3();
+          Accelerometer = new global::Ubii.DataStructure.Vector3();
         }
         Accelerometer.MergeFrom(other.Accelerometer);
       }
-      if (other.Gesture != 0) {
+      if (other.Gesture != global::Ubii.DataStructure.HandGestureType.Rest) {
         Gesture = other.Gesture;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -277,34 +277,34 @@ namespace Ubii.DataStructure {
             break;
           case 10: {
             if (emg_ == null) {
-              emg_ = new global::Ubii.DataStructure.Vector8();
+              Emg = new global::Ubii.DataStructure.Vector8();
             }
-            input.ReadMessage(emg_);
+            input.ReadMessage(Emg);
             break;
           }
           case 18: {
             if (orientation_ == null) {
-              orientation_ = new global::Ubii.DataStructure.Quaternion();
+              Orientation = new global::Ubii.DataStructure.Quaternion();
             }
-            input.ReadMessage(orientation_);
+            input.ReadMessage(Orientation);
             break;
           }
           case 26: {
             if (gyroscope_ == null) {
-              gyroscope_ = new global::Ubii.DataStructure.Vector3();
+              Gyroscope = new global::Ubii.DataStructure.Vector3();
             }
-            input.ReadMessage(gyroscope_);
+            input.ReadMessage(Gyroscope);
             break;
           }
           case 34: {
             if (accelerometer_ == null) {
-              accelerometer_ = new global::Ubii.DataStructure.Vector3();
+              Accelerometer = new global::Ubii.DataStructure.Vector3();
             }
-            input.ReadMessage(accelerometer_);
+            input.ReadMessage(Accelerometer);
             break;
           }
           case 40: {
-            gesture_ = (global::Ubii.DataStructure.HandGestureType) input.ReadEnum();
+            Gesture = (global::Ubii.DataStructure.HandGestureType) input.ReadEnum();
             break;
           }
         }

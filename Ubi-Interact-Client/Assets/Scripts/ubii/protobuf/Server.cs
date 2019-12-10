@@ -24,16 +24,16 @@ namespace Ubii.Servers {
     static ServerReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Chpwcm90by9zZXJ2ZXJzL3NlcnZlci5wcm90bxIMdWJpaS5zZXJ2ZXJzIrYB",
+            "Chpwcm90by9zZXJ2ZXJzL3NlcnZlci5wcm90bxIMdWJpaS5zZXJ2ZXJzIs4B",
             "CgZTZXJ2ZXISCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRITCgtpcF9ldGhl",
             "cm5ldBgDIAEoCRIPCgdpcF93bGFuGAQgASgJEhgKEHBvcnRfc2VydmljZV96",
             "bXEYBSABKAkSGQoRcG9ydF9zZXJ2aWNlX3Jlc3QYBiABKAkSGwoTcG9ydF90",
             "b3BpY19kYXRhX3ptcRgHIAEoCRIaChJwb3J0X3RvcGljX2RhdGFfd3MYCCAB",
-            "KAliBnByb3RvMw=="));
+            "KAkSFgoOY29uc3RhbnRzX2pzb24YCSABKAliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs", "ConstantsJson" }, null, null, null, null)
           }));
     }
     #endregion
@@ -73,6 +73,7 @@ namespace Ubii.Servers {
       portServiceRest_ = other.portServiceRest_;
       portTopicDataZmq_ = other.portTopicDataZmq_;
       portTopicDataWs_ = other.portTopicDataWs_;
+      constantsJson_ = other.constantsJson_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -169,6 +170,17 @@ namespace Ubii.Servers {
       }
     }
 
+    /// <summary>Field number for the "constants_json" field.</summary>
+    public const int ConstantsJsonFieldNumber = 9;
+    private string constantsJson_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ConstantsJson {
+      get { return constantsJson_; }
+      set {
+        constantsJson_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Server);
@@ -190,6 +202,7 @@ namespace Ubii.Servers {
       if (PortServiceRest != other.PortServiceRest) return false;
       if (PortTopicDataZmq != other.PortTopicDataZmq) return false;
       if (PortTopicDataWs != other.PortTopicDataWs) return false;
+      if (ConstantsJson != other.ConstantsJson) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -204,6 +217,7 @@ namespace Ubii.Servers {
       if (PortServiceRest.Length != 0) hash ^= PortServiceRest.GetHashCode();
       if (PortTopicDataZmq.Length != 0) hash ^= PortTopicDataZmq.GetHashCode();
       if (PortTopicDataWs.Length != 0) hash ^= PortTopicDataWs.GetHashCode();
+      if (ConstantsJson.Length != 0) hash ^= ConstantsJson.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -249,6 +263,10 @@ namespace Ubii.Servers {
         output.WriteRawTag(66);
         output.WriteString(PortTopicDataWs);
       }
+      if (ConstantsJson.Length != 0) {
+        output.WriteRawTag(74);
+        output.WriteString(ConstantsJson);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -280,6 +298,9 @@ namespace Ubii.Servers {
       }
       if (PortTopicDataWs.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(PortTopicDataWs);
+      }
+      if (ConstantsJson.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ConstantsJson);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -315,6 +336,9 @@ namespace Ubii.Servers {
       }
       if (other.PortTopicDataWs.Length != 0) {
         PortTopicDataWs = other.PortTopicDataWs;
+      }
+      if (other.ConstantsJson.Length != 0) {
+        ConstantsJson = other.ConstantsJson;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -357,6 +381,10 @@ namespace Ubii.Servers {
           }
           case 66: {
             PortTopicDataWs = input.ReadString();
+            break;
+          }
+          case 74: {
+            ConstantsJson = input.ReadString();
             break;
           }
         }

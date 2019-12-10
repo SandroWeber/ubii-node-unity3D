@@ -56,8 +56,8 @@ namespace Ubii.Services {
             "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.General.SuccessReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Servers.ServerReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Services.ServiceReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "Interaction", "InteractionList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList" }, new[]{ "Type" }, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "Interaction", "InteractionList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList" }, new[]{ "Type" }, null, null, null)
           }));
     }
     #endregion

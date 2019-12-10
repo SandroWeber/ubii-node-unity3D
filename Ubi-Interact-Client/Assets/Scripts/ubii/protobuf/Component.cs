@@ -32,8 +32,8 @@ namespace Ubii.Devices {
             "Bk9VVFBVVBABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType", "DeviceId", "Tags", "Description" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType", "DeviceId", "Tags", "Description" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null, null)
           }));
     }
     #endregion
@@ -103,7 +103,7 @@ namespace Ubii.Devices {
 
     /// <summary>Field number for the "io_type" field.</summary>
     public const int IoTypeFieldNumber = 3;
-    private global::Ubii.Devices.Component.Types.IOType ioType_ = 0;
+    private global::Ubii.Devices.Component.Types.IOType ioType_ = global::Ubii.Devices.Component.Types.IOType.Input;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Devices.Component.Types.IOType IoType {
       get { return ioType_; }
@@ -171,7 +171,7 @@ namespace Ubii.Devices {
       int hash = 1;
       if (Topic.Length != 0) hash ^= Topic.GetHashCode();
       if (MessageFormat.Length != 0) hash ^= MessageFormat.GetHashCode();
-      if (IoType != 0) hash ^= IoType.GetHashCode();
+      if (IoType != global::Ubii.Devices.Component.Types.IOType.Input) hash ^= IoType.GetHashCode();
       if (DeviceId.Length != 0) hash ^= DeviceId.GetHashCode();
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
@@ -196,7 +196,7 @@ namespace Ubii.Devices {
         output.WriteRawTag(18);
         output.WriteString(MessageFormat);
       }
-      if (IoType != 0) {
+      if (IoType != global::Ubii.Devices.Component.Types.IOType.Input) {
         output.WriteRawTag(24);
         output.WriteEnum((int) IoType);
       }
@@ -223,7 +223,7 @@ namespace Ubii.Devices {
       if (MessageFormat.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MessageFormat);
       }
-      if (IoType != 0) {
+      if (IoType != global::Ubii.Devices.Component.Types.IOType.Input) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) IoType);
       }
       if (DeviceId.Length != 0) {
@@ -250,7 +250,7 @@ namespace Ubii.Devices {
       if (other.MessageFormat.Length != 0) {
         MessageFormat = other.MessageFormat;
       }
-      if (other.IoType != 0) {
+      if (other.IoType != global::Ubii.Devices.Component.Types.IOType.Input) {
         IoType = other.IoType;
       }
       if (other.DeviceId.Length != 0) {
@@ -280,7 +280,7 @@ namespace Ubii.Devices {
             break;
           }
           case 24: {
-            ioType_ = (global::Ubii.Devices.Component.Types.IOType) input.ReadEnum();
+            IoType = (global::Ubii.Devices.Component.Types.IOType) input.ReadEnum();
             break;
           }
           case 34: {

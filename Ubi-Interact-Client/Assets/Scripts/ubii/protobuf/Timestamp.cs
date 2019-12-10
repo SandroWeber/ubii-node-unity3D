@@ -29,8 +29,8 @@ namespace Ubii.TopicData {
             "ASABKAMSDQoFbmFub3MYAiABKAViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.Timestamp), global::Ubii.TopicData.Timestamp.Parser, new[]{ "Seconds", "Nanos" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.Timestamp), global::Ubii.TopicData.Timestamp.Parser, new[]{ "Seconds", "Nanos" }, null, null, null, null)
           }));
     }
     #endregion

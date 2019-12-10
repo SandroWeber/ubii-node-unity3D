@@ -33,8 +33,8 @@ namespace Ubii.DataStructure {
             "bTMxGA4gASgBEgsKA20zMhgPIAEoARILCgNtMzMYECABKAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Matrix4x4), global::Ubii.DataStructure.Matrix4x4.Parser, new[]{ "M00", "M01", "M02", "M03", "M10", "M11", "M12", "M13", "M20", "M21", "M22", "M23", "M30", "M31", "M32", "M33" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Matrix4x4), global::Ubii.DataStructure.Matrix4x4.Parser, new[]{ "M00", "M01", "M02", "M03", "M10", "M11", "M12", "M13", "M20", "M21", "M22", "M23", "M30", "M31", "M32", "M33" }, null, null, null, null)
           }));
     }
     #endregion
