@@ -54,7 +54,7 @@ public class TestObjectMovement : MonoBehaviour
         {
             await ubiiClient.CallService(new Ubii.Services.ServiceRequest
             {
-                Topic = DEFAULT_TOPICS.SERVICES.DEVICE_DEREGISTRATION,
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_DEREGISTRATION,
                 Device = ubiiDevice
             });
         }
@@ -74,7 +74,7 @@ public class TestObjectMovement : MonoBehaviour
 
         Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
             Device = ubiiDevice
         });
         if (deviceRegistrationReply.Device != null)
