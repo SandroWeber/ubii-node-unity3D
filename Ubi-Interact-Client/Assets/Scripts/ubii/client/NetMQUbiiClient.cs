@@ -15,59 +15,6 @@ using NetMQ;
 using Google.Protobuf;
 using System.Threading;
 
-public struct DEFAULT_TOPICS
-{
-    public struct SERVICES
-    {
-        public const string CLIENT_REGISTRATION = "/services/client/registration";
-        public const string CLIENT_DEREGISTRATION = "/services/client/deregistration";
-        public const string CLIENT_GET_LIST = "/services/client/get_list";
-        public const string DEVICE_REGISTRATION = "/services/device/registration";
-        public const string DEVICE_DEREGISTRATION = "/services/device/deregistration";
-        public const string DEVICE_GET_LIST = "/services/device/get_list";
-        /* interactions */
-        public const string INTERACTION_REGISTRATION = "/services/interaction/registration";
-        public const string INTERACTION_DATABASE_GET = "/services/interaction/database/get";
-        public const string INTERACTION_DATABASE_GET_LIST = "/services/interaction/database/get_list";
-        public const string INTERACTION_REPLACE = "/services/interaction/replace";
-        public const string INTERACTION_DELETE = "/services/interaction/delete";
-        public const string SERVER_CONFIG = "/services/server_configuration";
-        /* session */
-        public const string SESSION_REGISTRATION = "/services/session/registration";
-        public const string SESSION_RUNTIME_GET = "/services/session/runtime/get";
-        public const string SESSION_RUNTIME_GET_LIST = "/services/session/runtime/get_list";
-        public const string SESSION_DATABASE_GET = "/services/session/database/get";
-        public const string SESSION_DATABASE_GET_LIST = "/services/session/database/get_list";
-        public const string SESSION_REPLACE = "/services/session/replace";
-        public const string SESSION_DELETE = "/services/session/delete";
-        public const string SESSION_START = "/services/session/start";
-        public const string SESSION_STOP = "/services/session/stop";
-        /* topic demultiplexer device */
-        public const string TOPIC_DEMUX_DATABASE_ADD = "/services/device/topic_demux/database/add";
-        public const string TOPIC_DEMUX_DATABASE_DELETE = "/services/device/topic_demux/database/delete";
-        public const string TOPIC_DEMUX_DATABASE_GET = "/services/device/topic_demux/database/get";
-        public const string TOPIC_DEMUX_DATABASE_GET_LIST = "/services/device/topic_demux/database/get_list";
-        public const string TOPIC_DEMUX_DATABASE_REPLACE = "/services/device/topic_demux/database/replace";
-        public const string TOPIC_DEMUX_RUNTIME_GET = "/services/device/topic_demux/runtime/get";
-        public const string TOPIC_DEMUX_RUNTIME_GET_LIST = "/services/device/topic_demux/runtime/get_list";
-        public const string TOPIC_DEMUX_RUNTIME_START = "/services/device/topic_demux/runtime/start";
-        public const string TOPIC_DEMUX_RUNTIME_STOP = "/services/device/topic_demux/runtime/stop";
-        /* topic multiplexer device */
-        public const string TOPIC_MUX_DATABASE_ADD = "/services/device/topic_mux/database/add";
-        public const string TOPIC_MUX_DATABASE_DELETE = "/services/device/topic_mux/database/delete";
-        public const string TOPIC_MUX_DATABASE_GET = "/services/device/topic_mux/database/get";
-        public const string TOPIC_MUX_DATABASE_GET_LIST = "/services/device/topic_mux/database/get_list";
-        public const string TOPIC_MUX_DATABASE_REPLACE = "/services/device/topic_mux/database/replace";
-        public const string TOPIC_MUX_RUNTIME_GET = "/services/device/topic_mux/runtime/get";
-        public const string TOPIC_MUX_RUNTIME_GET_LIST = "/services/device/topic_mux/runtime/get_list";
-        public const string TOPIC_MUX_RUNTIME_START = "/services/device/topic_mux/runtime/start";
-        public const string TOPIC_MUX_RUNTIME_STOP = "/services/device/topic_mux/runtime/stop";
-        /* topics */
-        public const string TOPIC_LIST = "/services/topic_list";
-        public const string TOPIC_SUBSCRIPTION = "/services/topic_subscription";
-    }
-}
-
 public class NetMQUbiiClient
 {
     private string id;
@@ -163,7 +110,7 @@ public class NetMQUbiiClient
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
             TopicSubscription = new TopicSubscription
             {
                 ClientId = clientSpecification.Id,
@@ -191,7 +138,7 @@ public class NetMQUbiiClient
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
             TopicSubscription = new TopicSubscription
             {
                 ClientId = clientSpecification.Id,
@@ -221,7 +168,7 @@ public class NetMQUbiiClient
 
         ServiceRequest topicUnsubscription = new ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
             TopicSubscription = new TopicSubscription
             {
                 ClientId = clientSpecification.Id,
@@ -248,7 +195,7 @@ public class NetMQUbiiClient
     private async Task InitServerSpec()
     {
         // Call Service to receive serverSpecifications
-        ServiceRequest serverConfigRequest = new ServiceRequest { Topic = DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
+        ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
 
         var task = CallService(serverConfigRequest);
         ServiceReply rep = await task;
@@ -260,7 +207,7 @@ public class NetMQUbiiClient
         // Client Registration
         ServiceRequest clientRegistration = new ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
             Client = new Client { Name = name, },
         };
 
@@ -291,7 +238,7 @@ public class NetMQUbiiClient
         // Device Registration
         ServiceRequest deviceRegistration = new ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
             Device = new Device
             {
                 Name = "TestDevice1",
@@ -325,7 +272,7 @@ public class NetMQUbiiClient
     {
         await CallService(new Ubii.Services.ServiceRequest
         {
-            Topic = DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
             Client = clientSpecification
         });
         netmqServiceClient.TearDown();
