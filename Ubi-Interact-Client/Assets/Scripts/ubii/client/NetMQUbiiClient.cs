@@ -101,9 +101,21 @@ public class NetMQUbiiClient
     {
         netmqTopicDataClient.SendTopicData(topicData);
     }
-    
-    public async Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> function)
+
+    public async Task<bool> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
+        if (callback == null)
+        {
+            Debug.LogError("SubscribeTopic() - callback is NULL!");
+            return false;
+        }
+
+        if (this.netmqTopicDataClient.IsSubscribed(topic))
+        {
+            netmqTopicDataClient.AddTopicDataCallback(topic, callback);
+            return true;
+        }
+
         // Repeated fields cannot be instantiated in SerivceRequest creation
         RepeatedField<string> subscribeTopics = new RepeatedField<string>();
         subscribeTopics.Add(topic);
@@ -124,17 +136,29 @@ public class NetMQUbiiClient
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-            return null;
+            return false;
         }
 
         // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataCallback(topic, function);
+        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
 
-        return subReply;
+        return true;
     }
 
-    public async Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> function)
+    public async Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
+        if (callback == null)
+        {
+            Debug.LogError("SubscribeRegex() - callback is NULL!");
+            return false;
+        }
+
+        if (this.netmqTopicDataClient.IsSubscribed(regex))
+        {
+            netmqTopicDataClient.AddTopicDataRegexCallback(regex, callback);
+            return true;
+        }
+
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
@@ -151,44 +175,72 @@ public class NetMQUbiiClient
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-            return null;
+            return false;
         }
 
         // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataRegexCallback(regex, function);
+        netmqTopicDataClient.AddTopicDataRegexCallback(regex, callback);
 
-        return subReply;
+        return true;
     }
 
-    public async Task<ServiceReply> Unsubscribe(string topic)
+    public async Task<bool> UnsubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
-        // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
-        RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
-        unsubscribeTopics.Add(topic);
-
-        ServiceRequest topicUnsubscription = new ServiceRequest
+        if (callback == null)
         {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
-            TopicSubscription = new TopicSubscription
-            {
-                ClientId = clientSpecification.Id,
-                UnsubscribeTopics = { unsubscribeTopics }
-            }
-        };
-
-        var task = CallService(topicUnsubscription);
-        ServiceReply subReply = await task;
-
-        if (subReply.Error != null)
-        {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-            return null;
+            Debug.LogError("UnsubscribeTopic() - callback is NULL!");
+            return false;
         }
 
         // removing callback function from dictionary
-        netmqTopicDataClient.RemoveTopicDataCallback(topic);
+        netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
 
-        return subReply;
+        if (!this.netmqTopicDataClient.HasTopicCallbacks(topic))
+        {
+            // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
+            RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
+            unsubscribeTopics.Add(topic);
+
+            ServiceRequest topicUnsubscription = new ServiceRequest
+            {
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+                TopicSubscription = new TopicSubscription
+                {
+                    ClientId = clientSpecification.Id,
+                    UnsubscribeTopics = { unsubscribeTopics }
+                }
+            };
+
+            var task = CallService(topicUnsubscription);
+            ServiceReply subReply = await task;
+
+            if (subReply.Error != null)
+            {
+                Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> UnsubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    {
+        if (callback == null)
+        {
+            Debug.LogError("UnsubscribeRegex() - callback is NULL!");
+            return false;
+        }
+
+        // removing callback function from dictionary
+        netmqTopicDataClient.RemoveTopicDataRegexCallback(regex, callback);
+
+        if (!this.netmqTopicDataClient.HasTopicRegexCallbacks(regex))
+        {
+            //TODO: server side implementation
+        }
+
+        return true;
     }
 
     #region Initialize Functions
