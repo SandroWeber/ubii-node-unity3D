@@ -132,8 +132,8 @@ public class NetMQTopicDataClient
 
     public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        if (!this.topicdataCallbacks.ContainsKey(regex)) {
-            this.topicdataCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
+        if (!this.topicdataRegexCallbacks.ContainsKey(regex)) {
+            this.topicdataRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
         }
         this.topicdataRegexCallbacks[regex].Add(callback);
     }
@@ -147,7 +147,7 @@ public class NetMQTopicDataClient
     public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
         //Debug.Log("removing topicDataRegexCallBack for regex: " + regex + " (backend)");
-        this.topicdataCallbacks[regex].Remove(callback);
+        this.topicdataRegexCallbacks[regex].Remove(callback);
     }
 
     public void SendTopicData(TopicData td)

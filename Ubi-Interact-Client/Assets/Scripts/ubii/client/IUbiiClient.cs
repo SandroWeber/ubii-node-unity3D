@@ -9,9 +9,12 @@ interface IUbiiClient
     // service related functions
     Task<ServiceReply> CallService(ServiceRequest request);
 
+    // status related functions
+    bool IsConnected();
+
     // topic data related functions
     void Publish(TopicData topicdata);
-    Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback);
-    Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
-    Task<ServiceReply> Unsubscribe(string topic);
+    Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback);
+    Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
+    Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback);
 }

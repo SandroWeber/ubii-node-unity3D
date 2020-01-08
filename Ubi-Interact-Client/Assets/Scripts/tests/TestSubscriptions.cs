@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-using System.Linq;
+
+using Ubii.TopicData;
 
 public class TestSubscriptions : MonoBehaviour
 {
@@ -35,15 +36,17 @@ public class TestSubscriptions : MonoBehaviour
         string topic = "/" + ubiiClient.GetID() + "/unity3D_client/test/subcribe_publish_simple";
         bool success = false;
 
-        await ubiiClient.Subscribe(topic, (Ubii.TopicData.TopicDataRecord record) =>
+        Action<TopicDataRecord> callback = (TopicDataRecord record) =>
         {
             success = record.Bool;
-        });
+        };
+
+        await ubiiClient.Subscribe(topic, callback);
         ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
-            await ubiiClient.Unsubscribe(topic);
+            await ubiiClient.Unsubscribe(topic, callback);
 
             if (success)
             {
@@ -97,7 +100,6 @@ public class TestSubscriptions : MonoBehaviour
                 {
                     success = false;
                 }
-                await ubiiClient.Unsubscribe(topic);
             }
 
             if (success)

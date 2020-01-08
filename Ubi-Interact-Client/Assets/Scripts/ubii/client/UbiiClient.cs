@@ -43,19 +43,19 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
         return client.SubscribeTopic(topic, callback);
     }
 
-    public Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         return client.SubscribeRegex(regex, callback);
     }
 
-    public Task<ServiceReply> Unsubscribe(string topic)
+    public Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.Unsubscribe(topic);
+        return client.UnsubscribeTopic(topic, callback);
     }
 
     public bool IsConnected()
