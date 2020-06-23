@@ -1,0 +1,26 @@
+{
+    "id": "02bc02ea-8228-43cf-8d80-88f8923e912a",
+    "name": "IdentityTest",
+    "authors": [
+        "Lukas Goll"
+    ],
+    "tags": [
+        "test"
+    ],
+    "description": "Enter description here.",
+    "processFrequency": 30,
+    "processingCallback": "(inputs, outputs, state) => {\n\n  outputs.defaultOut = inputs.defaultIn;\n}",
+    "inputFormats": [
+        {
+            "internalName": "defaultIn",
+            "messageFormat": "ubii.dataStructure.Vector3"
+        }
+    ],
+    "outputFormats": [
+        {
+            "internalName": "defaultOut",
+            "messageFormat": "ubii.dataStructure.Vector3"
+        }
+    ],
+    "onCreated": "(state) => {\n  // Your initialization code here.\n}"
+}
