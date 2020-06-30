@@ -12,31 +12,7 @@ public class TestSessions : MonoBehaviour
     private string inputTopic, outputTopic;
 
     private Ubii.Interactions.Interaction interactionSpecs = null;
-    /*
-    string id = 1;
-    string name = 2;
-    string processing_callback = 3;
-    repeated ubii.interactions.IOFormat input_formats = 4;
-    repeated ubii.interactions.IOFormat output_formats = 5;
-    string on_created = 6;
-    float process_frequency = 7;
-    repeated string authors = 8;
-    repeated string tags = 9;
-    string description = 10;
-    InteractionStatus status = 11;
-*/
     private Ubii.Sessions.Session sessionSpecs = null;
-    /*
-    string id = 1;
-    string name = 2;
-    repeated ubii.interactions.Interaction interactions = 3;
-    repeated ubii.sessions.IOMapping io_mappings = 4;
-    repeated string tags = 5;
-    string description = 6;
-    repeated string authors = 7;
-    ProcessMode process_mode = 8;
-    SessionStatus status = 9;
-     */
 
     void Start()
     {
@@ -104,8 +80,6 @@ public class TestSessions : MonoBehaviour
         if (replyStart.Session != null)
         {
             this.sessionSpecs = replyStart.Session;
-            Debug.Log("RunTestStartStopSession - session start ok");
-            Debug.Log(replyStart.Session.ToString());
 
             await Task.Delay(1000);
 
