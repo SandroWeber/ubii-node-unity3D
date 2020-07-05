@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 using pbc = global::Google.Protobuf.Collections;
@@ -27,7 +28,7 @@ public class TestTensorflowCommunication : MonoBehaviour
     private float tLastPublish = 0f;
 
     private Vector3 outPublish = new Vector3(1,1,1);
-    public Vector3 testPosition = new Vector3(0,0,0);
+    private Vector3 testPosition = new Vector3(0,0,0);
 
     // Start is called before the first frame update
     void Start()
@@ -52,6 +53,7 @@ public class TestTensorflowCommunication : MonoBehaviour
                         Vector3 = new Ubii.DataStructure.Vector3 { X = outPublish.x, Y = outPublish.y , Z = outPublish.z }
                     }
                 });
+            Debug.Log(testPosition);
             tLastPublish = tNow;
         }
     }
@@ -87,6 +89,8 @@ public class TestTensorflowCommunication : MonoBehaviour
 
         await ubiiClient.WaitForConnection();
 
+        await Task.Delay(1000);
+
         CreateUbiiDeviceSpecs();
 
         Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
@@ -99,7 +103,19 @@ public class TestTensorflowCommunication : MonoBehaviour
             ubiiDevice = deviceRegistrationReply.Device;
         }
 
-        Ubii.Services.ServiceReply interactionReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
+        this.ubiiInteraction = new Ubii.Interactions.Interaction
+        {
+            Id = "Unity3D-Client-TestSessions-Interaction-01",
+            Name = "Unity3D-Client-TestSessions-Interaction-01",
+            ProcessingCallback = "(inputs, outputs, state) => { outputs.outVec3 = inputs.inVec3; }",
+            ProcessFrequency = 10
+        };
+        this.ubiiInteraction.InputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "inVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.ubiiInteraction.OutputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "outVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.ubiiInteraction.Authors.Add("Sandro Weber");
+        
+
+        /*Ubii.Services.ServiceReply interactionReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.INTERACTION_DATABASE_GET,
             Interaction = new Ubii.Interactions.Interaction { Id = interactionID}
@@ -107,7 +123,7 @@ public class TestTensorflowCommunication : MonoBehaviour
         if (interactionReply.Interaction != null)
         {
             ubiiInteraction = interactionReply.Interaction;
-        }
+        }*/
 
         CreateUbiiSession();
         Ubii.Services.ServiceReply sessionRequest = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
@@ -115,10 +131,14 @@ public class TestTensorflowCommunication : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_START,
             Session = ubiiSession
         });
-
-        subscriptionReply = await ubiiClient.Subscribe(ubiiDevice.Components[1].Topic, (Ubii.TopicData.TopicDataRecord record) =>
+        if (sessionRequest.Session != null)
         {
-            testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
+            ubiiSession = sessionRequest.Session;
+        }
+
+        await ubiiClient.Subscribe(ubiiDevice.Components[1].Topic, (Ubii.TopicData.TopicDataRecord record) =>
+        {
+            testPosition = new Vector3((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
         });
         testRunning = true;
     }
@@ -129,8 +149,8 @@ public class TestTensorflowCommunication : MonoBehaviour
         topicTestPublish = "/" + ubiiClient.GetID() + "/test_tensorflow/test_publish";
 
         ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiClient.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Input, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestPublish });
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Output, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestSubscribe });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Output, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestPublish });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Input, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestSubscribe });
        
     }
 
@@ -144,7 +164,6 @@ public class TestTensorflowCommunication : MonoBehaviour
             //ioMappings_ = other.ioMappings_.Clone();
             //Tags = "Test";
             Description = "Testing Session",
-            //Authors = "Lukas Goll",
             ProcessMode = Ubii.Sessions.ProcessMode.IndividualProcessFrequencies
         };
         ubiiSession.Interactions.Add(ubiiInteraction);
