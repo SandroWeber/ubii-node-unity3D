@@ -9,18 +9,18 @@
     ],
     "description": "Enter description here.",
     "processFrequency": 30,
-    "processingCallback": "(inputs, outputs, state) => {\n\n  outputs.defaultOut = inputs.defaultIn;\n}",
+    "processingCallback": "(inputs, outputs, state) => {\n  console.log(\"StartProcess\");\n  console.log(inputs.defaultIn);\n  console.log(state.x);\n  outputs.defaultOut = 2.0;\n  //console.log(outputs.defaultOut);\n  console.log(\"StopProcess\");\n}",
     "inputFormats": [
         {
             "internalName": "defaultIn",
-            "messageFormat": "ubii.dataStructure.Vector3"
+            "messageFormat": "double"
         }
     ],
     "outputFormats": [
         {
             "internalName": "defaultOut",
-            "messageFormat": "ubii.dataStructure.Vector3"
+            "messageFormat": "double"
         }
     ],
-    "onCreated": "(state) => {\n  // Your initialization code here.\n}"
+    "onCreated": "(state) => {\n state.x = 1.0;\n state.arr = [1,2,3]\n}"
 }
