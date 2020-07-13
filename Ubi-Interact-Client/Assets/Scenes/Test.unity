@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8487dab0cf20014d888d7466f4b5ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: localhost
+  ip: 192.168.178.37
   port: 8101
   clientName: Unity3D Client
 --- !u!1 &534669902

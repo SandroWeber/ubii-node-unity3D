@@ -74,7 +74,7 @@ public class TestSessions : MonoBehaviour
         bool success = false;
 
         Ubii.Services.ServiceReply replyStart = await ubiiClient.CallService(
-            new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_START, Session = this.sessionSpecs }
+            new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START, Session = this.sessionSpecs }
         );
 
         if (replyStart.Session != null)
@@ -84,7 +84,7 @@ public class TestSessions : MonoBehaviour
             await Task.Delay(1000);
 
             Ubii.Services.ServiceReply replyStop = await ubiiClient.CallService(
-                new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_STOP, Session = this.sessionSpecs }
+                new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP, Session = this.sessionSpecs }
             );
 
             if (replyStop.Success != null)
