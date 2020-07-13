@@ -101,7 +101,7 @@ public class NetMQUbiiClient
     {
         netmqTopicDataClient.SendTopicData(topicData);
     }
-    
+
     public async Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> function)
     {
         // Repeated fields cannot be instantiated in SerivceRequest creation
@@ -145,7 +145,7 @@ public class NetMQUbiiClient
                 SubscribeTopicRegexp = regex
             }
         };
-        
+
         ServiceReply subReply = await CallService(topicSubscription);
 
         if (subReply.Error != null)
@@ -233,7 +233,7 @@ public class NetMQUbiiClient
     {
         // RepeatedFields have to be declared separately and then added to the service request
         RepeatedField<Ubii.Devices.Component> components = new RepeatedField<Ubii.Devices.Component>();
-        components.Add(new Ubii.Devices.Component { Topic = "TestBool", MessageFormat = "boolean", IoType = Ubii.Devices.Component.Types.IOType.Input });
+        components.Add(new Ubii.Devices.Component { Topic = "TestBool", MessageFormat = "boolean", IoType = Ubii.Devices.Component.Types.IOType.Publisher });
 
         // Device Registration
         ServiceRequest deviceRegistration = new ServiceRequest

@@ -11,23 +11,31 @@
       "DEVICE_DEREGISTRATION": "/services/device/deregistration",
       "DEVICE_GET_LIST": "/services/device/get_list",
 
-      "INTERACTION_REGISTRATION": "/services/interaction/registration",
+      "INTERACTION_DATABASE_SAVE": "/services/interaction/database/save",
+      "INTERACTION_DATABASE_DELETE": "/services/interaction/database/delete",
       "INTERACTION_DATABASE_GET": "/services/interaction/database/get",
       "INTERACTION_DATABASE_GET_LIST": "/services/interaction/database/get_list",
-      "INTERACTION_LOCAL_DATABASE_GET_LIST": "/services/interaction/database/local/get_list",
-      "INTERACTION_ONLINE_DATABASE_GET_LIST": "/services/interaction/database/online/get_list",
-      "INTERACTION_REPLACE": "/services/interaction/replace",
-      "INTERACTION_DELETE": "/services/interaction/delete",
+      "INTERACTION_DATABASE_ONLINE_GET_LIST": "/services/interaction/database/online/get_list",
+      "INTERACTION_DATABASE_LOCAL_GET_LIST": "/services/interaction/database/local/get_list",
 
-      "SESSION_REGISTRATION": "/services/session/registration",
-      "SESSION_RUNTIME_GET": "/services/session/runtime/get",
-      "SESSION_RUNTIME_GET_LIST": "/services/session/runtime/get_list",
+      "INTERACTION_RUNTIME_ADD": "/services/interaction/runtime/add",
+      "INTERACTION_RUNTIME_REMOVE": "/services/interaction/runtime/remove",
+      "INTERACTION_RUNTIME_GET": "/services/interaction/runtime/get",
+      "INTERACTION_RUNTIME_GET_LIST": "/services/interaction/runtime/get_list",
+
+      "SESSION_DATABASE_SAVE": "/services/session/database/save",
+      "SESSION_DATABASE_DELETE": "/services/session/database/delete",
       "SESSION_DATABASE_GET": "/services/session/database/get",
       "SESSION_DATABASE_GET_LIST": "/services/session/database/get_list",
-      "SESSION_REPLACE": "/services/session/replace",
-      "SESSION_DELETE": "/services/session/delete",
-      "SESSION_START": "/services/session/start",
-      "SESSION_STOP": "/services/session/stop",
+      "SESSION_DATABASE_ONLINE_GET_LIST": "/services/session/database/online/get_list",
+      "SESSION_DATABASE_LOCAL_GET_LIST": "/services/session/database/local/get_list",
+
+      "SESSION_RUNTIME_ADD": "/services/session/runtime/add",
+      "SESSION_RUNTIME_REMOVE": "/services/session/runtime/remove",
+      "SESSION_RUNTIME_GET": "/services/session/runtime/get",
+      "SESSION_RUNTIME_GET_LIST": "/services/session/runtime/get_list",
+      "SESSION_RUNTIME_START": "/services/session/runtime/start",
+      "SESSION_RUNTIME_STOP": "/services/session/runtime/stop",
 
       "TOPIC_DEMUX_DATABASE_ADD": "/services/device/topic_demux/database/add",
       "TOPIC_DEMUX_DATABASE_DELETE": "/services/device/topic_demux/database/delete",
@@ -53,12 +61,18 @@
       "TOPIC_SUBSCRIPTION": "/services/topic_subscription"
     },
     "INFO_TOPICS": {
+      "REGEX_ALL_INFOS": "/info/*",
+      "REGEX_INTERACTION_INFOS": "/info/interaction/*",
       "NEW_INTERACTION": "/info/interaction/new",
       "DELETE_INTERACTION": "/info/interaction/delete",
       "CHANGE_INTERACTION": "/info/interaction/change",
+      "PROCESSED_INTERACTION": "/info/interaction/processed",
+      "REGEX_SESSION_INFOS": "/info/session/*",
       "NEW_SESSION": "/info/session/new",
       "DELETE_SESSION": "/info/session/delete",
-      "CHANGE_SESSION": "/info/session/change"
+      "CHANGE_SESSION": "/info/session/change",
+      "START_SESSION": "/info/session/start",
+      "STOP_SESSION": "/info/session/stop"
     }
   },
   "MSG_TYPES": {
@@ -66,6 +80,7 @@
     "SUCCESS": "ubii.general.Success",
     "CLIENT": "ubii.clients.Client",
     "DEVICE": "ubii.devices.Device",
+    "COMPONENT": "ubii.devices.Component",
     "TOPIC_MUX": "ubii.devices.TopicMux",
     "TOPIC_MUX_LIST": "ubii.devices.TopicMuxList",
     "TOPIC_DEMUX": "ubii.devices.TopicDemux",

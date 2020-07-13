@@ -25,14 +25,15 @@ namespace Ubii.Services.Request {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5wcm90by9zZXJ2aWNlcy9yZXF1ZXN0L3RvcGljU3Vic2NyaXB0aW9uLnBy",
-            "b3RvEhV1YmlpLnNlcnZpY2VzLnJlcXVlc3QifAoRVG9waWNTdWJzY3JpcHRp",
-            "b24SEQoJY2xpZW50X2lkGAEgASgJEhgKEHN1YnNjcmliZV90b3BpY3MYAiAD",
-            "KAkSGgoSdW5zdWJzY3JpYmVfdG9waWNzGAMgAygJEh4KFnN1YnNjcmliZV90",
-            "b3BpY19yZWdleHAYBCABKAliBnByb3RvMw=="));
+            "b3RvEhV1YmlpLnNlcnZpY2VzLnJlcXVlc3QingEKEVRvcGljU3Vic2NyaXB0",
+            "aW9uEhEKCWNsaWVudF9pZBgBIAEoCRIYChBzdWJzY3JpYmVfdG9waWNzGAIg",
+            "AygJEhoKEnVuc3Vic2NyaWJlX3RvcGljcxgDIAMoCRIeChZzdWJzY3JpYmVf",
+            "dG9waWNfcmVnZXhwGAQgASgJEiAKGHVuc3Vic2NyaWJlX3RvcGljX3JlZ2V4",
+            "cBgFIAEoCWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.Request.TopicSubscription), global::Ubii.Services.Request.TopicSubscription.Parser, new[]{ "ClientId", "SubscribeTopics", "UnsubscribeTopics", "SubscribeTopicRegexp" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.Request.TopicSubscription), global::Ubii.Services.Request.TopicSubscription.Parser, new[]{ "ClientId", "SubscribeTopics", "UnsubscribeTopics", "SubscribeTopicRegexp", "UnsubscribeTopicRegexp" }, null, null, null, null)
           }));
     }
     #endregion
@@ -68,6 +69,7 @@ namespace Ubii.Services.Request {
       subscribeTopics_ = other.subscribeTopics_.Clone();
       unsubscribeTopics_ = other.unsubscribeTopics_.Clone();
       subscribeTopicRegexp_ = other.subscribeTopicRegexp_;
+      unsubscribeTopicRegexp_ = other.unsubscribeTopicRegexp_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -118,6 +120,17 @@ namespace Ubii.Services.Request {
       }
     }
 
+    /// <summary>Field number for the "unsubscribe_topic_regexp" field.</summary>
+    public const int UnsubscribeTopicRegexpFieldNumber = 5;
+    private string unsubscribeTopicRegexp_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string UnsubscribeTopicRegexp {
+      get { return unsubscribeTopicRegexp_; }
+      set {
+        unsubscribeTopicRegexp_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as TopicSubscription);
@@ -135,6 +148,7 @@ namespace Ubii.Services.Request {
       if(!subscribeTopics_.Equals(other.subscribeTopics_)) return false;
       if(!unsubscribeTopics_.Equals(other.unsubscribeTopics_)) return false;
       if (SubscribeTopicRegexp != other.SubscribeTopicRegexp) return false;
+      if (UnsubscribeTopicRegexp != other.UnsubscribeTopicRegexp) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -145,6 +159,7 @@ namespace Ubii.Services.Request {
       hash ^= subscribeTopics_.GetHashCode();
       hash ^= unsubscribeTopics_.GetHashCode();
       if (SubscribeTopicRegexp.Length != 0) hash ^= SubscribeTopicRegexp.GetHashCode();
+      if (UnsubscribeTopicRegexp.Length != 0) hash ^= UnsubscribeTopicRegexp.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -168,6 +183,10 @@ namespace Ubii.Services.Request {
         output.WriteRawTag(34);
         output.WriteString(SubscribeTopicRegexp);
       }
+      if (UnsubscribeTopicRegexp.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(UnsubscribeTopicRegexp);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -183,6 +202,9 @@ namespace Ubii.Services.Request {
       size += unsubscribeTopics_.CalculateSize(_repeated_unsubscribeTopics_codec);
       if (SubscribeTopicRegexp.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SubscribeTopicRegexp);
+      }
+      if (UnsubscribeTopicRegexp.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(UnsubscribeTopicRegexp);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -202,6 +224,9 @@ namespace Ubii.Services.Request {
       unsubscribeTopics_.Add(other.unsubscribeTopics_);
       if (other.SubscribeTopicRegexp.Length != 0) {
         SubscribeTopicRegexp = other.SubscribeTopicRegexp;
+      }
+      if (other.UnsubscribeTopicRegexp.Length != 0) {
+        UnsubscribeTopicRegexp = other.UnsubscribeTopicRegexp;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -228,6 +253,10 @@ namespace Ubii.Services.Request {
           }
           case 34: {
             SubscribeTopicRegexp = input.ReadString();
+            break;
+          }
+          case 42: {
+            UnsubscribeTopicRegexp = input.ReadString();
             break;
           }
         }
