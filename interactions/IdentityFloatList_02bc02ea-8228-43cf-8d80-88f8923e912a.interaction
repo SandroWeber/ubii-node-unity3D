@@ -1,0 +1,26 @@
+{
+    "id": "02bc02ea-8228-43cf-8d80-88f8923e912a",
+    "name": "IdentityFloatList",
+    "authors": [
+        "Lukas Goll"
+    ],
+    "tags": [
+        "test"
+    ],
+    "description": "Enter description here.",
+    "processFrequency": 60,
+    "processingCallback": "(inputs, outputs, state) => {\n  console.log(\"StartProcess\");\n  console.log(inputs.defaultIn);\n  outputs.TensorflowOutput = {elements: [0.2,0.4]}\n  console.log(\"StopProcess\");\n}",
+    "inputFormats": [
+        {
+            "internalName": "TensorflowInput",
+            "messageFormat": "ubii.datastructure.FloatList"
+        }
+    ],
+    "outputFormats": [
+        {
+            "internalName": "TensorflowOutput",
+            "messageFormat": "ubii.datastructure.FloatList"
+        }
+    ],
+    "onCreated": "(state) => {\n state.x = 1.0;\n state.arr = [1,2,3]\n}"
+}
