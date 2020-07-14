@@ -105,5 +105,14 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
         }
         Debug.Log("Shutting down UbiiClient");
     }
+
+    private void OnApplicationQuit()
+    {
+        if (client != null)
+        {
+            client.ShutDown();
+        }
+        Debug.Log("Shutting down UbiiClient");
+    }
 }
 
