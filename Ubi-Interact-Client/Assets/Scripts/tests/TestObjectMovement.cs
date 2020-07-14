@@ -86,7 +86,7 @@ public class TestObjectMovement : MonoBehaviour
         {
             testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
         });
-        
+
         testRunning = true;
     }
 
@@ -95,6 +95,6 @@ public class TestObjectMovement : MonoBehaviour
         topicTestPublishSubscribe = "/" + ubiiClient.GetID() + "/test_publish_subscribe/object_movement";
 
         ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiClient.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Input, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestPublishSubscribe });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestPublishSubscribe });
     }
 }
