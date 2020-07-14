@@ -10,7 +10,7 @@ public class TestTensorflowCommunication : MonoBehaviour
 
     private UbiiClient ubiiClient = null;
     private string deviceName = "TestTensorflowCommunication - Device";
-    private string interactionID = "02bc02ea-8228-43cf-8d80-88f8923e912a";
+    private string interactionID = "68020461-fa67-48f1-9ef1-37096d095bd6";
     private string topicTestSubscribe = null;
     private string topicTestPublish = null;
     private Ubii.Devices.Device ubiiDevice = null;
@@ -73,7 +73,7 @@ public class TestTensorflowCommunication : MonoBehaviour
 
             await ubiiClient.CallService(new Ubii.Services.ServiceRequest
             {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_STOP,
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
                 Session = ubiiSession
             });
 
@@ -92,7 +92,7 @@ public class TestTensorflowCommunication : MonoBehaviour
             
             await ubiiClient.CallService(new Ubii.Services.ServiceRequest
             {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_STOP,
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
                 Session = ubiiSession
             });
         }
@@ -126,11 +126,11 @@ public class TestTensorflowCommunication : MonoBehaviour
         {
             Id = "Unity3D-Client-TestSessions-Interaction-02",
             Name = "Unity3D-Client-TestSessions-Interaction-02",
-            ProcessingCallback = "(inputs, outputs, state) => { console.log(inputs.inVec3);",
+            ProcessingCallback = "(inputs, outputs, state) => { outputs.defaultOut = 4.0;",
             ProcessFrequency = 10
         };
-        this.ubiiInteraction.InputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "inVec3", MessageFormat = "vector3" });
-        this.ubiiInteraction.OutputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "outVec3", MessageFormat = "vector3" });
+        this.ubiiInteraction.InputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "defaultIn", MessageFormat = "double" });
+        this.ubiiInteraction.OutputFormats.Add(new Ubii.Interactions.IOFormat { InternalName = "defaultOut", MessageFormat = "double" });
         this.ubiiInteraction.Authors.Add("Lukas Goll");
         */
 
@@ -150,7 +150,7 @@ public class TestTensorflowCommunication : MonoBehaviour
 
         Ubii.Services.ServiceReply sessionRequest = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
         {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_START,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
         if (sessionRequest.Session != null)
@@ -175,8 +175,8 @@ public class TestTensorflowCommunication : MonoBehaviour
         topicTestPublish = "/" + ubiiClient.GetID() + "/test_tensorflow/test_publish";
 
         ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiClient.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Input, MessageFormat = "double", Topic = topicTestPublish });
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Output, MessageFormat = "double", Topic = topicTestSubscribe });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = "double", Topic = topicTestPublish });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Subscriber, MessageFormat = "double", Topic = topicTestSubscribe });
        
     }
 

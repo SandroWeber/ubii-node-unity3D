@@ -81,7 +81,7 @@ public class TensorflowUbiiCommunication : MonoBehaviour
 
             await ubiiClient.CallService(new Ubii.Services.ServiceRequest
             {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_STOP,
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
                 Session = ubiiSession
             });
         }
@@ -102,7 +102,7 @@ public class TensorflowUbiiCommunication : MonoBehaviour
             
             await ubiiClient.CallService(new Ubii.Services.ServiceRequest
             {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_STOP,
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
                 Session = ubiiSession
             });
         }
@@ -155,14 +155,13 @@ public class TensorflowUbiiCommunication : MonoBehaviour
 
         Ubii.Services.ServiceReply sessionRequest = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
         {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_START,
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
         if (sessionRequest.Session != null)
         {
             ubiiSession = sessionRequest.Session;
         }
-
 
         await ubiiClient.Subscribe(output.Topic, (Ubii.TopicData.TopicDataRecord record) =>
         { 
@@ -184,7 +183,7 @@ public class TensorflowUbiiCommunication : MonoBehaviour
         input.Data.Elements.AddRange(testIn);
 
         output.Name = "TensorflowOutput";
-        output.Topic = "topic";
+        output.Topic = "topicSubscribe";
         output.MessageFormat = "ubii.datastructure.FloatList";
         output.Data = new Ubii.DataStructure.FloatList { };
     }
@@ -192,15 +191,14 @@ public class TensorflowUbiiCommunication : MonoBehaviour
     async private void CreateDeviceSpecs()
     {   
         ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiClient.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Input, MessageFormat = input.MessageFormat, Topic = input.Topic });
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Output, MessageFormat = output.MessageFormat, Topic = output.Topic });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = input.MessageFormat, Topic = input.Topic });
+        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Subscriber, MessageFormat = output.MessageFormat, Topic = output.Topic });
     }
 
     private void MakeUbiiSession()
     {
         ubiiSession = new Ubii.Sessions.Session
         {
-            Id = "Session_Test_Unity",
             Name = "TestTensorflowConnection - Session IO",
             //Interactions = other.interactions_.Clone();
             //ioMappings_ = other.ioMappings_.Clone();
@@ -212,6 +210,8 @@ public class TensorflowUbiiCommunication : MonoBehaviour
 
         inputMapping = new Ubii.Sessions.InteractionInputMapping { Name = input.Name, Topic = input.Topic };
         outputMapping = new Ubii.Sessions.InteractionOutputMapping { Name = output.Name, Topic = output.Topic };
+        Debug.Log(output.Topic);
+        Debug.Log(outputMapping);
         IOMapping = new Ubii.Sessions.IOMapping { InteractionId = this.ubiiInteraction.Id };
         IOMapping.InputMappings.Add(inputMapping);
         IOMapping.OutputMappings.Add(outputMapping);
