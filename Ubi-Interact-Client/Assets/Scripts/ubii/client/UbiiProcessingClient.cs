@@ -25,18 +25,21 @@ public class UbiiProcessingClient : MonoBehaviour
 
     TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
 
+    private InteractionStatus status;
+    private List<ProcessingModule> processingModules;
     private Dictionary<string, Action<TopicDataRecordList>> onProcessingCallbacks;
     private Dictionary<string, Action<TopicDataRecordList>> onCreatedCallbacks;
+    private List<TopicData> inputTopicDatas;
+    private List<TopicData> outputTopicDatas;
+
     private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
 
-    private InteractionStatus status;
-    private List<ProcessingModule> processingModules;
-
     CancellationTokenSource cts = new CancellationTokenSource();
     CancellationToken cancellationToken;
 
+    //TODO replace with pm.frequency
     const int delay = 3000; // milliseconds
 
     public UbiiProcessingClient(string servicehost, int serviceport, string topicdatahost, int topicdataport string clientID)
@@ -46,10 +49,19 @@ public class UbiiProcessingClient : MonoBehaviour
         this.topicdatahost = topicdatahost;
         this.topicdataport = topicdataport;
         this.clientID = clientID;
+
+        processingModules = new List<ProcessingModule>();
         onProcessingCallbacks = new Dictionary<string, Action<TopicDataRecordList>>();
         onCreatedCallbacks = new Dictionary<string, Action<TopicDataRecordList>>();
+        inputTopicDatas = new List<TopicData>();
+        outputTopicDatas = new List<TopicData>();
 
         Initialize();
+
+        if (connected)
+        {
+            getProcessingModuleLoop();
+        }
     }
 
     private void StartSockets()
@@ -116,6 +128,29 @@ public class UbiiProcessingClient : MonoBehaviour
         return connected;
     }
 
+    async private void getProcessingModuleLoop()
+    {
+        while (connected)
+        {
+            //TODO fill in service request get pm specs
+            Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
+            {
+
+            });
+
+            processingModules.Add(newProcessingModule);
+        }
+    }
+
+    private void process()
+    {
+
+    }
+
+    private void create() {
+
+    }
+
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
         // Convert serviceRequest into byte array which is then sent to server as frame
@@ -128,48 +163,44 @@ public class UbiiProcessingClient : MonoBehaviour
         return promise.Task;
     }
 
+    // called when topicdata received
+    void OnMessage(object sender, NetMQSocketEventArgs e)
+    {
+        e.Socket.ReceiveFrameBytes(out bool hasmore);
+        TopicData newTopicData = new TopicData { };
+        if (hasmore)
+        {
+            newTopicData.MergeFrom(e.Socket.ReceiveFrameBytes(out hasmore));
+        }
+
+        //TODO make regex possible
+        // refresh inputTopicdatas
+        if (newTopicData.TopicDataRecord != null)
+        {
+            string topic = newTopicData.TopicDataRecord.Topic;
+            int index = 0;
+            foreach(TopicData inputTopicData in inputTopicDatas)
+            {
+                if(inputTopicData.TopicDataRecord.Topic == topic)
+                {
+                    break;
+                }
+                index++;
+            }
+            inputTopicDatas[index] = newTopicData;
+        }
+        // catch possible error
+        else if (newTopicData.Error != null)
+        {
+            Debug.LogError("topicData Error: " + newTopicData.Error.ToString());
+            return;
+        }
+    }
+
     public void SendTopicData(TopicData td)
     {
         byte[] buffer = td.ToByteArray();
         topicdataSocket.SendFrame(buffer);
-    }
-
-    // called when data received
-    void OnMessage(object sender, NetMQSocketEventArgs e)
-    {
-        e.Socket.ReceiveFrameBytes(out bool hasmore);
-        TopicData topicData = new TopicData { };
-        if (hasmore)
-        {
-            topicData.MergeFrom(e.Socket.ReceiveFrameBytes(out hasmore));
-        }
-
-        // Invoke callback 
-        if (topicData.TopicDataRecord != null)
-        {
-            /*string topic = topicData.TopicDataRecord.Topic;
-            if (topicdataCallbacks.ContainsKey(topic))
-            {
-                topicdataCallbacks[topic].Invoke(topicData.TopicDataRecord);
-            }
-            else
-            {
-                foreach (KeyValuePair<string, Action<TopicDataRecord>> entry in topicdataRegexCallbacks)
-                {
-                    Match m = Regex.Match(topic, entry.Key);
-                    if (m.Success)
-                    {
-                        entry.Value.Invoke(topicData.TopicDataRecord);
-                    }
-                }
-            }*/
-        }
-        // catch possible error
-        else if (topicData.Error != null)
-        {
-            Debug.LogError("topicData Error: " + topicData.Error.ToString());
-            return;
-        }
     }
 
     public void TearDown()
