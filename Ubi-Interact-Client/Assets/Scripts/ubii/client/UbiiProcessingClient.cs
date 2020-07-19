@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Reflection;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.Interactions;
@@ -27,8 +29,6 @@ public class UbiiProcessingClient : MonoBehaviour
 
     private InteractionStatus status;
     private List<ProcessingModule> processingModules;
-    private Dictionary<string, Action<TopicDataRecordList>> onProcessingCallbacks;
-    private Dictionary<string, Action<TopicDataRecordList>> onCreatedCallbacks;
     private List<TopicData> inputTopicDatas;
     private List<TopicData> outputTopicDatas;
 
@@ -51,8 +51,6 @@ public class UbiiProcessingClient : MonoBehaviour
         this.clientID = clientID;
 
         processingModules = new List<ProcessingModule>();
-        onProcessingCallbacks = new Dictionary<string, Action<TopicDataRecordList>>();
-        onCreatedCallbacks = new Dictionary<string, Action<TopicDataRecordList>>();
         inputTopicDatas = new List<TopicData>();
         outputTopicDatas = new List<TopicData>();
 
@@ -139,15 +137,33 @@ public class UbiiProcessingClient : MonoBehaviour
             });
 
             processingModules.Add(newProcessingModule);
+
+            // call oncreated function from class
+            if (newProcessingModule.onCreated != "")
+            {
+                string[] function = Regex.Split(newProcessingModule.onCreated, ".");
+                Type type = Type.GetType(function[0]);
+
+                type.InvokeMember(
+                    function[1],
+                    BindingFlags.InvokeMethod | BindingFlags.Public |
+                    BindingFlags.Static, null, null, null);
+            }
         }
     }
 
-    private void process()
+    private void LockstepMode()
     {
 
     }
 
-    private void create() {
+    private void AsyncFrequencyMode()
+    {
+
+    }
+
+    private void AsyncMode()
+    {
 
     }
 
