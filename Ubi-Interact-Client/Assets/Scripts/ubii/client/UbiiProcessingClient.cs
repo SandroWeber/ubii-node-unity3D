@@ -31,6 +31,7 @@ public class UbiiProcessingClient : MonoBehaviour
     private List<ProcessingModule> processingModules;
     private List<TopicData> inputTopicDatas;
     private List<TopicData> outputTopicDatas;
+    private Dictionary<string, TopicDataRecordList> gatheredOutputs;
 
     private bool running = false;
     private Task processIncomingMessages = null;
@@ -53,12 +54,16 @@ public class UbiiProcessingClient : MonoBehaviour
         processingModules = new List<ProcessingModule>();
         inputTopicDatas = new List<TopicData>();
         outputTopicDatas = new List<TopicData>();
+        gatheredOutputs = new Dictionary<string, TopicDataRecordList>();
 
         Initialize();
 
         if (connected)
         {
             getProcessingModuleLoop();
+            LockstepMaster();
+            AsyncFrequencyMaster();
+            AsyncMaster();
         }
     }
 
@@ -137,34 +142,114 @@ public class UbiiProcessingClient : MonoBehaviour
             });
 
             processingModules.Add(newProcessingModule);
+            int index = processingModules.Count - 1;
 
-            // call oncreated function from class
+            // call oncreated function
             if (newProcessingModule.onCreated != "")
             {
                 string[] function = Regex.Split(newProcessingModule.onCreated, ".");
-                Type type = Type.GetType(function[0]);
+                executeFunction(function[0], function[1]);
+            }
 
-                type.InvokeMember(
-                    function[1],
-                    BindingFlags.InvokeMethod | BindingFlags.Public |
-                    BindingFlags.Static, null, null, null);
+            newProcessingModule.status = InteractionStatus.Initialized;
+
+            switch (newProcessingModule.processingMode)
+            {
+                case PROCESSINGMODE.LOCKSTEP:
+                    LockstepMode(index);
+                    break;
+                case PROCESSINGMODE.ASYNCFREQUENCY:
+                    AsyncFrequencyMode(index);
+                    break;
+                case PROCESSINGMODE.ASYNC:
+                    AsyncMode(index);
+                    break;
             }
         }
     }
 
-    private void LockstepMode()
+    //TODO make those multi threaded
+    async private void LockstepMaster()
+    {
+        while (connected)
+        {
+            bool allFinished = true;
+            foreach(ProcessingModule pm in processingModules)
+            {
+                if(pm.status = InteractionStatus.Halted)
+                {
+                    allFinished = false;
+                }
+            }
+            if (allFinished)
+            {
+                //TODO fill in service request to send output TopicDataRecordList
+                Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
+                {
+
+                });
+            }
+        }
+    }
+
+    async private void LockstepMode(int index)
+    {
+        // wait for call to process
+        await CallService(new Ubii.Services.ServiceRequest
+        {
+
+        });
+
+        // process
+        if (processingModules[index].onProcessing != "")
+        {
+            processingModules[index].status = InteractionStatus.Processing;
+            string[] function = Regex.Split(processingModules[index].onProcessing, ".");
+            executeFunction(function[0], function[1]);
+            Type type = Type.GetType(function[0]);
+
+            TopicDataRecordList output = (TopicDataRecordList) type.InvokeMember(
+                function[1],
+                BindingFlags.InvokeMethod | BindingFlags.Public |
+                BindingFlags.Static, null, null, processingModules[index].input);
+            gatheredOutputs.Add(processingModules[index].id, output);
+        }
+    }
+
+    async private void AsyncFrequencyMaster()
+    {
+        while (connected)
+        {
+
+        }
+    }
+
+    async private void AsyncFrequencyMode(int index)
     {
 
     }
 
-    private void AsyncFrequencyMode()
+    async private void AsyncMaster()
+    {
+        while (connected)
+        {
+
+        }
+    }
+
+    async private void AsyncMode(int index)
     {
 
     }
 
-    private void AsyncMode()
+    private void executeFunction(string clss, string name)
     {
+        Type type = Type.GetType(clss);
 
+        type.InvokeMember(
+            name,
+            BindingFlags.InvokeMethod | BindingFlags.Public |
+            BindingFlags.Static, null, null, null);
     }
 
     public Task<ServiceReply> CallService(ServiceRequest srq)
