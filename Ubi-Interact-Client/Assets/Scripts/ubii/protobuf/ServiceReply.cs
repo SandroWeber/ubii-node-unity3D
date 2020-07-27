@@ -32,39 +32,45 @@ namespace Ubii.Services {
             "b3RvL2RldmljZXMvdG9waWNNdXgucHJvdG8aHnByb3RvL2RldmljZXMvdG9w",
             "aWNEZW11eC5wcm90bxoacHJvdG8vc2VydmVycy9zZXJ2ZXIucHJvdG8aHHBy",
             "b3RvL3Nlc3Npb25zL3Nlc3Npb24ucHJvdG8aJHByb3RvL2ludGVyYWN0aW9u",
-            "cy9pbnRlcmFjdGlvbi5wcm90bxoccHJvdG8vc2VydmljZXMvc2VydmljZS5w",
-            "cm90byL6BgoMU2VydmljZVJlcGx5EigKB3N1Y2Nlc3MYASABKAsyFS51Ymlp",
-            "LmdlbmVyYWwuU3VjY2Vzc0gAEiQKBWVycm9yGAIgASgLMhMudWJpaS5nZW5l",
-            "cmFsLkVycm9ySAASJgoGY2xpZW50GAMgASgLMhQudWJpaS5jbGllbnRzLkNs",
-            "aWVudEgAEiYKBmRldmljZRgEIAEoCzIULnViaWkuZGV2aWNlcy5EZXZpY2VI",
-            "ABImCgZzZXJ2ZXIYBSABKAsyFC51YmlpLnNlcnZlcnMuU2VydmVySAASKQoH",
-            "c2Vzc2lvbhgGIAEoCzIWLnViaWkuc2Vzc2lvbnMuU2Vzc2lvbkgAEjIKDHNl",
-            "c3Npb25fbGlzdBgHIAEoCzIaLnViaWkuc2Vzc2lvbnMuU2Vzc2lvbkxpc3RI",
-            "ABI1CgtpbnRlcmFjdGlvbhgIIAEoCzIeLnViaWkuaW50ZXJhY3Rpb25zLklu",
-            "dGVyYWN0aW9uSAASPgoQaW50ZXJhY3Rpb25fbGlzdBgJIAEoCzIiLnViaWku",
-            "aW50ZXJhY3Rpb25zLkludGVyYWN0aW9uTGlzdEgAEjUKC3N0cmluZ19saXN0",
-            "GAogASgLMh4udWJpaS5kYXRhU3RydWN0dXJlLlN0cmluZ0xpc3RIABIrCgl0",
-            "b3BpY19tdXgYCyABKAsyFi51YmlpLmRldmljZXMuVG9waWNNdXhIABI0Cg50",
-            "b3BpY19tdXhfbGlzdBgMIAEoCzIaLnViaWkuZGV2aWNlcy5Ub3BpY011eExp",
-            "c3RIABIvCgt0b3BpY19kZW11eBgNIAEoCzIYLnViaWkuZGV2aWNlcy5Ub3Bp",
-            "Y0RlbXV4SAASOAoQdG9waWNfZGVtdXhfbGlzdBgOIAEoCzIcLnViaWkuZGV2",
-            "aWNlcy5Ub3BpY0RlbXV4TGlzdEgAEi8KC2NsaWVudF9saXN0GA8gASgLMhgu",
-            "dWJpaS5jbGllbnRzLkNsaWVudExpc3RIABIvCgtkZXZpY2VfbGlzdBgQIAEo",
-            "CzIYLnViaWkuZGV2aWNlcy5EZXZpY2VMaXN0SAASKQoHc2VydmljZRgRIAEo",
-            "CzIWLnViaWkuc2VydmljZXMuU2VydmljZUgAEjIKDHNlcnZpY2VfbGlzdBgS",
-            "IAEoCzIaLnViaWkuc2VydmljZXMuU2VydmljZUxpc3RIAEIGCgR0eXBlYgZw",
-            "cm90bzM="));
+            "cy9pbnRlcmFjdGlvbi5wcm90bxotcHJvdG8vcHJvY2Vzc2luZ0NsaWVudC9w",
+            "cm9jZXNzaW5nTW9kdWxlLnByb3RvGhxwcm90by9zZXJ2aWNlcy9zZXJ2aWNl",
+            "LnByb3RvIrwHCgxTZXJ2aWNlUmVwbHkSKAoHc3VjY2VzcxgBIAEoCzIVLnVi",
+            "aWkuZ2VuZXJhbC5TdWNjZXNzSAASJAoFZXJyb3IYAiABKAsyEy51YmlpLmdl",
+            "bmVyYWwuRXJyb3JIABImCgZjbGllbnQYAyABKAsyFC51YmlpLmNsaWVudHMu",
+            "Q2xpZW50SAASJgoGZGV2aWNlGAQgASgLMhQudWJpaS5kZXZpY2VzLkRldmlj",
+            "ZUgAEiYKBnNlcnZlchgFIAEoCzIULnViaWkuc2VydmVycy5TZXJ2ZXJIABIp",
+            "CgdzZXNzaW9uGAYgASgLMhYudWJpaS5zZXNzaW9ucy5TZXNzaW9uSAASMgoM",
+            "c2Vzc2lvbl9saXN0GAcgASgLMhoudWJpaS5zZXNzaW9ucy5TZXNzaW9uTGlz",
+            "dEgAEjUKC2ludGVyYWN0aW9uGAggASgLMh4udWJpaS5pbnRlcmFjdGlvbnMu",
+            "SW50ZXJhY3Rpb25IABI+ChBpbnRlcmFjdGlvbl9saXN0GAkgASgLMiIudWJp",
+            "aS5pbnRlcmFjdGlvbnMuSW50ZXJhY3Rpb25MaXN0SAASNQoLc3RyaW5nX2xp",
+            "c3QYCiABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUuU3RyaW5nTGlzdEgAEisK",
+            "CXRvcGljX211eBgLIAEoCzIWLnViaWkuZGV2aWNlcy5Ub3BpY011eEgAEjQK",
+            "DnRvcGljX211eF9saXN0GAwgASgLMhoudWJpaS5kZXZpY2VzLlRvcGljTXV4",
+            "TGlzdEgAEi8KC3RvcGljX2RlbXV4GA0gASgLMhgudWJpaS5kZXZpY2VzLlRv",
+            "cGljRGVtdXhIABI4ChB0b3BpY19kZW11eF9saXN0GA4gASgLMhwudWJpaS5k",
+            "ZXZpY2VzLlRvcGljRGVtdXhMaXN0SAASLwoLY2xpZW50X2xpc3QYDyABKAsy",
+            "GC51YmlpLmNsaWVudHMuQ2xpZW50TGlzdEgAEi8KC2RldmljZV9saXN0GBAg",
+            "ASgLMhgudWJpaS5kZXZpY2VzLkRldmljZUxpc3RIABIpCgdzZXJ2aWNlGBEg",
+            "ASgLMhYudWJpaS5zZXJ2aWNlcy5TZXJ2aWNlSAASMgoMc2VydmljZV9saXN0",
+            "GBIgASgLMhoudWJpaS5zZXJ2aWNlcy5TZXJ2aWNlTGlzdEgAEkAKEXByb2Nl",
+            "c3NpbmdfbW9kdWxlGBMgASgLMiMudWJpaS5pbnRlcmFjdGlvbnMuUHJvY2Vz",
+            "c2luZ01vZHVsZUgAQgYKBHR5cGViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.General.SuccessReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Servers.ServerReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Services.ServiceReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.General.SuccessReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Servers.ServerReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Interactions.ProcessingModuleReflection.Descriptor, global::Ubii.Services.ServiceReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "Interaction", "InteractionList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList" }, new[]{ "Type" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "Interaction", "InteractionList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList", "ProcessingModule" }, new[]{ "Type" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class ServiceReply : pb::IMessage<ServiceReply> {
+  public sealed partial class ServiceReply : pb::IMessage<ServiceReply>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<ServiceReply> _parser = new pb::MessageParser<ServiceReply>(() => new ServiceReply());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -143,6 +149,9 @@ namespace Ubii.Services {
           break;
         case TypeOneofCase.ServiceList:
           ServiceList = other.ServiceList.Clone();
+          break;
+        case TypeOneofCase.ProcessingModule:
+          ProcessingModule = other.ProcessingModule.Clone();
           break;
       }
 
@@ -352,6 +361,17 @@ namespace Ubii.Services {
       }
     }
 
+    /// <summary>Field number for the "processing_module" field.</summary>
+    public const int ProcessingModuleFieldNumber = 19;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Interactions.ProcessingModule ProcessingModule {
+      get { return typeCase_ == TypeOneofCase.ProcessingModule ? (global::Ubii.Interactions.ProcessingModule) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.ProcessingModule;
+      }
+    }
+
     private object type_;
     /// <summary>Enum of possible cases for the "type" oneof.</summary>
     public enum TypeOneofCase {
@@ -374,6 +394,7 @@ namespace Ubii.Services {
       DeviceList = 16,
       Service = 17,
       ServiceList = 18,
+      ProcessingModule = 19,
     }
     private TypeOneofCase typeCase_ = TypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -418,6 +439,7 @@ namespace Ubii.Services {
       if (!object.Equals(DeviceList, other.DeviceList)) return false;
       if (!object.Equals(Service, other.Service)) return false;
       if (!object.Equals(ServiceList, other.ServiceList)) return false;
+      if (!object.Equals(ProcessingModule, other.ProcessingModule)) return false;
       if (TypeCase != other.TypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -443,6 +465,7 @@ namespace Ubii.Services {
       if (typeCase_ == TypeOneofCase.DeviceList) hash ^= DeviceList.GetHashCode();
       if (typeCase_ == TypeOneofCase.Service) hash ^= Service.GetHashCode();
       if (typeCase_ == TypeOneofCase.ServiceList) hash ^= ServiceList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.ProcessingModule) hash ^= ProcessingModule.GetHashCode();
       hash ^= (int) typeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -457,6 +480,9 @@ namespace Ubii.Services {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (typeCase_ == TypeOneofCase.Success) {
         output.WriteRawTag(10);
         output.WriteMessage(Success);
@@ -529,10 +555,100 @@ namespace Ubii.Services {
         output.WriteRawTag(146, 1);
         output.WriteMessage(ServiceList);
       }
+      if (typeCase_ == TypeOneofCase.ProcessingModule) {
+        output.WriteRawTag(154, 1);
+        output.WriteMessage(ProcessingModule);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (typeCase_ == TypeOneofCase.Success) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Success);
+      }
+      if (typeCase_ == TypeOneofCase.Error) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Error);
+      }
+      if (typeCase_ == TypeOneofCase.Client) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Client);
+      }
+      if (typeCase_ == TypeOneofCase.Device) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Device);
+      }
+      if (typeCase_ == TypeOneofCase.Server) {
+        output.WriteRawTag(42);
+        output.WriteMessage(Server);
+      }
+      if (typeCase_ == TypeOneofCase.Session) {
+        output.WriteRawTag(50);
+        output.WriteMessage(Session);
+      }
+      if (typeCase_ == TypeOneofCase.SessionList) {
+        output.WriteRawTag(58);
+        output.WriteMessage(SessionList);
+      }
+      if (typeCase_ == TypeOneofCase.Interaction) {
+        output.WriteRawTag(66);
+        output.WriteMessage(Interaction);
+      }
+      if (typeCase_ == TypeOneofCase.InteractionList) {
+        output.WriteRawTag(74);
+        output.WriteMessage(InteractionList);
+      }
+      if (typeCase_ == TypeOneofCase.StringList) {
+        output.WriteRawTag(82);
+        output.WriteMessage(StringList);
+      }
+      if (typeCase_ == TypeOneofCase.TopicMux) {
+        output.WriteRawTag(90);
+        output.WriteMessage(TopicMux);
+      }
+      if (typeCase_ == TypeOneofCase.TopicMuxList) {
+        output.WriteRawTag(98);
+        output.WriteMessage(TopicMuxList);
+      }
+      if (typeCase_ == TypeOneofCase.TopicDemux) {
+        output.WriteRawTag(106);
+        output.WriteMessage(TopicDemux);
+      }
+      if (typeCase_ == TypeOneofCase.TopicDemuxList) {
+        output.WriteRawTag(114);
+        output.WriteMessage(TopicDemuxList);
+      }
+      if (typeCase_ == TypeOneofCase.ClientList) {
+        output.WriteRawTag(122);
+        output.WriteMessage(ClientList);
+      }
+      if (typeCase_ == TypeOneofCase.DeviceList) {
+        output.WriteRawTag(130, 1);
+        output.WriteMessage(DeviceList);
+      }
+      if (typeCase_ == TypeOneofCase.Service) {
+        output.WriteRawTag(138, 1);
+        output.WriteMessage(Service);
+      }
+      if (typeCase_ == TypeOneofCase.ServiceList) {
+        output.WriteRawTag(146, 1);
+        output.WriteMessage(ServiceList);
+      }
+      if (typeCase_ == TypeOneofCase.ProcessingModule) {
+        output.WriteRawTag(154, 1);
+        output.WriteMessage(ProcessingModule);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -590,6 +706,9 @@ namespace Ubii.Services {
       }
       if (typeCase_ == TypeOneofCase.ServiceList) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ServiceList);
+      }
+      if (typeCase_ == TypeOneofCase.ProcessingModule) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(ProcessingModule);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -711,6 +830,12 @@ namespace Ubii.Services {
           }
           ServiceList.MergeFrom(other.ServiceList);
           break;
+        case TypeOneofCase.ProcessingModule:
+          if (ProcessingModule == null) {
+            ProcessingModule = new global::Ubii.Interactions.ProcessingModule();
+          }
+          ProcessingModule.MergeFrom(other.ProcessingModule);
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -718,6 +843,9 @@ namespace Ubii.Services {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -886,9 +1014,204 @@ namespace Ubii.Services {
             ServiceList = subBuilder;
             break;
           }
+          case 154: {
+            global::Ubii.Interactions.ProcessingModule subBuilder = new global::Ubii.Interactions.ProcessingModule();
+            if (typeCase_ == TypeOneofCase.ProcessingModule) {
+              subBuilder.MergeFrom(ProcessingModule);
+            }
+            input.ReadMessage(subBuilder);
+            ProcessingModule = subBuilder;
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            global::Ubii.General.Success subBuilder = new global::Ubii.General.Success();
+            if (typeCase_ == TypeOneofCase.Success) {
+              subBuilder.MergeFrom(Success);
+            }
+            input.ReadMessage(subBuilder);
+            Success = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Ubii.General.Error subBuilder = new global::Ubii.General.Error();
+            if (typeCase_ == TypeOneofCase.Error) {
+              subBuilder.MergeFrom(Error);
+            }
+            input.ReadMessage(subBuilder);
+            Error = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Ubii.Clients.Client subBuilder = new global::Ubii.Clients.Client();
+            if (typeCase_ == TypeOneofCase.Client) {
+              subBuilder.MergeFrom(Client);
+            }
+            input.ReadMessage(subBuilder);
+            Client = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Ubii.Devices.Device subBuilder = new global::Ubii.Devices.Device();
+            if (typeCase_ == TypeOneofCase.Device) {
+              subBuilder.MergeFrom(Device);
+            }
+            input.ReadMessage(subBuilder);
+            Device = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Ubii.Servers.Server subBuilder = new global::Ubii.Servers.Server();
+            if (typeCase_ == TypeOneofCase.Server) {
+              subBuilder.MergeFrom(Server);
+            }
+            input.ReadMessage(subBuilder);
+            Server = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Ubii.Sessions.Session subBuilder = new global::Ubii.Sessions.Session();
+            if (typeCase_ == TypeOneofCase.Session) {
+              subBuilder.MergeFrom(Session);
+            }
+            input.ReadMessage(subBuilder);
+            Session = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Ubii.Sessions.SessionList subBuilder = new global::Ubii.Sessions.SessionList();
+            if (typeCase_ == TypeOneofCase.SessionList) {
+              subBuilder.MergeFrom(SessionList);
+            }
+            input.ReadMessage(subBuilder);
+            SessionList = subBuilder;
+            break;
+          }
+          case 66: {
+            global::Ubii.Interactions.Interaction subBuilder = new global::Ubii.Interactions.Interaction();
+            if (typeCase_ == TypeOneofCase.Interaction) {
+              subBuilder.MergeFrom(Interaction);
+            }
+            input.ReadMessage(subBuilder);
+            Interaction = subBuilder;
+            break;
+          }
+          case 74: {
+            global::Ubii.Interactions.InteractionList subBuilder = new global::Ubii.Interactions.InteractionList();
+            if (typeCase_ == TypeOneofCase.InteractionList) {
+              subBuilder.MergeFrom(InteractionList);
+            }
+            input.ReadMessage(subBuilder);
+            InteractionList = subBuilder;
+            break;
+          }
+          case 82: {
+            global::Ubii.DataStructure.StringList subBuilder = new global::Ubii.DataStructure.StringList();
+            if (typeCase_ == TypeOneofCase.StringList) {
+              subBuilder.MergeFrom(StringList);
+            }
+            input.ReadMessage(subBuilder);
+            StringList = subBuilder;
+            break;
+          }
+          case 90: {
+            global::Ubii.Devices.TopicMux subBuilder = new global::Ubii.Devices.TopicMux();
+            if (typeCase_ == TypeOneofCase.TopicMux) {
+              subBuilder.MergeFrom(TopicMux);
+            }
+            input.ReadMessage(subBuilder);
+            TopicMux = subBuilder;
+            break;
+          }
+          case 98: {
+            global::Ubii.Devices.TopicMuxList subBuilder = new global::Ubii.Devices.TopicMuxList();
+            if (typeCase_ == TypeOneofCase.TopicMuxList) {
+              subBuilder.MergeFrom(TopicMuxList);
+            }
+            input.ReadMessage(subBuilder);
+            TopicMuxList = subBuilder;
+            break;
+          }
+          case 106: {
+            global::Ubii.Devices.TopicDemux subBuilder = new global::Ubii.Devices.TopicDemux();
+            if (typeCase_ == TypeOneofCase.TopicDemux) {
+              subBuilder.MergeFrom(TopicDemux);
+            }
+            input.ReadMessage(subBuilder);
+            TopicDemux = subBuilder;
+            break;
+          }
+          case 114: {
+            global::Ubii.Devices.TopicDemuxList subBuilder = new global::Ubii.Devices.TopicDemuxList();
+            if (typeCase_ == TypeOneofCase.TopicDemuxList) {
+              subBuilder.MergeFrom(TopicDemuxList);
+            }
+            input.ReadMessage(subBuilder);
+            TopicDemuxList = subBuilder;
+            break;
+          }
+          case 122: {
+            global::Ubii.Clients.ClientList subBuilder = new global::Ubii.Clients.ClientList();
+            if (typeCase_ == TypeOneofCase.ClientList) {
+              subBuilder.MergeFrom(ClientList);
+            }
+            input.ReadMessage(subBuilder);
+            ClientList = subBuilder;
+            break;
+          }
+          case 130: {
+            global::Ubii.Devices.DeviceList subBuilder = new global::Ubii.Devices.DeviceList();
+            if (typeCase_ == TypeOneofCase.DeviceList) {
+              subBuilder.MergeFrom(DeviceList);
+            }
+            input.ReadMessage(subBuilder);
+            DeviceList = subBuilder;
+            break;
+          }
+          case 138: {
+            global::Ubii.Services.Service subBuilder = new global::Ubii.Services.Service();
+            if (typeCase_ == TypeOneofCase.Service) {
+              subBuilder.MergeFrom(Service);
+            }
+            input.ReadMessage(subBuilder);
+            Service = subBuilder;
+            break;
+          }
+          case 146: {
+            global::Ubii.Services.ServiceList subBuilder = new global::Ubii.Services.ServiceList();
+            if (typeCase_ == TypeOneofCase.ServiceList) {
+              subBuilder.MergeFrom(ServiceList);
+            }
+            input.ReadMessage(subBuilder);
+            ServiceList = subBuilder;
+            break;
+          }
+          case 154: {
+            global::Ubii.Interactions.ProcessingModule subBuilder = new global::Ubii.Interactions.ProcessingModule();
+            if (typeCase_ == TypeOneofCase.ProcessingModule) {
+              subBuilder.MergeFrom(ProcessingModule);
+            }
+            input.ReadMessage(subBuilder);
+            ProcessingModule = subBuilder;
+            break;
+          }
         }
       }
     }
+    #endif
 
   }
 

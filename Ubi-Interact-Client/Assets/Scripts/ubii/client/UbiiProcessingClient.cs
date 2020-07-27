@@ -12,7 +12,9 @@ using Ubii.Interactions;
 using NetMQ;
 using NetMQ.Sockets;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using UnityEngine;
+using System.Linq;
 
 public class UbiiProcessingClient : MonoBehaviour
 {
@@ -27,7 +29,7 @@ public class UbiiProcessingClient : MonoBehaviour
 
     TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
 
-    private InteractionStatus status;
+    private bool startProcessing = false;
     private List<ProcessingModule> processingModules;
     private List<TopicData> inputTopicDatas;
     private List<TopicData> outputTopicDatas;
@@ -43,7 +45,7 @@ public class UbiiProcessingClient : MonoBehaviour
     //TODO replace with pm.frequency
     const int delay = 3000; // milliseconds
 
-    public UbiiProcessingClient(string servicehost, int serviceport, string topicdatahost, int topicdataport string clientID)
+    public UbiiProcessingClient(string servicehost, int serviceport, string topicdatahost, int topicdataport, string clientID)
     {
         this.servicehost = servicehost;
         this.serviceport = serviceport;
@@ -141,27 +143,27 @@ public class UbiiProcessingClient : MonoBehaviour
 
             });
 
-            processingModules.Add(newProcessingModule);
+            processingModules.Add(newProcessingModule.ProcessingModule);
             int index = processingModules.Count - 1;
 
             // call oncreated function
-            if (newProcessingModule.onCreated != "")
+            if (newProcessingModule.ProcessingModule.OnCreated != "")
             {
-                string[] function = Regex.Split(newProcessingModule.onCreated, ".");
+                string[] function = Regex.Split(newProcessingModule.ProcessingModule.OnCreated, ".");
                 executeFunction(function[0], function[1]);
             }
 
-            newProcessingModule.status = InteractionStatus.Initialized;
+            newProcessingModule.ProcessingModule.Status = InteractionStatus.Initialized;
 
-            switch (newProcessingModule.processingMode)
+            switch (newProcessingModule.ProcessingModule.Mode)
             {
-                case PROCESSINGMODE.LOCKSTEP:
-                    LockstepMode(index);
+                case ProcessingMode.Lockstep:
+                    LockstepMaster();
                     break;
-                case PROCESSINGMODE.ASYNCFREQUENCY:
+                case ProcessingMode.Atfrequency:
                     AsyncFrequencyMode(index);
                     break;
-                case PROCESSINGMODE.ASYNC:
+                case ProcessingMode.Atnewtopicdata:
                     AsyncMode(index);
                     break;
             }
@@ -173,12 +175,17 @@ public class UbiiProcessingClient : MonoBehaviour
     {
         while (connected)
         {
+            await GetProcessingCall();
             bool allFinished = true;
             foreach(ProcessingModule pm in processingModules)
             {
-                if(pm.status = InteractionStatus.Halted)
+                if(pm.Mode == ProcessingMode.Lockstep)
                 {
-                    allFinished = false;
+                    // start processing
+                    if (pm.Status != InteractionStatus.Halted)
+                    {
+                        allFinished = false;
+                    }
                 }
             }
             if (allFinished)
@@ -192,7 +199,7 @@ public class UbiiProcessingClient : MonoBehaviour
         }
     }
 
-    async private void LockstepMode(int index)
+    async private Task GetProcessingCall()
     {
         // wait for call to process
         await CallService(new Ubii.Services.ServiceRequest
@@ -200,20 +207,33 @@ public class UbiiProcessingClient : MonoBehaviour
 
         });
 
-        // process
-        if (processingModules[index].onProcessing != "")
-        {
-            processingModules[index].status = InteractionStatus.Processing;
-            string[] function = Regex.Split(processingModules[index].onProcessing, ".");
-            executeFunction(function[0], function[1]);
-            Type type = Type.GetType(function[0]);
+        startProcessing = true;
+    }
 
-            TopicDataRecordList output = (TopicDataRecordList) type.InvokeMember(
-                function[1],
-                BindingFlags.InvokeMethod | BindingFlags.Public |
-                BindingFlags.Static, null, null, processingModules[index].input);
-            gatheredOutputs.Add(processingModules[index].id, output);
-        }
+    private void LockstepMode(int index)
+    {
+        Task processStep = Task.Factory.StartNew(() =>
+        {
+            while (!startProcessing)
+            {
+
+            }
+            // process
+            if (processingModules[index].OnProcessing != "")
+            {
+                processingModules[index].Status = InteractionStatus.Processing;
+                string[] function = Regex.Split(processingModules[index].OnProcessing, ".");
+                executeFunction(function[0], function[1]);
+                Type type = Type.GetType(function[0]);
+
+                TopicDataRecordList output = (TopicDataRecordList)type.InvokeMember(
+                    function[1],
+                    BindingFlags.InvokeMethod | BindingFlags.Public |
+                    BindingFlags.Static, null, null, processingModules[index].Lockstep.InputTopicDataRecordList.ToArray<TopicDataRecordList>());
+                // gather topicdatarecordlist
+                gatheredOutputs.Add(processingModules[index].Id, output);
+            }
+        });        
     }
 
     async private void AsyncFrequencyMaster()
