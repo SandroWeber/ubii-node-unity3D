@@ -1,0 +1,15 @@
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\Google.Protobuf.dll
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\Google.Protobuf.pdb
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\Google.Protobuf.xml
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\System.Buffers.dll
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\System.Memory.dll
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\bin\Debug\net45\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.csprojAssemblyReference.cache
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.AssemblyInfoInputs.cache
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.AssemblyInfo.cs
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.csproj.CoreCompileInputs.cache
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.sourcelink.json
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.csproj.CopyComplete
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.dll
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.xml
+C:\Users\leona\Downloads\protobuf-master\protobuf-master\csharp\src\Google.Protobuf\obj\Debug\net45\Google.Protobuf.pdb
