@@ -36,14 +36,14 @@ public class UbiiProcessingClient : MonoBehaviour
     private Dictionary<string, TopicDataRecordList> gatheredOutputs;
 
     private bool running = false;
+    private bool lockstepMasterRunning = false;
+    private bool atFrequencyMasterRunning = false;
+    private bool atNewTopicDataMasterRunning = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
 
     CancellationTokenSource cts = new CancellationTokenSource();
     CancellationToken cancellationToken;
-
-    //TODO replace with pm.frequency
-    const int delay = 3000; // milliseconds
 
     public UbiiProcessingClient(string servicehost, int serviceport, string topicdatahost, int topicdataport, string clientID)
     {
@@ -60,12 +60,19 @@ public class UbiiProcessingClient : MonoBehaviour
 
         Initialize();
 
+        int tries = 100;
+        while (!connected && tries > 0)
+        {
+            Initialize();
+            tries--;
+        }
         if (connected)
         {
             getProcessingModuleLoop();
-            LockstepMaster();
-            AsyncFrequencyMaster();
-            AsyncMaster();
+        }
+        else
+        {
+            Debug.Log("Failed to connect to the server. Try again!");
         }
     }
 
@@ -117,8 +124,6 @@ public class UbiiProcessingClient : MonoBehaviour
 
             while (running)
             {
-                // TODO if pm mode frequency
-                Thread.Sleep(delay);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Debug.Log("Cancelling task");
@@ -133,49 +138,76 @@ public class UbiiProcessingClient : MonoBehaviour
         return connected;
     }
 
-    async private void getProcessingModuleLoop()
+    private void getProcessingModuleLoop()
     {
-        while (connected)
+        Task processStep = Task.Factory.StartNew(async () =>
         {
-            //TODO fill in service request get pm specs
-            Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
+            while (connected)
             {
+                //TODO fill in service request get pm specs
+                Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
+                {
 
-            });
+                });
 
-            processingModules.Add(newProcessingModule.ProcessingModule);
-            int index = processingModules.Count - 1;
+                processingModules.Add(newProcessingModule.ProcessingModule);
+                int index = processingModules.Count - 1;
 
-            // call oncreated function
-            if (newProcessingModule.ProcessingModule.OnCreated != "")
-            {
-                string[] function = Regex.Split(newProcessingModule.ProcessingModule.OnCreated, ".");
-                executeFunction(function[0], function[1]);
+                // call oncreated function
+                if (newProcessingModule.ProcessingModule.OnCreated != "")
+                {
+                    string[] function = Regex.Split(newProcessingModule.ProcessingModule.OnCreated, ".");
+                    executeFunction(function[0], function[1]);
+                }
+
+                newProcessingModule.ProcessingModule.Status = InteractionStatus.Initialized;
+
+                switch (newProcessingModule.ProcessingModule.Mode)
+                {
+                    case ProcessingMode.Lockstep:
+                        if (!lockstepMasterRunning)
+                        {
+                            LockstepMaster();
+                        }
+                        break;
+                    case ProcessingMode.Atfrequency:
+                        if (!atFrequencyMasterRunning)
+                        {
+                            AtFrequencyMaster();
+                        }
+                        break;
+                    case ProcessingMode.Atnewtopicdata:
+                        if (!atNewTopicDataMasterRunning)
+                        {
+                            AtNewTopicDataMaster();
+                        }
+                        break;
+                }
             }
-
-            newProcessingModule.ProcessingModule.Status = InteractionStatus.Initialized;
-
-            switch (newProcessingModule.ProcessingModule.Mode)
-            {
-                case ProcessingMode.Lockstep:
-                    LockstepMaster();
-                    break;
-                case ProcessingMode.Atfrequency:
-                    AsyncFrequencyMode(index);
-                    break;
-                case ProcessingMode.Atnewtopicdata:
-                    AsyncMode(index);
-                    break;
-            }
-        }
+        });
     }
 
     //TODO make those multi threaded
     async private void LockstepMaster()
     {
+        lockstepMasterRunning = true;
         while (connected)
         {
-            await GetProcessingCall();
+            if (!startProcessing)
+            {
+                await GetProcessingCall();
+
+                // let all pms of mode lockstep process
+                int index = 0;
+                foreach(ProcessingModule pm in processingModules)
+                {
+                    if(pm.Mode == ProcessingMode.Lockstep)
+                    {
+                        LockstepMode(index);
+                    }
+                    ++index;
+                }
+            }
             bool allFinished = true;
             foreach(ProcessingModule pm in processingModules)
             {
@@ -190,6 +222,9 @@ public class UbiiProcessingClient : MonoBehaviour
             }
             if (allFinished)
             {
+                startProcessing = false;
+                //TODO sort through / order outputs...
+
                 //TODO fill in service request to send output TopicDataRecordList
                 Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
                 {
@@ -197,6 +232,7 @@ public class UbiiProcessingClient : MonoBehaviour
                 });
             }
         }
+        lockstepMasterRunning = false;
     }
 
     async private Task GetProcessingCall()
@@ -214,10 +250,6 @@ public class UbiiProcessingClient : MonoBehaviour
     {
         Task processStep = Task.Factory.StartNew(() =>
         {
-            while (!startProcessing)
-            {
-
-            }
             // process
             if (processingModules[index].OnProcessing != "")
             {
@@ -236,30 +268,46 @@ public class UbiiProcessingClient : MonoBehaviour
         });        
     }
 
-    async private void AsyncFrequencyMaster()
+    private void AtFrequencyMaster()
     {
-        while (connected)
+        Task processStep = Task.Factory.StartNew(async () =>
+        {
+            atFrequencyMasterRunning = true;
+            while (connected)
+            {
+
+            }
+            atFrequencyMasterRunning = false;
+        });
+    }
+
+    async private void AtFrequencyMode(int index)
+    {
+        Task processStep = Task.Factory.StartNew(async () =>
         {
 
-        }
+        });
     }
 
-    async private void AsyncFrequencyMode(int index)
+    async private void AtNewTopicDataMaster()
     {
+        Task processStep = Task.Factory.StartNew(async () =>
+        {
+            atNewTopicDataMasterRunning = true;
+            while (connected)
+            {
 
+            }
+            atNewTopicDataMasterRunning = false;
+        });
     }
 
-    async private void AsyncMaster()
+    async private void AtNewTopicDataMode(int index)
     {
-        while (connected)
+        Task processStep = Task.Factory.StartNew(async () =>
         {
 
-        }
-    }
-
-    async private void AsyncMode(int index)
-    {
-
+        });
     }
 
     private void executeFunction(string clss, string name)
