@@ -95,9 +95,8 @@ public sealed class UbiiConstants
 
     private static UbiiConstants CreateFromJSON()
     {
-        string jsonString = System.IO.File.ReadAllText(Application.dataPath + "/Scripts/ubii/constants.json");
-
-        UbiiConstants constants = JsonUtility.FromJson<UbiiConstants>(jsonString);
+        var jsonTextFile = Resources.Load<TextAsset>("ubii/constants");
+        UbiiConstants constants = JsonUtility.FromJson<UbiiConstants>(jsonTextFile.text);
         return constants;
     }
 }
