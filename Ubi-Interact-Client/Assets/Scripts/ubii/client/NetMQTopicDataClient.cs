@@ -150,6 +150,16 @@ public class NetMQTopicDataClient
         this.topicdataRegexCallbacks[regex].Remove(callback);
     }
 
+    public List<string> GetAllSubscribedTopics()
+    {
+        return topicdataCallbacks.Keys.ToList();
+    }
+
+    public List<string> GetAllSubscribedRegex()
+    {
+        return topicdataRegexCallbacks.Keys.ToList();
+    }
+
     public void SendTopicData(TopicData td)
     {
         byte[] buffer = td.ToByteArray();
@@ -203,6 +213,8 @@ public class NetMQTopicDataClient
     public void TearDown()
     {
         Debug.Log("TearDown TopicDataClient");
+        topicdataCallbacks.Clear();
+        topicdataRegexCallbacks.Clear();
         cts.Cancel();
         running = false;
         connected = false;

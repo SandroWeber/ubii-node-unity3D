@@ -192,33 +192,13 @@ public class NetMQUbiiClient
             return false;
         }
 
-        // removing callback function from dictionary
+        // removing callback function for this topic from dictionary
         netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
 
+        // check if there are any callbacks left for this topic, if not, unsubscribe from topic
         if (!this.netmqTopicDataClient.HasTopicCallbacks(topic))
         {
-            // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
-            RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
-            unsubscribeTopics.Add(topic);
-
-            ServiceRequest topicUnsubscription = new ServiceRequest
-            {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
-                TopicSubscription = new TopicSubscription
-                {
-                    ClientId = clientSpecification.Id,
-                    UnsubscribeTopics = { unsubscribeTopics }
-                }
-            };
-
-            var task = CallService(topicUnsubscription);
-            ServiceReply subReply = await task;
-
-            if (subReply.Error != null)
-            {
-                Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-                return false;
-            }
+            return await UnsubscribeTopic(topic);
         }
 
         return true;
@@ -238,10 +218,66 @@ public class NetMQUbiiClient
         if (!this.netmqTopicDataClient.HasTopicRegexCallbacks(regex))
         {
             //TODO: server side implementation
+            return await UnsubscribeRegex(regex);
         }
-
         return true;
     }
+
+    /// <summary>
+    /// Unsubscribe from all topics/regex, called before shutdown
+    /// </summary>
+    /// <returns></returns>
+    private async Task UnsubscribeAll()
+    {
+        List<string> subscribedTopics = netmqTopicDataClient.GetAllSubscribedTopics();
+        List<string> subscribedRegex = netmqTopicDataClient.GetAllSubscribedRegex();
+
+        foreach (string topic in subscribedTopics)
+        {
+            await UnsubscribeTopic(topic);
+        }
+
+        foreach (string regex in subscribedRegex)
+        {
+            await UnsubscribeRegex(regex);
+        }
+
+
+    }
+
+    private async Task<bool> UnsubscribeTopic(string topic)
+    {
+        // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
+        RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
+        unsubscribeTopics.Add(topic);
+
+        ServiceRequest topicUnsubscription = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            TopicSubscription = new TopicSubscription
+            {
+                ClientId = clientSpecification.Id,
+                UnsubscribeTopics = { unsubscribeTopics }
+            }
+        };
+
+        var task = CallService(topicUnsubscription);
+        ServiceReply subReply = await task;
+
+        if (subReply.Error != null)
+        {
+            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            return false;
+        }
+        return true;
+    }
+
+    private async Task<bool> UnsubscribeRegex(string regex)
+    {
+        //TODO: server side implementation
+        return false;
+    }
+
 
     #region Initialize Functions
     private async Task InitServerSpec()
@@ -322,6 +358,7 @@ public class NetMQUbiiClient
 
     async public void ShutDown()
     {
+        await UnsubscribeAll();
         await CallService(new Ubii.Services.ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
