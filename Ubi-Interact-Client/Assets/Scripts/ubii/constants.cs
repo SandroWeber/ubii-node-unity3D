@@ -7,7 +7,8 @@ using System;
 public sealed class UbiiConstants
 {
     [Serializable]
-    public struct Services {
+    public struct Services
+    {
         public string SERVER_CONFIG;
         public string CLIENT_REGISTRATION;
         public string CLIENT_DEREGISTRATION;
@@ -15,22 +16,20 @@ public sealed class UbiiConstants
         public string DEVICE_REGISTRATION;
         public string DEVICE_DEREGISTRATION;
         public string DEVICE_GET_LIST;
-        public string INTERACTION_REGISTRATION;
+        public string INTERACTION_DATABASE_SAVE;
         public string INTERACTION_DATABASE_GET;
         public string INTERACTION_DATABASE_GET_LIST;
-        public string INTERACTION_LOCAL_DATABASE_GET_LIST;
-        public string INTERACTION_ONLINE_DATABASE_GET_LIST;
-        public string INTERACTION_REPLACE;
-        public string INTERACTION_DELETE;
-        public string SESSION_REGISTRATION;
+        public string INTERACTION_DATABASE_LOCAL_GET_LIST;
+        public string INTERACTION_DATABASE_ONLINE_GET_LIST;
+        public string INTERACTION_DATABASE_DELETE;
+        public string SESSION_DATABASE_SAVE;
         public string SESSION_RUNTIME_GET;
         public string SESSION_RUNTIME_GET_LIST;
         public string SESSION_DATABASE_GET;
         public string SESSION_DATABASE_GET_LIST;
-        public string SESSION_REPLACE;
-        public string SESSION_DELETE;
-        public string SESSION_START;
-        public string SESSION_STOP;
+        public string SESSION_DATABASE_DELETE;
+        public string SESSION_RUNTIME_START;
+        public string SESSION_RUNTIME_STOP;
         public string TOPIC_DEMUX_DATABASE_ADD;
         public string TOPIC_DEMUX_DATABASE_DELETE;
         public string TOPIC_DEMUX_DATABASE_GET;
@@ -52,9 +51,10 @@ public sealed class UbiiConstants
         public string TOPIC_LIST;
         public string TOPIC_SUBSCRIPTION;
     }
-    
+
     [Serializable]
-    public struct InfoTopics {
+    public struct InfoTopics
+    {
         public string NEW_INTERACTION;
         public string DELETE_INTERACTION;
         public string CHANGE_INTERACTION;
@@ -64,13 +64,15 @@ public sealed class UbiiConstants
     }
 
     [Serializable]
-    public struct DefaultTopics {
+    public struct DefaultTopics
+    {
         public Services SERVICES;
         public InfoTopics INFO_TOPICS;
     }
 
     [Serializable]
-    public struct MsgTypes {
+    public struct MsgTypes
+    {
         public string ERROR;
         public string SUCCESS;
         public string CLIENT;
@@ -88,7 +90,7 @@ public sealed class UbiiConstants
 
     public DefaultTopics DEFAULT_TOPICS;
     public MsgTypes MSG_TYPES;
-    
+
     private static readonly Lazy<UbiiConstants> lazy = new Lazy<UbiiConstants>(() => UbiiConstants.CreateFromJSON());
 
     public static UbiiConstants Instance { get { return lazy.Value; } }
