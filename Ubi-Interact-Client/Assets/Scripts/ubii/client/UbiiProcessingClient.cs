@@ -20,17 +20,19 @@ public class UbiiProcessingClient : MonoBehaviour
 {
     private string servicehost;
     private int serviceport;
+    private int responseport;
     private string topicdatahost;
     private int topicdataport;
     private string clientID;
+    private List<ProcessingModule> processingModules;
+
     RequestSocket serviceSocket;
+    ResponseSocket responseSocket;
     DealerSocket topicdataSocket;
     bool connected = false;
-
     TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
 
     private bool startProcessing = false;
-    private List<ProcessingModule> processingModules;
     private List<TopicData> inputTopicDatas;
     private List<TopicData> outputTopicDatas;
     private Dictionary<string, TopicDataRecordList> gatheredOutputs;
@@ -41,19 +43,25 @@ public class UbiiProcessingClient : MonoBehaviour
     private bool atNewTopicDataMasterRunning = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
+    NetMQPoller responsePoller;
 
     CancellationTokenSource cts = new CancellationTokenSource();
     CancellationToken cancellationToken;
 
-    public UbiiProcessingClient(string servicehost, int serviceport, string topicdatahost, int topicdataport, string clientID)
+    public UbiiProcessingClient(string servicehost, int serviceport, int responseport, string topicdatahost, int topicdataport, string clientID, List<ProcessingModule> processingModules = null)
     {
         this.servicehost = servicehost;
         this.serviceport = serviceport;
+        this.responseport = responseport;
         this.topicdatahost = topicdatahost;
         this.topicdataport = topicdataport;
         this.clientID = clientID;
+        this.processingModules = processingModules;
+        if(processingModules == null)
+        {
+            this.processingModules = new List<ProcessingModule>();
+        }
 
-        processingModules = new List<ProcessingModule>();
         inputTopicDatas = new List<TopicData>();
         outputTopicDatas = new List<TopicData>();
         gatheredOutputs = new Dictionary<string, TopicDataRecordList>();
@@ -68,7 +76,13 @@ public class UbiiProcessingClient : MonoBehaviour
         }
         if (connected)
         {
-            getProcessingModuleLoop();
+            // execute oncreated functions
+            foreach(ProcessingModule pm in this.processingModules)
+            {
+                NewProcessingModule(pm);
+            }
+            // register processingModules
+
         }
         else
         {
@@ -80,6 +94,8 @@ public class UbiiProcessingClient : MonoBehaviour
     {
         AsyncIO.ForceDotNet.Force();
         serviceSocket = new RequestSocket();
+        responseSocket = new ResponseSocket();
+
         try
         {
             serviceSocket.Connect("ipc://" + servicehost + ":" + serviceport);
@@ -87,6 +103,17 @@ public class UbiiProcessingClient : MonoBehaviour
             connected = true;
         }catch(Exception ex)
         {
+            Debug.LogError("ProcessingClient, StartSocket(), Exception occured: " + ex.ToString());
+        }
+        try
+        {
+            responseSocket.Connect("ipc://*:" + responseport);
+            Debug.Log("Create response socket successful. Port:" + responseport);
+            connected = true;
+        }
+        catch(Exception ex)
+        {
+            connected = false;
             Debug.LogError("ProcessingClient, StartSocket(), Exception occured: " + ex.ToString());
         }
         if (connected)
@@ -112,23 +139,36 @@ public class UbiiProcessingClient : MonoBehaviour
         processIncomingMessages = Task.Factory.StartNew(() =>
         {
             // instantiate poller and socket
+            responsePoller = new NetMQPoller();
             poller = new NetMQPoller();
             topicdataSocket = new DealerSocket();
             topicdataSocket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router
-            topicdataSocket.ReceiveReady += OnMessage; // event on receive data
+            topicdataSocket.ReceiveReady += OnTopicDataMessage; // event on receive topicdata
 
             StartSockets();
 
-            poller.Add(topicdataSocket);
-            poller.RunAsync();
+            responseSocket.Options.Identity = Encoding.UTF8.GetBytes(clientID);
+            responseSocket.ReceiveReady += OnRequests; // event on receive data
 
-            while (running)
+            if (connected)
             {
-                if (cancellationToken.IsCancellationRequested)
+                responsePoller.Add(responseSocket);
+                responsePoller.RunAsync();
+                poller.Add(topicdataSocket);
+                poller.RunAsync();
+
+                while (running)
                 {
-                    Debug.Log("Cancelling task");
-                    break;
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.Log("Cancelling task");
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                running = false;
             }
         }, cancellationToken);
     }
@@ -138,53 +178,47 @@ public class UbiiProcessingClient : MonoBehaviour
         return connected;
     }
 
-    private void getProcessingModuleLoop()
+    public void AddProcessingModule(ProcessingModule pm)
     {
-        Task processStep = Task.Factory.StartNew(async () =>
+        this.processingModules.Add(pm);
+
+        //TODO register new pm via service call
+
+        NewProcessingModule(pm);
+    }
+
+        private void NewProcessingModule(ProcessingModule newpm)
+    {
+        // call oncreated function
+        if (newpm.OnCreated != "")
         {
-            while (connected)
-            {
-                //TODO fill in service request get pm specs
-                Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
+            string[] function = Regex.Split(newpm.OnCreated, ".");
+            executeFunction(function[0], function[1]);
+        }
+
+        newpm.Status = ProcessingModuleStatus.Created;
+
+        switch (newpm.Mode)
+        {
+            case ProcessingMode.Lockstep:
+                if (!lockstepMasterRunning)
                 {
-
-                });
-
-                processingModules.Add(newProcessingModule.ProcessingModule);
-                int index = processingModules.Count - 1;
-
-                // call oncreated function
-                if (newProcessingModule.ProcessingModule.OnCreated != "")
-                {
-                    string[] function = Regex.Split(newProcessingModule.ProcessingModule.OnCreated, ".");
-                    executeFunction(function[0], function[1]);
+                    LockstepMaster();
                 }
-
-                newProcessingModule.ProcessingModule.Status = InteractionStatus.Initialized;
-
-                switch (newProcessingModule.ProcessingModule.Mode)
+                break;
+            case ProcessingMode.Atfrequency:
+                if (!atFrequencyMasterRunning)
                 {
-                    case ProcessingMode.Lockstep:
-                        if (!lockstepMasterRunning)
-                        {
-                            LockstepMaster();
-                        }
-                        break;
-                    case ProcessingMode.Atfrequency:
-                        if (!atFrequencyMasterRunning)
-                        {
-                            AtFrequencyMaster();
-                        }
-                        break;
-                    case ProcessingMode.Atnewtopicdata:
-                        if (!atNewTopicDataMasterRunning)
-                        {
-                            AtNewTopicDataMaster();
-                        }
-                        break;
+                    AtFrequencyMaster();
                 }
-            }
-        });
+                break;
+            case ProcessingMode.Atnewtopicdata:
+                if (!atNewTopicDataMasterRunning)
+                {
+                    AtNewTopicDataMaster();
+                }
+                break;
+        }
     }
 
     //TODO make those multi threaded
@@ -195,6 +229,7 @@ public class UbiiProcessingClient : MonoBehaviour
         {
             if (!startProcessing)
             {
+                //TODO get name/group of modules who should start processing
                 await GetProcessingCall();
 
                 // let all pms of mode lockstep process
@@ -214,7 +249,7 @@ public class UbiiProcessingClient : MonoBehaviour
                 if(pm.Mode == ProcessingMode.Lockstep)
                 {
                     // start processing
-                    if (pm.Status != InteractionStatus.Halted)
+                    if (pm.Status != ProcessingModuleStatus.Halted)
                     {
                         allFinished = false;
                     }
@@ -235,17 +270,6 @@ public class UbiiProcessingClient : MonoBehaviour
         lockstepMasterRunning = false;
     }
 
-    async private Task GetProcessingCall()
-    {
-        // wait for call to process
-        await CallService(new Ubii.Services.ServiceRequest
-        {
-
-        });
-
-        startProcessing = true;
-    }
-
     private void LockstepMode(int index)
     {
         Task processStep = Task.Factory.StartNew(() =>
@@ -253,7 +277,7 @@ public class UbiiProcessingClient : MonoBehaviour
             // process
             if (processingModules[index].OnProcessing != "")
             {
-                processingModules[index].Status = InteractionStatus.Processing;
+                processingModules[index].Status = ProcessingModuleStatus.Processing;
                 string[] function = Regex.Split(processingModules[index].OnProcessing, ".");
                 executeFunction(function[0], function[1]);
                 Type type = Type.GetType(function[0]);
@@ -265,7 +289,7 @@ public class UbiiProcessingClient : MonoBehaviour
                 // gather topicdatarecordlist
                 gatheredOutputs.Add(processingModules[index].Id, output);
             }
-        });        
+        });
     }
 
     private void AtFrequencyMaster()
@@ -333,7 +357,7 @@ public class UbiiProcessingClient : MonoBehaviour
     }
 
     // called when topicdata received
-    void OnMessage(object sender, NetMQSocketEventArgs e)
+    void OnTopicDataMessage(object sender, NetMQSocketEventArgs e)
     {
         e.Socket.ReceiveFrameBytes(out bool hasmore);
         TopicData newTopicData = new TopicData { };
@@ -366,6 +390,13 @@ public class UbiiProcessingClient : MonoBehaviour
         }
     }
 
+    // receives requests like start processing
+    void OnRequests(object sender, NetMQSocketEventArgs e)
+    {
+        //e.Socket.ReceiveFrameBytes(out bool hasmore);
+        startProcessing = true;
+    }
+
     public void SendTopicData(TopicData td)
     {
         byte[] buffer = td.ToByteArray();
@@ -375,9 +406,8 @@ public class UbiiProcessingClient : MonoBehaviour
     public void TearDown()
     {
         serviceSocket.Close();
-        NetMQConfig.Cleanup(false);
+        responseSocket.Close();
         connected = false;
-
         cts.Cancel();
         running = false;
         NetMQConfig.Cleanup(false);

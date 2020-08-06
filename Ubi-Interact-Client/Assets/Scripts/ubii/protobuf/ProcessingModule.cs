@@ -25,33 +25,34 @@ namespace Ubii.Interactions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1wcm90by9wcm9jZXNzaW5nQ2xpZW50L3Byb2Nlc3NpbmdNb2R1bGUucHJv",
-            "dG8SEXViaWkuaW50ZXJhY3Rpb25zGiRwcm90by9pbnRlcmFjdGlvbnMvaW50",
-            "ZXJhY3Rpb24ucHJvdG8aIXByb3RvL2ludGVyYWN0aW9ucy9pb0Zvcm1hdC5w",
-            "cm90bxo1cHJvdG8vdG9waWNEYXRhL3RvcGljRGF0YVJlY29yZC90b3BpY0Rh",
-            "dGFSZWNvcmQucHJvdG8ilAMKEFByb2Nlc3NpbmdNb2R1bGUSCgoCaWQYASAB",
-            "KAkSDAoEbmFtZRgCIAEoCRIPCgdhdXRob3JzGAMgAygJEgwKBHRhZ3MYBCAD",
-            "KAkSEwoLZGVzY3JpcHRpb24YBSABKAkSFQoNb25fcHJvY2Vzc2luZxgGIAEo",
-            "CRISCgpvbl9jcmVhdGVkGAcgASgJEjQKBnN0YXR1cxgIIAEoDjIkLnViaWku",
-            "aW50ZXJhY3Rpb25zLkludGVyYWN0aW9uU3RhdHVzEi8KBG1vZGUYCSABKA4y",
-            "IS51YmlpLmludGVyYWN0aW9ucy5Qcm9jZXNzaW5nTW9kZRIvCghsb2Nrc3Rl",
-            "cBgLIAEoCzIbLnViaWkuaW50ZXJhY3Rpb25zLkxvY2tzdGVwSAASPAoPYXN5",
-            "bmNfZnJlcXVlbmN5GAwgASgLMiEudWJpaS5pbnRlcmFjdGlvbnMuQXN5bmNG",
-            "cmVxdWVuY3lIABIpCgVhc3luYxgNIAEoCzIYLnViaWkuaW50ZXJhY3Rpb25z",
-            "LkFzeW5jSABCBgoEZGF0YSKhAQoITG9ja3N0ZXASSQocaW5wdXRfdG9waWNf",
-            "ZGF0YV9yZWNvcmRfbGlzdBgBIAMoCzIjLnViaWkudG9waWNEYXRhLlRvcGlj",
-            "RGF0YVJlY29yZExpc3QSSgodb3V0cHV0X3RvcGljX2RhdGFfcmVjb3JkX2xp",
-            "c3QYAiADKAsyIy51YmlpLnRvcGljRGF0YS5Ub3BpY0RhdGFSZWNvcmRMaXN0",
-            "IowBCg5Bc3luY0ZyZXF1ZW5jeRIRCglmcmVxdWVuY3kYASABKAISMgoNaW5w",
-            "dXRfZm9ybWF0cxgCIAMoCzIbLnViaWkuaW50ZXJhY3Rpb25zLklPRm9ybWF0",
-            "EjMKDm91dHB1dF9mb3JtYXRzGAMgAygLMhsudWJpaS5pbnRlcmFjdGlvbnMu",
-            "SU9Gb3JtYXQicAoFQXN5bmMSMgoNaW5wdXRfZm9ybWF0cxgBIAMoCzIbLnVi",
-            "aWkuaW50ZXJhY3Rpb25zLklPRm9ybWF0EjMKDm91dHB1dF9mb3JtYXRzGAIg",
-            "AygLMhsudWJpaS5pbnRlcmFjdGlvbnMuSU9Gb3JtYXQqQwoOUHJvY2Vzc2lu",
-            "Z01vZGUSDAoITE9DS1NURVAQABIPCgtBVEZSRVFVRU5DWRABEhIKDkFUTkVX",
-            "VE9QSUNEQVRBEAJiBnByb3RvMw=="));
+            "dG8SEXViaWkuaW50ZXJhY3Rpb25zGiFwcm90by9pbnRlcmFjdGlvbnMvaW9G",
+            "b3JtYXQucHJvdG8aNXByb3RvL3RvcGljRGF0YS90b3BpY0RhdGFSZWNvcmQv",
+            "dG9waWNEYXRhUmVjb3JkLnByb3RvIpkDChBQcm9jZXNzaW5nTW9kdWxlEgoK",
+            "AmlkGAEgASgJEgwKBG5hbWUYAiABKAkSDwoHYXV0aG9ycxgDIAMoCRIMCgR0",
+            "YWdzGAQgAygJEhMKC2Rlc2NyaXB0aW9uGAUgASgJEhUKDW9uX3Byb2Nlc3Np",
+            "bmcYBiABKAkSEgoKb25fY3JlYXRlZBgHIAEoCRI5CgZzdGF0dXMYCCABKA4y",
+            "KS51YmlpLmludGVyYWN0aW9ucy5Qcm9jZXNzaW5nTW9kdWxlU3RhdHVzEi8K",
+            "BG1vZGUYCSABKA4yIS51YmlpLmludGVyYWN0aW9ucy5Qcm9jZXNzaW5nTW9k",
+            "ZRIvCghsb2Nrc3RlcBgLIAEoCzIbLnViaWkuaW50ZXJhY3Rpb25zLkxvY2tz",
+            "dGVwSAASPAoPYXN5bmNfZnJlcXVlbmN5GAwgASgLMiEudWJpaS5pbnRlcmFj",
+            "dGlvbnMuQXN5bmNGcmVxdWVuY3lIABIpCgVhc3luYxgNIAEoCzIYLnViaWku",
+            "aW50ZXJhY3Rpb25zLkFzeW5jSABCBgoEZGF0YSKhAQoITG9ja3N0ZXASSQoc",
+            "aW5wdXRfdG9waWNfZGF0YV9yZWNvcmRfbGlzdBgBIAMoCzIjLnViaWkudG9w",
+            "aWNEYXRhLlRvcGljRGF0YVJlY29yZExpc3QSSgodb3V0cHV0X3RvcGljX2Rh",
+            "dGFfcmVjb3JkX2xpc3QYAiADKAsyIy51YmlpLnRvcGljRGF0YS5Ub3BpY0Rh",
+            "dGFSZWNvcmRMaXN0IowBCg5Bc3luY0ZyZXF1ZW5jeRIRCglmcmVxdWVuY3kY",
+            "ASABKAISMgoNaW5wdXRfZm9ybWF0cxgCIAMoCzIbLnViaWkuaW50ZXJhY3Rp",
+            "b25zLklPRm9ybWF0EjMKDm91dHB1dF9mb3JtYXRzGAMgAygLMhsudWJpaS5p",
+            "bnRlcmFjdGlvbnMuSU9Gb3JtYXQicAoFQXN5bmMSMgoNaW5wdXRfZm9ybWF0",
+            "cxgBIAMoCzIbLnViaWkuaW50ZXJhY3Rpb25zLklPRm9ybWF0EjMKDm91dHB1",
+            "dF9mb3JtYXRzGAIgAygLMhsudWJpaS5pbnRlcmFjdGlvbnMuSU9Gb3JtYXQq",
+            "QwoOUHJvY2Vzc2luZ01vZGUSDAoITE9DS1NURVAQABIPCgtBVEZSRVFVRU5D",
+            "WRABEhIKDkFUTkVXVE9QSUNEQVRBEAIqWwoWUHJvY2Vzc2luZ01vZHVsZVN0",
+            "YXR1cxIPCgtJTklUSUFMSVpFRBAAEgsKB0NSRUFURUQQARIOCgpQUk9DRVNT",
+            "SU5HEAISCgoGSEFMVEVEEAMSBwoDRU5EEARiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.Interactions.InteractionReflection.Descriptor, global::Ubii.Interactions.IoFormatReflection.Descriptor, global::Ubii.TopicData.TopicDataRecordReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.ProcessingMode), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::FileDescriptor[] { global::Ubii.Interactions.IoFormatReflection.Descriptor, global::Ubii.TopicData.TopicDataRecordReflection.Descriptor, },
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.ProcessingMode), typeof(global::Ubii.Interactions.ProcessingModuleStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.ProcessingModule), global::Ubii.Interactions.ProcessingModule.Parser, new[]{ "Id", "Name", "Authors", "Tags", "Description", "OnProcessing", "OnCreated", "Status", "Mode", "Lockstep", "AsyncFrequency", "Async" }, new[]{ "Data" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Lockstep), global::Ubii.Interactions.Lockstep.Parser, new[]{ "InputTopicDataRecordList", "OutputTopicDataRecordList" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.AsyncFrequency), global::Ubii.Interactions.AsyncFrequency.Parser, new[]{ "Frequency", "InputFormats", "OutputFormats" }, null, null, null, null),
@@ -66,6 +67,14 @@ namespace Ubii.Interactions {
     [pbr::OriginalName("LOCKSTEP")] Lockstep = 0,
     [pbr::OriginalName("ATFREQUENCY")] Atfrequency = 1,
     [pbr::OriginalName("ATNEWTOPICDATA")] Atnewtopicdata = 2,
+  }
+
+  public enum ProcessingModuleStatus {
+    [pbr::OriginalName("INITIALIZED")] Initialized = 0,
+    [pbr::OriginalName("CREATED")] Created = 1,
+    [pbr::OriginalName("PROCESSING")] Processing = 2,
+    [pbr::OriginalName("HALTED")] Halted = 3,
+    [pbr::OriginalName("END")] End = 4,
   }
 
   #endregion
@@ -206,9 +215,9 @@ namespace Ubii.Interactions {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 8;
-    private global::Ubii.Interactions.InteractionStatus status_ = global::Ubii.Interactions.InteractionStatus.Created;
+    private global::Ubii.Interactions.ProcessingModuleStatus status_ = global::Ubii.Interactions.ProcessingModuleStatus.Initialized;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Ubii.Interactions.InteractionStatus Status {
+    public global::Ubii.Interactions.ProcessingModuleStatus Status {
       get { return status_; }
       set {
         status_ = value;
@@ -318,7 +327,7 @@ namespace Ubii.Interactions {
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (OnProcessing.Length != 0) hash ^= OnProcessing.GetHashCode();
       if (OnCreated.Length != 0) hash ^= OnCreated.GetHashCode();
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) hash ^= Status.GetHashCode();
+      if (Status != global::Ubii.Interactions.ProcessingModuleStatus.Initialized) hash ^= Status.GetHashCode();
       if (Mode != global::Ubii.Interactions.ProcessingMode.Lockstep) hash ^= Mode.GetHashCode();
       if (dataCase_ == DataOneofCase.Lockstep) hash ^= Lockstep.GetHashCode();
       if (dataCase_ == DataOneofCase.AsyncFrequency) hash ^= AsyncFrequency.GetHashCode();
@@ -362,7 +371,7 @@ namespace Ubii.Interactions {
         output.WriteRawTag(58);
         output.WriteString(OnCreated);
       }
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
+      if (Status != global::Ubii.Interactions.ProcessingModuleStatus.Initialized) {
         output.WriteRawTag(64);
         output.WriteEnum((int) Status);
       }
@@ -413,7 +422,7 @@ namespace Ubii.Interactions {
         output.WriteRawTag(58);
         output.WriteString(OnCreated);
       }
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
+      if (Status != global::Ubii.Interactions.ProcessingModuleStatus.Initialized) {
         output.WriteRawTag(64);
         output.WriteEnum((int) Status);
       }
@@ -459,7 +468,7 @@ namespace Ubii.Interactions {
       if (OnCreated.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(OnCreated);
       }
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
+      if (Status != global::Ubii.Interactions.ProcessingModuleStatus.Initialized) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (Mode != global::Ubii.Interactions.ProcessingMode.Lockstep) {
@@ -502,7 +511,7 @@ namespace Ubii.Interactions {
       if (other.OnCreated.Length != 0) {
         OnCreated = other.OnCreated;
       }
-      if (other.Status != global::Ubii.Interactions.InteractionStatus.Created) {
+      if (other.Status != global::Ubii.Interactions.ProcessingModuleStatus.Initialized) {
         Status = other.Status;
       }
       if (other.Mode != global::Ubii.Interactions.ProcessingMode.Lockstep) {
@@ -572,7 +581,7 @@ namespace Ubii.Interactions {
             break;
           }
           case 64: {
-            Status = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
+            Status = (global::Ubii.Interactions.ProcessingModuleStatus) input.ReadEnum();
             break;
           }
           case 72: {
@@ -649,7 +658,7 @@ namespace Ubii.Interactions {
             break;
           }
           case 64: {
-            Status = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
+            Status = (global::Ubii.Interactions.ProcessingModuleStatus) input.ReadEnum();
             break;
           }
           case 72: {

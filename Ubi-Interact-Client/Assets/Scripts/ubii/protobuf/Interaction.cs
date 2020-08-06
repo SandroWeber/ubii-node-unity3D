@@ -26,39 +26,30 @@ namespace Ubii.Interactions {
           string.Concat(
             "CiRwcm90by9pbnRlcmFjdGlvbnMvaW50ZXJhY3Rpb24ucHJvdG8SEXViaWku",
             "aW50ZXJhY3Rpb25zGiFwcm90by9pbnRlcmFjdGlvbnMvaW9Gb3JtYXQucHJv",
-            "dG8ixgIKC0ludGVyYWN0aW9uEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkS",
+            "dG8ikAIKC0ludGVyYWN0aW9uEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkS",
             "GwoTcHJvY2Vzc2luZ19jYWxsYmFjaxgDIAEoCRIyCg1pbnB1dF9mb3JtYXRz",
             "GAQgAygLMhsudWJpaS5pbnRlcmFjdGlvbnMuSU9Gb3JtYXQSMwoOb3V0cHV0",
             "X2Zvcm1hdHMYBSADKAsyGy51YmlpLmludGVyYWN0aW9ucy5JT0Zvcm1hdBIS",
             "Cgpvbl9jcmVhdGVkGAYgASgJEhkKEXByb2Nlc3NfZnJlcXVlbmN5GAcgASgC",
             "Eg8KB2F1dGhvcnMYCCADKAkSDAoEdGFncxgJIAMoCRITCgtkZXNjcmlwdGlv",
-            "bhgKIAEoCRI0CgZzdGF0dXMYCyABKA4yJC51YmlpLmludGVyYWN0aW9ucy5J",
-            "bnRlcmFjdGlvblN0YXR1cyJDCg9JbnRlcmFjdGlvbkxpc3QSMAoIZWxlbWVu",
-            "dHMYASADKAsyHi51YmlpLmludGVyYWN0aW9ucy5JbnRlcmFjdGlvbipNChFJ",
-            "bnRlcmFjdGlvblN0YXR1cxILCgdDUkVBVEVEEAASDwoLSU5JVElBTElaRUQQ",
-            "ARIOCgpQUk9DRVNTSU5HEAISCgoGSEFMVEVEEANiBnByb3RvMw=="));
+            "bhgKIAEoCSJDCg9JbnRlcmFjdGlvbkxpc3QSMAoIZWxlbWVudHMYASADKAsy",
+            "Hi51YmlpLmludGVyYWN0aW9ucy5JbnRlcmFjdGlvbmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Interactions.IoFormatReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Interactions.InteractionStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description", "Status" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.Interaction), global::Ubii.Interactions.Interaction.Parser, new[]{ "Id", "Name", "ProcessingCallback", "InputFormats", "OutputFormats", "OnCreated", "ProcessFrequency", "Authors", "Tags", "Description" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Interactions.InteractionList), global::Ubii.Interactions.InteractionList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
-  #region Enums
-  public enum InteractionStatus {
-    [pbr::OriginalName("CREATED")] Created = 0,
-    [pbr::OriginalName("INITIALIZED")] Initialized = 1,
-    [pbr::OriginalName("PROCESSING")] Processing = 2,
-    [pbr::OriginalName("HALTED")] Halted = 3,
-  }
-
-  #endregion
-
   #region Messages
-  public sealed partial class Interaction : pb::IMessage<Interaction> {
+  public sealed partial class Interaction : pb::IMessage<Interaction>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Interaction> _parser = new pb::MessageParser<Interaction>(() => new Interaction());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -93,7 +84,6 @@ namespace Ubii.Interactions {
       authors_ = other.authors_.Clone();
       tags_ = other.tags_.Clone();
       description_ = other.description_;
-      status_ = other.status_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -200,22 +190,14 @@ namespace Ubii.Interactions {
     /// <summary>Field number for the "description" field.</summary>
     public const int DescriptionFieldNumber = 10;
     private string description_ = "";
+    /// <summary>
+    ///InteractionStatus status = 11;
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Description {
       get { return description_; }
       set {
         description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "status" field.</summary>
-    public const int StatusFieldNumber = 11;
-    private global::Ubii.Interactions.InteractionStatus status_ = global::Ubii.Interactions.InteractionStatus.Created;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Ubii.Interactions.InteractionStatus Status {
-      get { return status_; }
-      set {
-        status_ = value;
       }
     }
 
@@ -242,7 +224,6 @@ namespace Ubii.Interactions {
       if(!authors_.Equals(other.authors_)) return false;
       if(!tags_.Equals(other.tags_)) return false;
       if (Description != other.Description) return false;
-      if (Status != other.Status) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -259,7 +240,6 @@ namespace Ubii.Interactions {
       hash ^= authors_.GetHashCode();
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -273,6 +253,9 @@ namespace Ubii.Interactions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (Id.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(Id);
@@ -301,14 +284,48 @@ namespace Ubii.Interactions {
         output.WriteRawTag(82);
         output.WriteString(Description);
       }
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
-        output.WriteRawTag(88);
-        output.WriteEnum((int) Status);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (Name.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Name);
+      }
+      if (ProcessingCallback.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(ProcessingCallback);
+      }
+      inputFormats_.WriteTo(ref output, _repeated_inputFormats_codec);
+      outputFormats_.WriteTo(ref output, _repeated_outputFormats_codec);
+      if (OnCreated.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(OnCreated);
+      }
+      if (ProcessFrequency != 0F) {
+        output.WriteRawTag(61);
+        output.WriteFloat(ProcessFrequency);
+      }
+      authors_.WriteTo(ref output, _repeated_authors_codec);
+      tags_.WriteTo(ref output, _repeated_tags_codec);
+      if (Description.Length != 0) {
+        output.WriteRawTag(82);
+        output.WriteString(Description);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -334,9 +351,6 @@ namespace Ubii.Interactions {
       size += tags_.CalculateSize(_repeated_tags_codec);
       if (Description.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
-      }
-      if (Status != global::Ubii.Interactions.InteractionStatus.Created) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -371,14 +385,14 @@ namespace Ubii.Interactions {
       if (other.Description.Length != 0) {
         Description = other.Description;
       }
-      if (other.Status != global::Ubii.Interactions.InteractionStatus.Created) {
-        Status = other.Status;
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -425,17 +439,72 @@ namespace Ubii.Interactions {
             Description = input.ReadString();
             break;
           }
-          case 88: {
-            Status = (global::Ubii.Interactions.InteractionStatus) input.ReadEnum();
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            Name = input.ReadString();
+            break;
+          }
+          case 26: {
+            ProcessingCallback = input.ReadString();
+            break;
+          }
+          case 34: {
+            inputFormats_.AddEntriesFrom(ref input, _repeated_inputFormats_codec);
+            break;
+          }
+          case 42: {
+            outputFormats_.AddEntriesFrom(ref input, _repeated_outputFormats_codec);
+            break;
+          }
+          case 50: {
+            OnCreated = input.ReadString();
+            break;
+          }
+          case 61: {
+            ProcessFrequency = input.ReadFloat();
+            break;
+          }
+          case 66: {
+            authors_.AddEntriesFrom(ref input, _repeated_authors_codec);
+            break;
+          }
+          case 74: {
+            tags_.AddEntriesFrom(ref input, _repeated_tags_codec);
+            break;
+          }
+          case 82: {
+            Description = input.ReadString();
             break;
           }
         }
       }
     }
+    #endif
 
   }
 
-  public sealed partial class InteractionList : pb::IMessage<InteractionList> {
+  public sealed partial class InteractionList : pb::IMessage<InteractionList>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<InteractionList> _parser = new pb::MessageParser<InteractionList>(() => new InteractionList());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -513,11 +582,25 @@ namespace Ubii.Interactions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       elements_.WriteTo(output, _repeated_elements_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      elements_.WriteTo(ref output, _repeated_elements_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -540,6 +623,9 @@ namespace Ubii.Interactions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -552,7 +638,26 @@ namespace Ubii.Interactions {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            elements_.AddEntriesFrom(ref input, _repeated_elements_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
