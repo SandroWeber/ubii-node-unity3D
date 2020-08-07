@@ -9,12 +9,15 @@ using System.Reflection;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.Interactions;
+using Ubii.Clients;
 using NetMQ;
 using NetMQ.Sockets;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using System.Linq;
+using System.Diagnostics;
 
 public class UbiiProcessingClient : MonoBehaviour
 {
@@ -30,7 +33,9 @@ public class UbiiProcessingClient : MonoBehaviour
     ResponseSocket responseSocket;
     DealerSocket topicdataSocket;
     bool connected = false;
+    bool registered = false;
     TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
+    Task[] tasks;
 
     private bool startProcessing = false;
     private List<TopicData> inputTopicDatas;
@@ -79,10 +84,12 @@ public class UbiiProcessingClient : MonoBehaviour
             // execute oncreated functions
             foreach(ProcessingModule pm in this.processingModules)
             {
-                NewProcessingModule(pm);
+                AddProcessingModule(pm, false);
             }
-            // register processingModules
-
+            tasks = new Task[processingModules.Count];
+            // register processingClient
+            ServiceRequest registerClient = new ServiceRequest();
+            CallService(registerClient);
         }
         else
         {
@@ -178,27 +185,30 @@ public class UbiiProcessingClient : MonoBehaviour
         return connected;
     }
 
-    public void AddProcessingModule(ProcessingModule pm)
+    // @param register if true: means last processingModule has been added -> register processingClient at server
+    public void AddProcessingModule(ProcessingModule pm, bool register = true)
     {
         this.processingModules.Add(pm);
 
-        //TODO register new pm via service call
-
-        NewProcessingModule(pm);
-    }
-
-        private void NewProcessingModule(ProcessingModule newpm)
-    {
+        registered = false;
         // call oncreated function
-        if (newpm.OnCreated != "")
+        if (pm.OnCreated != "")
         {
-            string[] function = Regex.Split(newpm.OnCreated, ".");
+            string[] function = Regex.Split(pm.OnCreated, ".");
             executeFunction(function[0], function[1]);
         }
 
-        newpm.Status = ProcessingModuleStatus.Created;
+        pm.Status = ProcessingModuleStatus.Created;
 
-        switch (newpm.Mode)
+        // register processingClient with processingModules
+        if (register)
+        {
+            ServiceRequest registerClient = new ServiceRequest();
+            CallService(registerClient);
+            Array.Resize<Task>(ref tasks, processingModules.Count);
+        }
+
+        switch (pm.Mode)
         {
             case ProcessingMode.Lockstep:
                 if (!lockstepMasterRunning)
@@ -225,54 +235,57 @@ public class UbiiProcessingClient : MonoBehaviour
     async private void LockstepMaster()
     {
         lockstepMasterRunning = true;
+        bool tasksCreated = false;
         while (connected)
         {
-            if (!startProcessing)
+            if (!startProcessing && registered && !tasksCreated)
             {
-                //TODO get name/group of modules who should start processing
-                await GetProcessingCall();
-
                 // let all pms of mode lockstep process
                 int index = 0;
                 foreach(ProcessingModule pm in processingModules)
                 {
                     if(pm.Mode == ProcessingMode.Lockstep)
                     {
-                        LockstepMode(index);
+                        CreateOnProcessingTask(index);
                     }
                     ++index;
                 }
+                tasksCreated = true;
             }
-            bool allFinished = true;
-            foreach(ProcessingModule pm in processingModules)
+
+            if (startProcessing)
             {
-                if(pm.Mode == ProcessingMode.Lockstep)
+                Parallel.ForEach<Task>(tasks, (t) => { t.Start(); });
+                Task.WaitAll(tasks);
+
+                startProcessing = false;
+                foreach (ProcessingModule pm in processingModules)
                 {
-                    // start processing
-                    if (pm.Status != ProcessingModuleStatus.Halted)
+                    if (pm.Mode == ProcessingMode.Lockstep)
                     {
-                        allFinished = false;
+                        if(pm.Status != ProcessingModuleStatus.End)
+                        {
+                            pm.Status = ProcessingModuleStatus.Halted;
+                        }
                     }
                 }
-            }
-            if (allFinished)
-            {
-                startProcessing = false;
                 //TODO sort through / order outputs...
 
                 //TODO fill in service request to send output TopicDataRecordList
                 Ubii.Services.ServiceReply newProcessingModule = await CallService(new Ubii.Services.ServiceRequest
                 {
-
+                    Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
+                    Client = new Client { Name = name, },
                 });
             }
         }
         lockstepMasterRunning = false;
     }
 
-    private void LockstepMode(int index)
+    private void CreateOnProcessingTask(int index)
     {
-        Task processStep = Task.Factory.StartNew(() =>
+        // creates task to be executed in the future
+        Task onProcess = new Task(() =>
         {
             // process
             if (processingModules[index].OnProcessing != "")
@@ -290,6 +303,7 @@ public class UbiiProcessingClient : MonoBehaviour
                 gatheredOutputs.Add(processingModules[index].Id, output);
             }
         });
+        tasks.Add(onProcess);
     }
 
     private void AtFrequencyMaster()
@@ -395,6 +409,7 @@ public class UbiiProcessingClient : MonoBehaviour
     {
         //e.Socket.ReceiveFrameBytes(out bool hasmore);
         startProcessing = true;
+
     }
 
     public void SendTopicData(TopicData td)
