@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Ubii.TopicData;
 using Ubii.Clients;
 using Ubii.Devices;
+using Ubii.Processing;
 using Ubii.Services;
 using Ubii.Servers;
 using Ubii.Services.Request;
@@ -14,6 +15,8 @@ using UnityEngine;
 using NetMQ;
 using Google.Protobuf;
 using System.Threading;
+using System.ComponentModel.Design;
+using NetMQ.Sockets;
 
 public class NetMQUbiiClient
 {
@@ -21,6 +24,14 @@ public class NetMQUbiiClient
     private string name;
     private string host;
     private int port;
+    private bool hasProcessing;
+    private List<ProcessingModule> processingModules;
+    private int responseport;
+
+    private bool hasLockstep;
+    private ResponseSocket responseSocket;
+    private NetMQPoller responsePoller;
+    CancellationTokenSource cts = new CancellationTokenSource();
 
     private Client clientSpecification;
 
@@ -32,12 +43,15 @@ public class NetMQUbiiClient
 
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string id, string name, string host, int port)
+    public NetMQUbiiClient(string id, string name, string host, int port, bool hasProcessing, List<ProcessingModule> processingModules = null, int responseport=0)
     {
         this.id = id;
         this.name = name;
         this.host = host;
         this.port = port;
+        this.hasProcessing = hasProcessing;
+        this.processingModules = processingModules;
+        this.responseport = responseport;
     }
 
     public string GetClientID()
@@ -54,6 +68,11 @@ public class NetMQUbiiClient
         await InitClientReg();
         InitTopicDataClient();
         //await InitTestDe<vices(); // Initialize some test devices for demonstration purposes, thus commented out
+        // 
+        if (hasProcessing)
+        {
+            HasLockstep();
+        }
     }
 
     public bool IsConnected()
@@ -67,6 +86,14 @@ public class NetMQUbiiClient
         }*/
         return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
     }
+
+    public void AddProcessingModules(List<ProcessingModule> processingModules)
+    {
+        this.processingModules.AddRange(processingModules);
+        HasLockstep();
+    }
+
+
 
     /*public Task WaitForConnection()
     {
@@ -205,6 +232,7 @@ public class NetMQUbiiClient
     private async Task InitClientReg()
     {
         // Client Registration
+        //TODO add processing info
         ServiceRequest clientRegistration = new ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
@@ -224,6 +252,98 @@ public class NetMQUbiiClient
     {
         netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, int.Parse(serverSpecification.PortTopicDataZmq));
     }
+
+    #endregion
+
+    #region Processing
+    private void RemoveProcessingModules(ProcessingModule pm)
+    {
+        processingModules.Remove(pm);
+        HasLockstep();
+    }
+
+    #region Lockstep
+
+    private async Task InitLockstep()
+    {
+        bool running = true;
+        CancellationToken cancellationToken = cts.Token;
+        responsePoller = new NetMQPoller();
+        await StartResponseSocket();
+
+        Task processIncomingMessages = Task.Factory.StartNew(() =>
+        {
+            responseSocket.Options.Identity = Encoding.UTF8.GetBytes(id);
+            responseSocket.ReceiveReady += OnRequests; // event on receive data
+
+            responsePoller.Add(responseSocket);
+            responsePoller.RunAsync();
+
+            while (running)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    Debug.Log("Cancelling task");
+                    break;
+                }
+            }
+
+        }, cancellationToken);
+    }
+
+    private void StartResponseSocket()
+    {
+        AsyncIO.ForceDotNet.Force();
+        responseSocket = new ResponseSocket();
+        try
+        {
+            //TODO change to icp/tcp
+            responseSocket.Connect("tcp://*:" + responseport);
+            Debug.Log("Create Response Socket successful. Host: " + host + ":" + serverSpecification.PortServiceZmq);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("NetMQUbiiClient, StartResponseSocket(), Exception occured: " + ex.ToString());
+        }
+    }
+    private async Task OnRequests(object sender, NetMQSocketEventArgs e)
+    {
+        e.Socket.ReceiveFrameBytes(out bool hasmore);
+        TopicDataRecordList input = new TopicDataRecordList();
+        if (hasmore)
+        {
+            input.MergeFrom(e.Socket.ReceiveFrameBytes(out hasmore));
+        }
+
+        if(input != null)
+        {
+            // process
+        }
+    }
+
+    private bool HasLockstep()
+    {
+        if (processingModules != null)
+        {
+            foreach (ProcessingModule pm in processingModules)
+            {
+                if (pm.ProcessingMode.ModeCase == ProcessingMode.ModeOneofCase.Lockstep)
+                {
+                    if (!hasLockstep)
+                    {
+                        hasLockstep = true;
+                        InitLockstep();
+                        break;
+                    }
+                    hasLockstep = true;
+                    break;
+                }
+            }
+        }
+        return hasLockstep;
+    }
+
+    #endregion
 
     #endregion
 
@@ -275,6 +395,7 @@ public class NetMQUbiiClient
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
             Client = clientSpecification
         });
+        cts.Cancel();
         netmqServiceClient.TearDown();
         netmqTopicDataClient.TearDown();
     }
