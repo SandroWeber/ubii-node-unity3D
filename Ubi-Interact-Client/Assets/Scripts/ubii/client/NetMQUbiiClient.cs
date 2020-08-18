@@ -35,7 +35,8 @@ public class NetMQUbiiClient
     private NetMQPoller responsePoller;
     private CancellationTokenSource cts = new CancellationTokenSource();
     private Task[] lockstepProcessingTasks;
-    private TopicDataRecordList gatheredOutputs;
+    private TopicDataRecordList currentLockstepTD;
+    private TopicDataRecordList gatheredLockstepOutputs;
 
     private Client clientSpecification;
 
@@ -54,7 +55,7 @@ public class NetMQUbiiClient
         this.host = host;
         this.port = port;
         this.hasProcessing = hasProcessing;
-        this.processingModules = processingModules;
+        AddProcessingModules(processingModules);
         this.responseport = responseport;
     }
 
@@ -93,9 +94,32 @@ public class NetMQUbiiClient
 
     public void AddProcessingModules(List<ProcessingModule> processingModules)
     {
+        foreach(ProcessingModule pm in processingModules)
+        {
+            if (pm.OnCreated != "")
+            {
+                string[] function = Regex.Split(pm.OnCreated, ".");
+                executeFunction(function[0], function[1]);
+            }
+
+            pm.Status = ProcessingModule.Types.Status.Created;
+        }
+
         this.processingModules.AddRange(processingModules);
         HasLockstep();
         Array.Resize<Task>(ref lockstepProcessingTasks, processingModules.Count);
+    }
+
+    public void RemoveProcessingModules(ProcessingModule pm)
+    {
+        if (pm.OnDestroyed != "")
+        {
+            string[] function = Regex.Split(pm.OnDestroyed, ".");
+            executeFunction(function[0], function[1]);
+        }
+        pm.Status = ProcessingModule.Types.Status.Destroyed;
+        processingModules.Remove(pm);
+        HasLockstep();
     }
 
     /*public Task WaitForConnection()
@@ -259,11 +283,6 @@ public class NetMQUbiiClient
     #endregion
 
     #region Processing
-    private void RemoveProcessingModules(ProcessingModule pm)
-    {
-        processingModules.Remove(pm);
-        HasLockstep();
-    }
 
     #region Lockstep
 
@@ -273,7 +292,8 @@ public class NetMQUbiiClient
         CancellationToken cancellationToken = cts.Token;
         responsePoller = new NetMQPoller();
         lockstepProcessingTasks = new Task[processingModules.Count];
-        gatheredOutputs = new TopicDataRecordList();
+        currentLockstepTD = new TopicDataRecordList();
+        gatheredLockstepOutputs = new TopicDataRecordList();
         await StartResponseSocket();
 
         Task processIncomingMessages = Task.Factory.StartNew(() =>
@@ -313,32 +333,37 @@ public class NetMQUbiiClient
     }
     async void OnRequests(object sender, NetMQSocketEventArgs e)
     {
-        e.Socket.ReceiveFrameBytes(out bool hasmore);
-        TopicDataRecordList input = new TopicDataRecordList();
-        if (hasmore)
-        {
-            input.MergeFrom(e.Socket.ReceiveFrameBytes(out hasmore));
-        }
+        ServiceRequest request = ServiceRequest.Parser.ParseFrom(e.Socket.ReceiveFrameBytes(out bool hasmore));
+        currentLockstepTD = request.LockstepProcessingRequest.Records;
 
         // process
         await Task.WhenAll(lockstepProcessingTasks);
-        foreach(ProcessingModule pm in processingModules)
-        {
-            if(pm.ProcessingMode.ModeCase == ProcessingMode.ModeOneofCase.Lockstep)
-            {
-                pm.Status = ProcessingModule.Types.Status.Halted;
-            }
-        }
 
         // send output
         ServiceReply reply = new ServiceReply
         {
-            LockstepProcessingReply = gatheredOutputs,
+            LockstepProcessingReply = { Records = gatheredLockstepOutputs },
         };
-        responseSocket.Send(reply);
+        byte[] buffer = gatheredLockstepOutputs.ToByteArray();
+        responseSocket.SendFrame(buffer);
+
+        // execute onHalted
+        foreach (ProcessingModule pm in processingModules)
+        {
+            if(pm.ProcessingMode.ModeCase == ProcessingMode.ModeOneofCase.Lockstep)
+            {
+                if (pm.OnHalted != "")
+                {
+                    string[] function = Regex.Split(pm.OnHalted, ".");
+                    executeFunction(function[0], function[1]);
+                }
+                
+                pm.Status = ProcessingModule.Types.Status.Halted;
+            }
+        }
     }
 
-    private void CreateOnProcessingTask(ProcessingModule pm, TopicDataRecordList input)
+    private void CreateOnProcessingTask(ProcessingModule pm)
     {
         // creates task to be executed in the future
         Task onProcess = new Task(() =>
@@ -348,15 +373,15 @@ public class NetMQUbiiClient
             {
                 pm.Status = ProcessingModule.Types.Status.Processing;
                 string[] function = Regex.Split(pm.OnProcessing, ".");
-                executeFunction(function[0], function[1]);
                 Type type = Type.GetType(function[0]);
 
                 TopicDataRecordList output = (TopicDataRecordList)type.InvokeMember(
                     function[1],
                     BindingFlags.InvokeMethod | BindingFlags.Public |
-                    BindingFlags.Static, null, null, input.Elements.ToArray<TopicDataRecord>());
+                    BindingFlags.Static, null, null, 
+                    currentLockstepTD.Elements.ToArray<TopicDataRecord>());
                 // gather topicdatarecordlist
-                gatheredOutputs.
+                gatheredLockstepOutputs.Elements.AddRange(output.Elements);
             }
         });
         lockstepProcessingTasks[Array.IndexOf(lockstepProcessingTasks, null)] = onProcess;
