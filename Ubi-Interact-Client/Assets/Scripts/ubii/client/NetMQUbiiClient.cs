@@ -17,6 +17,8 @@ using Google.Protobuf;
 using System.Threading;
 using System.ComponentModel.Design;
 using NetMQ.Sockets;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 public class NetMQUbiiClient
 {
@@ -31,7 +33,9 @@ public class NetMQUbiiClient
     private bool hasLockstep;
     private ResponseSocket responseSocket;
     private NetMQPoller responsePoller;
-    CancellationTokenSource cts = new CancellationTokenSource();
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    private Task[] lockstepProcessingTasks;
+    private TopicDataRecordList gatheredOutputs;
 
     private Client clientSpecification;
 
@@ -91,9 +95,8 @@ public class NetMQUbiiClient
     {
         this.processingModules.AddRange(processingModules);
         HasLockstep();
+        Array.Resize<Task>(ref lockstepProcessingTasks, processingModules.Count);
     }
-
-
 
     /*public Task WaitForConnection()
     {
@@ -269,6 +272,8 @@ public class NetMQUbiiClient
         bool running = true;
         CancellationToken cancellationToken = cts.Token;
         responsePoller = new NetMQPoller();
+        lockstepProcessingTasks = new Task[processingModules.Count];
+        gatheredOutputs = new TopicDataRecordList();
         await StartResponseSocket();
 
         Task processIncomingMessages = Task.Factory.StartNew(() =>
@@ -291,7 +296,7 @@ public class NetMQUbiiClient
         }, cancellationToken);
     }
 
-    private void StartResponseSocket()
+    private async Task StartResponseSocket()
     {
         AsyncIO.ForceDotNet.Force();
         responseSocket = new ResponseSocket();
@@ -306,7 +311,7 @@ public class NetMQUbiiClient
             Debug.LogError("NetMQUbiiClient, StartResponseSocket(), Exception occured: " + ex.ToString());
         }
     }
-    private async Task OnRequests(object sender, NetMQSocketEventArgs e)
+    async void OnRequests(object sender, NetMQSocketEventArgs e)
     {
         e.Socket.ReceiveFrameBytes(out bool hasmore);
         TopicDataRecordList input = new TopicDataRecordList();
@@ -315,10 +320,56 @@ public class NetMQUbiiClient
             input.MergeFrom(e.Socket.ReceiveFrameBytes(out hasmore));
         }
 
-        if(input != null)
+        // process
+        await Task.WhenAll(lockstepProcessingTasks);
+        foreach(ProcessingModule pm in processingModules)
+        {
+            if(pm.ProcessingMode.ModeCase == ProcessingMode.ModeOneofCase.Lockstep)
+            {
+                pm.Status = ProcessingModule.Types.Status.Halted;
+            }
+        }
+
+        // send output
+        ServiceReply reply = new ServiceReply
+        {
+            LockstepProcessingReply = gatheredOutputs,
+        };
+        responseSocket.Send(reply);
+    }
+
+    private void CreateOnProcessingTask(ProcessingModule pm, TopicDataRecordList input)
+    {
+        // creates task to be executed in the future
+        Task onProcess = new Task(() =>
         {
             // process
-        }
+            if (pm.OnProcessing != "")
+            {
+                pm.Status = ProcessingModule.Types.Status.Processing;
+                string[] function = Regex.Split(pm.OnProcessing, ".");
+                executeFunction(function[0], function[1]);
+                Type type = Type.GetType(function[0]);
+
+                TopicDataRecordList output = (TopicDataRecordList)type.InvokeMember(
+                    function[1],
+                    BindingFlags.InvokeMethod | BindingFlags.Public |
+                    BindingFlags.Static, null, null, input.Elements.ToArray<TopicDataRecord>());
+                // gather topicdatarecordlist
+                gatheredOutputs.
+            }
+        });
+        lockstepProcessingTasks[Array.IndexOf(lockstepProcessingTasks, null)] = onProcess;
+    }
+
+    private void executeFunction(string clss, string name)
+    {
+        Type type = Type.GetType(clss);
+
+        type.InvokeMember(
+            name,
+            BindingFlags.InvokeMethod | BindingFlags.Public |
+            BindingFlags.Static, null, null, null);
     }
 
     private bool HasLockstep()
