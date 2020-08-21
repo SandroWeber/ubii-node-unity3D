@@ -45,9 +45,9 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<bool> Subscribe(List<string> topics, List<Action<TopicDataRecord>> callbacks)
+    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.SubscribeTopic(topics, callbacks);
+        return client.SubscribeTopic(topic, callback);
     }
 
     public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Ubii.Devices;
-using Ubii.TopicData;
 using UnityEngine;
 
 public class TestObjectMovement : MonoBehaviour
@@ -12,7 +9,7 @@ public class TestObjectMovement : MonoBehaviour
     private UbiiClient ubiiClient = null;
     private string deviceName = "TestObjectMovement - Device";
     private string topicTestPublishSubscribe = null;
-    private Device ubiiDevice = null;
+    private Ubii.Devices.Device ubiiDevice = null;
 
     //private CancellationTokenSource cts = null;
     private bool testRunning = false;
@@ -35,7 +32,7 @@ public class TestObjectMovement : MonoBehaviour
         float tNow = Time.time;
         if (testRunning && tNow > tLastPublish + 1)
         {
-            Vector3 randomPosition = UnityEngine.Random.insideUnitSphere;
+            Vector3 randomPosition = Random.insideUnitSphere;
             ubiiClient.Publish(
                 new Ubii.TopicData.TopicData
                 {
@@ -71,15 +68,10 @@ public class TestObjectMovement : MonoBehaviour
         {
             ubiiDevice = deviceRegistrationReply.Device;
         }
-        else
-        {
-            Debug.LogWarning("Ubii device could not be registered");
-        }
 
-        await ubiiClient.Subscribe(new List<string>() { topicTestPublishSubscribe }, new List<Action<TopicDataRecord>>() { (TopicDataRecord record) =>
+        await ubiiClient.Subscribe(topicTestPublishSubscribe, (Ubii.TopicData.TopicDataRecord record) =>
         {
             testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
-        } 
         });
 
         testRunning = true;

@@ -16,7 +16,7 @@ interface IUbiiClient
 
     // topic data related functions
     void Publish(TopicData topicdata);
-    Task<bool> Subscribe(List<string> topics, List<Action<TopicDataRecord>> callbacks);
+    Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback);
     Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
     Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback);
     Task<ServiceReply> RegisterDevice(Device ubiiDevice);

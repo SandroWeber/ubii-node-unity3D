@@ -8,17 +8,17 @@ using Ubii.TopicData;
 public class TestSubscriptions : MonoBehaviour
 {
     private UbiiClient ubiiClient = null;
-    
+
     void Start()
     {
         ubiiClient = FindObjectOfType<UbiiClient>();
 
         RunTests();
     }
-    
+
     void Update()
     {
-        
+
     }
 
     async private void RunTests()
@@ -41,7 +41,7 @@ public class TestSubscriptions : MonoBehaviour
             success = record.Bool;
         };
 
-        await ubiiClient.Subscribe(new List<string>() { topic }, new List<Action<TopicDataRecord>>() { callback });
+        await ubiiClient.Subscribe(topic, callback);
         ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
@@ -65,9 +65,9 @@ public class TestSubscriptions : MonoBehaviour
         await ubiiClient.WaitForConnection();
 
         string common_topic_substring = "/unity3D_client/test/subcribe_publish_regex";
-        string regex = "/*" + common_topic_substring  + "/[0-9]";
+        string regex = "/*" + common_topic_substring + "/[0-9]";
         string[] topics = new string[10];
-        for (int i=0; i<10; i++)
+        for (int i = 0; i < 10; i++)
         {
             topics[i] = "/" + ubiiClient.GetID() + common_topic_substring + "/" + i.ToString();
         }
@@ -94,7 +94,7 @@ public class TestSubscriptions : MonoBehaviour
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
             bool success = true;
-            foreach(string topic in topics)
+            foreach (string topic in topics)
             {
                 if (!topics_received.Contains(topic))
                 {

@@ -36,13 +36,10 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         await client.Initialize();
 
         Debug.Log("Subscribing to test topics");
-        List<string> subs = new List<string> { "TestTopicPos", "TestTopicRot", "MoveCubeH", "MoveCubeV" };
-        List<Action<TopicDataRecord>> callbacks = new List<Action<TopicDataRecord>> { TestTopicDataSubPos, TestTopicDataSubRot, MoveCubeH, MoveCubeV };
-        await Subscribe(subs, callbacks);
-        //await Subscribe("TestTopicPos", TestTopicDataSubPos);
-        //await Subscribe("TestTopicRot", TestTopicDataSubRot);
-        //await Subscribe("MoveCubeH", MoveCubeH);
-        //await Subscribe("MoveCubeV", MoveCubeV);
+        await Subscribe("TestTopicPos", TestTopicDataSubPos);
+        await Subscribe("TestTopicRot", TestTopicDataSubRot);
+        await Subscribe("MoveCubeH", MoveCubeH);
+        await Subscribe("MoveCubeV", MoveCubeV);
         subscribed = true;
 
         newPos = cube.transform.position;
@@ -147,9 +144,9 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<bool> Subscribe(List<string> topics, List<Action<TopicDataRecord>> callbacks)
+    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.SubscribeTopic(topics, callbacks);
+        return client.SubscribeTopic(topic, callback);
     }
 
     public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
