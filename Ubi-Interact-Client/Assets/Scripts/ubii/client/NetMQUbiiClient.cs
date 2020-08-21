@@ -14,6 +14,7 @@ using UnityEngine;
 using NetMQ;
 using Google.Protobuf;
 using System.Threading;
+using UnityEngine.Apple.ReplayKit;
 
 public class NetMQUbiiClient
 {
@@ -28,7 +29,7 @@ public class NetMQUbiiClient
 
     private NetMQTopicDataClient netmqTopicDataClient;
 
-    private List<Device> deviceSpecifications = new List<Device>();
+    private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
 
     private Server serverSpecification;
 
@@ -53,7 +54,6 @@ public class NetMQUbiiClient
         Debug.Log("ServerSpecs: " + serverSpecification);
         await InitClientReg();
         InitTopicDataClient();
-        //await InitTestDe<vices(); // Initialize some test devices for demonstration purposes, thus commented out
     }
 
     public bool IsConnected()
@@ -96,29 +96,85 @@ public class NetMQUbiiClient
         return Task.Run(() => netmqServiceClient.CallService(srq));
     }
 
-
     public void Publish(TopicData topicData)
     {
         netmqTopicDataClient.SendTopicData(topicData);
     }
 
-    public async Task<bool> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
+    #region Devices
+    public async Task<ServiceReply> RegisterDevice(Device ubiiDevice)
     {
-        if (callback == null)
+        ServiceReply reply = await CallService(new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
+            Device = ubiiDevice
+        });
+
+        if (reply.Error == null)
+        {
+            registeredDevices.Add(reply.Device.Id, reply.Device);
+        }
+
+        return reply;
+    }
+
+    public async Task<ServiceReply> DeregisterDevice(Device ubiiDevice)
+    {
+        ServiceReply reply = await CallService(new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_DEREGISTRATION,
+            Device = ubiiDevice
+        });
+
+        if (reply.Error != null)
+        {
+            Debug.LogError("Deregister Device Error: " + reply.Error.Message);
+        }
+        if (!registeredDevices.Remove(ubiiDevice.Id))
+        {
+            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
+        }
+        Debug.Log("Deregistering " + ubiiDevice + " successful!");
+        return reply;
+    }
+
+    private async Task DeregisterAllDevices()
+    {
+        foreach (Device device in registeredDevices.Values.ToList())
+        {
+            await DeregisterDevice(device);
+        }
+    }
+    #endregion
+
+    #region Subscriptions
+
+    #region Topics
+    public async Task<bool> SubscribeTopic(List<string> topics, List<Action<TopicDataRecord>> callbacks)
+    {
+        if (callbacks.Any(c => c == null))
         {
             Debug.LogError("SubscribeTopic() - callback is NULL!");
             return false;
         }
 
-        if (this.netmqTopicDataClient.IsSubscribed(topic))
+        foreach (string topic in topics.ToList())
         {
-            netmqTopicDataClient.AddTopicDataCallback(topic, callback);
-            return true;
+            if (this.netmqTopicDataClient.IsSubscribed(topic))
+            {
+                netmqTopicDataClient.AddTopicDataCallback(topic, callbacks[topics.IndexOf(topic)]);
+                topics.Remove(topic);
+            }
         }
+        if (topics.Count == 0) return true;
 
         // Repeated fields cannot be instantiated in SerivceRequest creation
         RepeatedField<string> subscribeTopics = new RepeatedField<string>();
-        subscribeTopics.Add(topic);
+        foreach (string topic in topics)
+        {
+            subscribeTopics.Add(topic);
+        }
+
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
@@ -140,11 +196,63 @@ public class NetMQUbiiClient
         }
 
         // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
+        foreach (string topic in topics)
+        {
+            netmqTopicDataClient.AddTopicDataCallback(topic, callbacks[topics.IndexOf(topic)]);
+        }
 
         return true;
     }
 
+    public async Task<bool> UnsubscribeTopic(string topic, Action<TopicDataRecord> callback)
+    {
+        if (callback == null)
+        {
+            Debug.LogError("UnsubscribeTopic() - callback is NULL!");
+            return false;
+        }
+
+        // removing callback function for this topic from dictionary
+        netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
+
+        // check if there are any callbacks left for this topic, if not, unsubscribe from topic
+        if (!this.netmqTopicDataClient.HasTopicCallbacks(topic))
+        {
+            return await UnsubscribeTopic(topic);
+        }
+
+        return true;
+    }
+    private async Task<bool> UnsubscribeTopic(string topic)
+    {
+        // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
+        RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
+        unsubscribeTopics.Add(topic);
+
+        ServiceRequest topicUnsubscription = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            TopicSubscription = new TopicSubscription
+            {
+                ClientId = clientSpecification.Id,
+                UnsubscribeTopics = { unsubscribeTopics }
+            }
+        };
+
+        var task = CallService(topicUnsubscription);
+        ServiceReply subReply = await task;
+
+        if (subReply.Error != null)
+        {
+            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            return false;
+        }
+        netmqTopicDataClient.RemoveTopicData(topic);
+        return true;
+    }
+    #endregion
+
+    #region Regex
     public async Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         if (callback == null)
@@ -184,26 +292,6 @@ public class NetMQUbiiClient
         return true;
     }
 
-    public async Task<bool> UnsubscribeTopic(string topic, Action<TopicDataRecord> callback)
-    {
-        if (callback == null)
-        {
-            Debug.LogError("UnsubscribeTopic() - callback is NULL!");
-            return false;
-        }
-
-        // removing callback function for this topic from dictionary
-        netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
-
-        // check if there are any callbacks left for this topic, if not, unsubscribe from topic
-        if (!this.netmqTopicDataClient.HasTopicCallbacks(topic))
-        {
-            return await UnsubscribeTopic(topic);
-        }
-
-        return true;
-    }
-
     public async Task<bool> UnsubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         if (callback == null)
@@ -217,12 +305,36 @@ public class NetMQUbiiClient
 
         if (!this.netmqTopicDataClient.HasTopicRegexCallbacks(regex))
         {
-            //TODO: server side implementation
+            // remove regex sub completely as no callbacks are left
             return await UnsubscribeRegex(regex);
         }
         return true;
     }
+    private async Task<bool> UnsubscribeRegex(string regex)
+    {
+        //TODO: server side implementation
+        ServiceRequest regexSubscription = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
+            TopicSubscription = new TopicSubscription
+            {
+                ClientId = clientSpecification.Id,
+                UnsubscribeTopicRegexp = regex
+            }
+        };
 
+        ServiceReply subReply = await CallService(regexSubscription);
+
+        if (subReply.Error != null)
+        {
+            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            return false;
+        }
+        // remove regex from topicdataclient
+        netmqTopicDataClient.RemoveTopicDataRegex(regex);
+        return true;
+    }
+    #endregion
     /// <summary>
     /// Unsubscribe from all topics/regex, called before shutdown
     /// </summary>
@@ -232,52 +344,17 @@ public class NetMQUbiiClient
         List<string> subscribedTopics = netmqTopicDataClient.GetAllSubscribedTopics();
         List<string> subscribedRegex = netmqTopicDataClient.GetAllSubscribedRegex();
 
-        foreach (string topic in subscribedTopics)
+        foreach (string topic in subscribedTopics.ToList())
         {
             await UnsubscribeTopic(topic);
         }
 
-        foreach (string regex in subscribedRegex)
+        foreach (string regex in subscribedRegex.ToList())
         {
             await UnsubscribeRegex(regex);
         }
-
-
     }
-
-    private async Task<bool> UnsubscribeTopic(string topic)
-    {
-        // Repeated fields cannot be instantiated in SerivceRequest creation; adding topic to unsubscribeTopics which is later sent to server with clientID
-        RepeatedField<string> unsubscribeTopics = new RepeatedField<string>();
-        unsubscribeTopics.Add(topic);
-
-        ServiceRequest topicUnsubscription = new ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.TOPIC_SUBSCRIPTION,
-            TopicSubscription = new TopicSubscription
-            {
-                ClientId = clientSpecification.Id,
-                UnsubscribeTopics = { unsubscribeTopics }
-            }
-        };
-
-        var task = CallService(topicUnsubscription);
-        ServiceReply subReply = await task;
-
-        if (subReply.Error != null)
-        {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-            return false;
-        }
-        return true;
-    }
-
-    private async Task<bool> UnsubscribeRegex(string regex)
-    {
-        //TODO: server side implementation
-        return false;
-    }
-
+    #endregion
 
     #region Initialize Functions
     private async Task InitServerSpec()
@@ -315,49 +392,9 @@ public class NetMQUbiiClient
 
     #endregion
 
-    #region Test Functions
-    // This is only for testing / demonstration purposes on how a device registration works with ubiiClient
-    private async Task InitTestDevices()
-    {
-        // RepeatedFields have to be declared separately and then added to the service request
-        RepeatedField<Ubii.Devices.Component> components = new RepeatedField<Ubii.Devices.Component>();
-        components.Add(new Ubii.Devices.Component { Topic = "TestBool", MessageFormat = "boolean", IoType = Ubii.Devices.Component.Types.IOType.Publisher });
-
-        // Device Registration
-        ServiceRequest deviceRegistration = new ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
-            Device = new Device
-            {
-                Name = "TestDevice1",
-                DeviceType = Device.Types.DeviceType.Participant,
-                ClientId = clientSpecification.Id,
-                Components = { components }
-            }
-        };
-
-        Debug.Log("DeviceRegistration #1 Components: " + deviceRegistration.ToString());
-
-        var task = CallService(deviceRegistration);
-        ServiceReply svr = await task;
-
-        if (svr.Device != null)
-        {
-            deviceSpecifications.Add(svr.Device);
-            Debug.Log("DeviceSpecifications #1: " + deviceSpecifications[0].ToString());
-            Debug.Log("DeviceSpecifications #1 Components: " + deviceSpecifications[0].Components.ToString());
-        }
-        else if (svr.Error != null)
-            Debug.Log("SVR Error: " + svr.Error.ToString());
-        else
-            Debug.Log("An unknown error occured");
-    }
-
-
-    #endregion
-
     async public void ShutDown()
     {
+        await DeregisterAllDevices();
         await UnsubscribeAll();
         await CallService(new Ubii.Services.ServiceRequest
         {

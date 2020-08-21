@@ -4,6 +4,8 @@ using UnityEngine;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
+using Ubii.Devices;
+using System.Collections.Generic;
 
 public class UbiiTestClient : MonoBehaviour, IUbiiClient
 {
@@ -34,10 +36,13 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         await client.Initialize();
 
         Debug.Log("Subscribing to test topics");
-        await Subscribe("TestTopicPos", TestTopicDataSubPos);
-        await Subscribe("TestTopicRot", TestTopicDataSubRot);
-        await Subscribe("MoveCubeH", MoveCubeH);
-        await Subscribe("MoveCubeV", MoveCubeV);
+        List<string> subs = new List<string> { "TestTopicPos", "TestTopicRot", "MoveCubeH", "MoveCubeV" };
+        List<Action<TopicDataRecord>> callbacks = new List<Action<TopicDataRecord>> { TestTopicDataSubPos, TestTopicDataSubRot, MoveCubeH, MoveCubeV };
+        await Subscribe(subs, callbacks);
+        //await Subscribe("TestTopicPos", TestTopicDataSubPos);
+        //await Subscribe("TestTopicRot", TestTopicDataSubRot);
+        //await Subscribe("MoveCubeH", MoveCubeH);
+        //await Subscribe("MoveCubeV", MoveCubeV);
         subscribed = true;
 
         newPos = cube.transform.position;
@@ -142,9 +147,9 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public Task<bool> Subscribe(List<string> topics, List<Action<TopicDataRecord>> callbacks)
     {
-        return client.SubscribeTopic(topic, callback);
+        return client.SubscribeTopic(topics, callbacks);
     }
 
     public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
@@ -162,6 +167,16 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
     {
         client.ShutDown();
         Debug.Log("Shutting down UbiiClient");
+    }
+
+    public Task<ServiceReply> RegisterDevice(Device ubiiDevice)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ServiceReply> DeregisterDevice(Device ubiiDevice)
+    {
+        throw new NotImplementedException();
     }
 }
 

@@ -22,8 +22,8 @@ public class NetMQTopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = null;
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks = null;
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
     private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
@@ -138,10 +138,20 @@ public class NetMQTopicDataClient
         this.topicdataRegexCallbacks[regex].Add(callback);
     }
 
+    public void RemoveTopicData(string topic)
+    {
+        this.topicdataCallbacks.Remove(topic);
+    }
+
     public void RemoveTopicDataCallback(string topic, Action<TopicDataRecord> callback)
     {
         //Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
         this.topicdataCallbacks[topic].Remove(callback);
+    }
+
+    public void RemoveTopicDataRegex(string regex)
+    {
+        this.topicdataRegexCallbacks.Remove(regex);
     }
 
     public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)

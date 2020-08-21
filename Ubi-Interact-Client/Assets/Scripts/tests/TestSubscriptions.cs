@@ -41,7 +41,7 @@ public class TestSubscriptions : MonoBehaviour
             success = record.Bool;
         };
 
-        await ubiiClient.Subscribe(topic, callback);
+        await ubiiClient.Subscribe(new List<string>() { topic }, new List<Action<TopicDataRecord>>() { callback });
         ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>

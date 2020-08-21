@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Ubii.Devices;
+using Ubii.TopicData;
 using UnityEngine;
 
 public class TestObjectMovement : MonoBehaviour
@@ -9,7 +12,7 @@ public class TestObjectMovement : MonoBehaviour
     private UbiiClient ubiiClient = null;
     private string deviceName = "TestObjectMovement - Device";
     private string topicTestPublishSubscribe = null;
-    private Ubii.Devices.Device ubiiDevice = null;
+    private Device ubiiDevice = null;
 
     //private CancellationTokenSource cts = null;
     private bool testRunning = false;
@@ -32,7 +35,7 @@ public class TestObjectMovement : MonoBehaviour
         float tNow = Time.time;
         if (testRunning && tNow > tLastPublish + 1)
         {
-            Vector3 randomPosition = Random.insideUnitSphere;
+            Vector3 randomPosition = UnityEngine.Random.insideUnitSphere;
             ubiiClient.Publish(
                 new Ubii.TopicData.TopicData
                 {
@@ -46,18 +49,9 @@ public class TestObjectMovement : MonoBehaviour
         }
     }
 
-    async private void OnDisable()
+    private void OnDisable()
     {
         testRunning = false;
-
-        if (ubiiDevice != null)
-        {
-            await ubiiClient.CallService(new Ubii.Services.ServiceRequest
-            {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_DEREGISTRATION,
-                Device = ubiiDevice
-            });
-        }
     }
 
     async private void StartTest()
@@ -72,19 +66,20 @@ public class TestObjectMovement : MonoBehaviour
 
         CreateUbiiSpecs();
 
-        Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
-            Device = ubiiDevice
-        });
+        Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.RegisterDevice(ubiiDevice);
         if (deviceRegistrationReply.Device != null)
         {
             ubiiDevice = deviceRegistrationReply.Device;
         }
+        else
+        {
+            Debug.LogWarning("Ubii device could not be registered");
+        }
 
-        await ubiiClient.Subscribe(topicTestPublishSubscribe, (Ubii.TopicData.TopicDataRecord record) =>
+        await ubiiClient.Subscribe(new List<string>() { topicTestPublishSubscribe }, new List<Action<TopicDataRecord>>() { (TopicDataRecord record) =>
         {
             testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
+        } 
         });
 
         testRunning = true;
