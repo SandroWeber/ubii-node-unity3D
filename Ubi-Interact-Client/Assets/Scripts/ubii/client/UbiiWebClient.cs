@@ -27,7 +27,7 @@ namespace ubii
     }
 }
 
-public class UbiiWebClient : MonoBehaviour, IUbiiClient
+public class UbiiWebClient : MonoBehaviour
 {
     public string host = "localhost";
     public int service_port = 8102;
@@ -102,7 +102,7 @@ public class UbiiWebClient : MonoBehaviour, IUbiiClient
 
     }
 
-    public async Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public async Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
         RepeatedField<string> topic_subscriptions = new RepeatedField<string>();
         topic_subscriptions.Add(topic);
@@ -121,9 +121,10 @@ public class UbiiWebClient : MonoBehaviour, IUbiiClient
         {
             Debug.Log("subscribe to topic " + topic + " successful");
             topicdata_client.AddTopicDataCallback(topic, callback);
+            return true;
         }
 
-		return reply;
+		return false;
     }
 
     public async Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> function)

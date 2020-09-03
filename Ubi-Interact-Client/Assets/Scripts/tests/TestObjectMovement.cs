@@ -46,18 +46,9 @@ public class TestObjectMovement : MonoBehaviour
         }
     }
 
-    async private void OnDisable()
+    private void OnDisable()
     {
         testRunning = false;
-
-        if (ubiiDevice != null)
-        {
-            await ubiiClient.CallService(new Ubii.Services.ServiceRequest
-            {
-                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_DEREGISTRATION,
-                Device = ubiiDevice
-            });
-        }
     }
 
     async private void StartTest()
@@ -72,11 +63,7 @@ public class TestObjectMovement : MonoBehaviour
 
         CreateUbiiSpecs();
 
-        Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.CallService(new Ubii.Services.ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
-            Device = ubiiDevice
-        });
+        Ubii.Services.ServiceReply deviceRegistrationReply = await ubiiClient.RegisterDevice(ubiiDevice);
         if (deviceRegistrationReply.Device != null)
         {
             ubiiDevice = deviceRegistrationReply.Device;

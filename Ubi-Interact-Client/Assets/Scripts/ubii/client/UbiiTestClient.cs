@@ -4,6 +4,8 @@ using UnityEngine;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
+using Ubii.Devices;
+using System.Collections.Generic;
 
 public class UbiiTestClient : MonoBehaviour, IUbiiClient
 {
@@ -42,6 +44,11 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
 
         newPos = cube.transform.position;
         newRot = cube.transform.rotation;
+    }
+
+    public bool IsConnected()
+    {
+        return client.IsConnected();
     }
 
     private void MoveCubeH(TopicDataRecord obj)
@@ -137,19 +144,19 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.Subscribe(topic, callback);
+        return client.SubscribeTopic(topic, callback);
     }
 
-    public Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         return client.SubscribeRegex(regex, callback);
     }
 
-    public Task<ServiceReply> Unsubscribe(string topic)
+    public Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.Unsubscribe(topic);
+        return client.UnsubscribeTopic(topic, callback);
     }
 
 
@@ -157,6 +164,16 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
     {
         client.ShutDown();
         Debug.Log("Shutting down UbiiClient");
+    }
+
+    public Task<ServiceReply> RegisterDevice(Device ubiiDevice)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ServiceReply> DeregisterDevice(Device ubiiDevice)
+    {
+        throw new NotImplementedException();
     }
 }
 

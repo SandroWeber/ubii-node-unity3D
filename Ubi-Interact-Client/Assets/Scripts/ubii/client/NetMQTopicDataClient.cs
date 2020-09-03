@@ -22,8 +22,8 @@ public class NetMQTopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Dictionary<string, Action<TopicDataRecord>> topicdataCallbacks = null;
-    private Dictionary<string, Action<TopicDataRecord>> topicdataRegexCallbacks = null;
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
     private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
@@ -42,8 +42,8 @@ public class NetMQTopicDataClient
         this.port = port;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
 
-        topicdataCallbacks = new Dictionary<string, Action<TopicDataRecord>>();
-        topicdataRegexCallbacks = new Dictionary<string, Action<TopicDataRecord>>();
+        topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+        topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
 
         Initialize();
     }
@@ -97,26 +97,77 @@ public class NetMQTopicDataClient
         return connected;
     }
 
+    public bool IsSubscribed(string topicOrRegex)
+    {
+        return this.topicdataCallbacks.ContainsKey(topicOrRegex) || this.topicdataRegexCallbacks.ContainsKey(topicOrRegex);
+    }
+
+    public bool HasTopicCallbacks(string topic)
+    {
+        if (!this.IsSubscribed(topic))
+        {
+            return false;
+        }
+
+        return this.topicdataCallbacks[topic].Count > 0;
+    }
+
+    public bool HasTopicRegexCallbacks(string regex)
+    {
+        if (!this.IsSubscribed(regex))
+        {
+            return false;
+        }
+
+        return this.topicdataRegexCallbacks[regex].Count > 0;
+    }
+
     public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
     {
-        this.topicdataCallbacks.Add(topic, callback);
+        if (!this.topicdataCallbacks.ContainsKey(topic)) {
+            this.topicdataCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
+        }
+        this.topicdataCallbacks[topic].Add(callback);
     }
 
     public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        this.topicdataRegexCallbacks.Add(regex, callback);
+        if (!this.topicdataRegexCallbacks.ContainsKey(regex)) {
+            this.topicdataRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
+        }
+        this.topicdataRegexCallbacks[regex].Add(callback);
     }
 
-    public void RemoveTopicDataCallback(string topic)
+    public void RemoveTopicData(string topic)
     {
-        //Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
         this.topicdataCallbacks.Remove(topic);
     }
 
-    public void RemoveTopicDataRegexCallback(string regex)
+    public void RemoveTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    {
+        //Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
+        this.topicdataCallbacks[topic].Remove(callback);
+    }
+
+    public void RemoveTopicDataRegex(string regex)
+    {
+        this.topicdataRegexCallbacks.Remove(regex);
+    }
+
+    public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
         //Debug.Log("removing topicDataRegexCallBack for regex: " + regex + " (backend)");
-        this.topicdataRegexCallbacks.Remove(regex);
+        this.topicdataRegexCallbacks[regex].Remove(callback);
+    }
+
+    public List<string> GetAllSubscribedTopics()
+    {
+        return topicdataCallbacks.Keys.ToList();
+    }
+
+    public List<string> GetAllSubscribedRegex()
+    {
+        return topicdataRegexCallbacks.Keys.ToList();
     }
 
     public void SendTopicData(TopicData td)
@@ -141,16 +192,22 @@ public class NetMQTopicDataClient
             string topic = topicData.TopicDataRecord.Topic;
             if (topicdataCallbacks.ContainsKey(topic))
             {
-                topicdataCallbacks[topic].Invoke(topicData.TopicDataRecord);
+                foreach (Action<TopicDataRecord> callback in topicdataCallbacks[topic])
+                {
+                    callback.Invoke(topicData.TopicDataRecord);
+                }
             }
             else
             {
-                foreach (KeyValuePair<string, Action<TopicDataRecord>> entry in topicdataRegexCallbacks)
+                foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicdataRegexCallbacks)
                 {
                     Match m = Regex.Match(topic, entry.Key);
                     if (m.Success)
                     {
-                        entry.Value.Invoke(topicData.TopicDataRecord);
+                        foreach (Action<TopicDataRecord> callback in entry.Value)
+                        {
+                            callback.Invoke(topicData.TopicDataRecord);
+                        }
                     }
                 }
             }
@@ -166,6 +223,8 @@ public class NetMQTopicDataClient
     public void TearDown()
     {
         Debug.Log("TearDown TopicDataClient");
+        topicdataCallbacks.Clear();
+        topicdataRegexCallbacks.Clear();
         cts.Cancel();
         running = false;
         connected = false;

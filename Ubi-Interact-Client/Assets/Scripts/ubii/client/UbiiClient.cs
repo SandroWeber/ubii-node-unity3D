@@ -9,6 +9,8 @@ using System.Threading;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
+using Ubii.Devices;
+using System.Collections.Generic;
 
 public class UbiiClient : MonoBehaviour, IUbiiClient
 {
@@ -28,10 +30,10 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
         await client.Initialize();
     }
 
-	public string GetID()
-	{
-		return client.GetClientID();
-	}
+    public string GetID()
+    {
+        return client.GetClientID();
+    }
 
     public Task<ServiceReply> CallService(ServiceRequest request)
     {
@@ -43,19 +45,29 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
         client.Publish(topicData);
     }
 
-    public Task<ServiceReply> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.Subscribe(topic, callback);
+        return client.SubscribeTopic(topic, callback);
     }
 
-    public Task<ServiceReply> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         return client.SubscribeRegex(regex, callback);
     }
 
-    public Task<ServiceReply> Unsubscribe(string topic)
+    public Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback)
     {
-        return client.Unsubscribe(topic);
+        return client.UnsubscribeTopic(topic, callback);
+    }
+
+    public Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
+    {
+        return client.RegisterDevice(ubiiDevice);
+    }
+
+    public Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice)
+    {
+        return client.DeregisterDevice(ubiiDevice);
     }
 
     public bool IsConnected()
