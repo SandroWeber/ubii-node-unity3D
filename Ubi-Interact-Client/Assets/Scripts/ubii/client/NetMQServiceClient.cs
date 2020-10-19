@@ -9,14 +9,12 @@ using Google.Protobuf;
 using UnityEngine;
 using System.Threading.Tasks;
 
-class NetMQServiceClient: IUbiiServiceClient
+class NetMQServiceClient : IUbiiServiceClient
 {
     private string host;
     private int port;
 
     RequestSocket socket;
-
-    TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
 
     public NetMQServiceClient(string host = "localhost", int port = 8101)
     {
@@ -43,13 +41,27 @@ class NetMQServiceClient: IUbiiServiceClient
 
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        // Convert serviceRequest into byte array which is then sent to server as frame
-        byte[] buffer = srq.ToByteArray();
-        socket.SendFrame(buffer);
 
-        // Receive, return Task
-        promise = new TaskCompletionSource<ServiceReply>();
-        promise.TrySetResult(ServiceReply.Parser.ParseFrom(socket.ReceiveFrameBytes()));
+        TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
+        bool success = false;
+        while (!success)
+        {
+            try
+            {
+                // Convert serviceRequest into byte array which is then sent to server as frame
+                byte[] buffer = srq.ToByteArray();
+                socket.SendFrame(buffer);
+
+                // Receive, return Task
+                promise = new TaskCompletionSource<ServiceReply>();
+                promise.TrySetResult(ServiceReply.Parser.ParseFrom(socket.ReceiveFrameBytes()));
+                success = true;
+            }
+            catch (Exception exception)
+            {
+                Task.Delay(100).Wait();
+            }
+        }
         return promise.Task;
     }
 
