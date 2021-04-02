@@ -15,6 +15,7 @@ interface IUbiiClient
     bool IsConnected();
 
     // topic data related functions
+    // TODO Unsub Regex!
     void Publish(TopicData topicdata);
     Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback);
     Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
