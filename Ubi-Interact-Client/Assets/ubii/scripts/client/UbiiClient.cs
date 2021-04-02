@@ -14,6 +14,9 @@ using System.Collections.Generic;
 
 public class UbiiClient : MonoBehaviour, IUbiiClient
 {
+    public delegate void InitializedEventHandler();
+    public static event InitializedEventHandler OnInitialized;
+
     protected NetMQUbiiClient client;
 
     [Header("Network configuration")]
@@ -28,6 +31,7 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
     {
         client = new NetMQUbiiClient(null, clientName, ip, port);
         await client.Initialize();
+        OnInitialized();
     }
 
     public string GetID()

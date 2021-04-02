@@ -26,7 +26,6 @@ public class TestObjectMovement : MonoBehaviour
     void Start()
     {
         ubiiClient = FindObjectOfType<UbiiClient>();
-        Invoke("StartTest", testStartDelaySeconds);  //StartTest();
     }
 
     // Update is called once per frame
@@ -51,9 +50,21 @@ public class TestObjectMovement : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        UbiiClient.OnInitialized += OnClientInitialized;
+    }
+
     private void OnDisable()
     {
         testRunning = false;
+        UbiiClient.OnInitialized -= OnClientInitialized;
+    }
+
+    public void OnClientInitialized()
+    {
+        Invoke("StartTest", testStartDelaySeconds);  //StartTest();
+        return;
     }
 
     async private void StartTest()
