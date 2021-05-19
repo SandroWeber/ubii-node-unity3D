@@ -145,7 +145,6 @@ public class NetMQTopicDataClient
 
     public void RemoveTopicDataCallback(string topic, Action<TopicDataRecord> callback)
     {
-        //Debug.Log("removing topicDataCallBack for topic: " + topic + " (backend)");
         this.topicdataCallbacks[topic].Remove(callback);
     }
 
@@ -156,7 +155,6 @@ public class NetMQTopicDataClient
 
     public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        //Debug.Log("removing topicDataRegexCallBack for regex: " + regex + " (backend)");
         this.topicdataRegexCallbacks[regex].Remove(callback);
     }
 

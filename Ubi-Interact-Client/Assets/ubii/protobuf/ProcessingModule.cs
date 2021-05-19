@@ -58,7 +58,7 @@ namespace Ubii.Processing {
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode), global::Ubii.Processing.ProcessingMode.Parser, new[]{ "Frequency", "Lockstep", "TriggerOnInput" }, new[]{ "Mode" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Frequency), global::Ubii.Processing.ProcessingMode.Types.Frequency.Parser, new[]{ "Hertz" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Lockstep), global::Ubii.Processing.ProcessingMode.Types.Lockstep.Parser, new[]{ "ProcessRequestEndpoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput), global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput.Parser, new[]{ "MinDelayMs", "AllInputsNeedUpdate" }, null, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "InternalName", "MessageFormat" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "publicName", "MessageFormat" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModule), global::Ubii.Processing.ProcessingModule.Parser, new[]{ "Id", "Name", "Authors", "Tags", "Description", "NodeId", "SessionId", "Status", "ProcessingMode", "Inputs", "Outputs", "Language", "OnProcessingStringified", "OnCreatedStringified", "OnHaltedStringified", "OnDestroyedStringified" }, null, new[]{ typeof(global::Ubii.Processing.ProcessingModule.Types.Status), typeof(global::Ubii.Processing.ProcessingModule.Types.Language) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModuleList), global::Ubii.Processing.ProcessingModuleList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
@@ -757,7 +757,7 @@ namespace Ubii.Processing {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ModuleIO(ModuleIO other) : this() {
-      internalName_ = other.internalName_;
+      publicName_ = other.publicName_;
       messageFormat_ = other.messageFormat_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -767,14 +767,14 @@ namespace Ubii.Processing {
       return new ModuleIO(this);
     }
 
-    /// <summary>Field number for the "internal_name" field.</summary>
-    public const int InternalNameFieldNumber = 1;
-    private string internalName_ = "";
+    /// <summary>Field number for the "public_name" field.</summary>
+    public const int publicNameFieldNumber = 1;
+    private string publicName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string InternalName {
-      get { return internalName_; }
+    public string publicName {
+      get { return publicName_; }
       set {
-        internalName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        publicName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -802,7 +802,7 @@ namespace Ubii.Processing {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (InternalName != other.InternalName) return false;
+      if (publicName != other.publicName) return false;
       if (MessageFormat != other.MessageFormat) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -810,7 +810,7 @@ namespace Ubii.Processing {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (InternalName.Length != 0) hash ^= InternalName.GetHashCode();
+      if (publicName.Length != 0) hash ^= publicName.GetHashCode();
       if (MessageFormat.Length != 0) hash ^= MessageFormat.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -825,9 +825,9 @@ namespace Ubii.Processing {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (InternalName.Length != 0) {
+      if (publicName.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(InternalName);
+        output.WriteString(publicName);
       }
       if (MessageFormat.Length != 0) {
         output.WriteRawTag(18);
@@ -841,8 +841,8 @@ namespace Ubii.Processing {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (InternalName.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(InternalName);
+      if (publicName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(publicName);
       }
       if (MessageFormat.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MessageFormat);
@@ -858,8 +858,8 @@ namespace Ubii.Processing {
       if (other == null) {
         return;
       }
-      if (other.InternalName.Length != 0) {
-        InternalName = other.InternalName;
+      if (other.publicName.Length != 0) {
+        publicName = other.publicName;
       }
       if (other.MessageFormat.Length != 0) {
         MessageFormat = other.MessageFormat;
@@ -876,7 +876,7 @@ namespace Ubii.Processing {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            InternalName = input.ReadString();
+            publicName = input.ReadString();
             break;
           }
           case 18: {

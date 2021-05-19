@@ -33,7 +33,7 @@ public class UbiiTestClient : MonoBehaviour, IUbiiClient
     {
         // Initializing NetMQUbiiClient (sets serverSpecification & clientRegistration, starts sockets)
         client = new NetMQUbiiClient(null, "testClient", ip, port);
-        await client.Initialize();
+        await client.Initialize(false);
 
         Debug.Log("Subscribing to test topics");
         await Subscribe("TestTopicPos", TestTopicDataSubPos);

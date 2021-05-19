@@ -26,11 +26,13 @@ public class UbiiClient : MonoBehaviour, IUbiiClient
     public int port = 8101;
     [Tooltip("Name for the client connection to the server. Default is Unity3D Client.")]
     public string clientName = "Unity3D Client";
+    public bool isUbiiNode;
+
 
     public async Task InitializeClient()
     {
         client = new NetMQUbiiClient(null, clientName, ip, port);
-        await client.Initialize();
+        await client.Initialize(isUbiiNode);
         OnInitialized();
     }
 

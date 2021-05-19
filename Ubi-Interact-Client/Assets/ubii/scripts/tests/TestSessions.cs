@@ -48,8 +48,8 @@ public class TestSessions : MonoBehaviour
             OnProcessingStringified = "(inputs, outputs, state) => { outputs.outVec3 = inputs.inVec3; }",
             ProcessingMode = new Ubii.Processing.ProcessingMode { Frequency = new Ubii.Processing.ProcessingMode.Types.Frequency { Hertz = 10 } }
         };
-        this.pmSpecs.Inputs.Add(new Ubii.Processing.ModuleIO { InternalName = "inVec3", MessageFormat = "ubii.dataStructure.Vector3" });
-        this.pmSpecs.Outputs.Add(new Ubii.Processing.ModuleIO { InternalName = "outVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.pmSpecs.Inputs.Add(new Ubii.Processing.ModuleIO { publicName = "inVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.pmSpecs.Outputs.Add(new Ubii.Processing.ModuleIO { publicName = "outVec3", MessageFormat = "ubii.dataStructure.Vector3" });
         this.pmSpecs.Authors.Add("Sandro Weber");
 
         this.sessionSpecs = new Ubii.Sessions.Session
