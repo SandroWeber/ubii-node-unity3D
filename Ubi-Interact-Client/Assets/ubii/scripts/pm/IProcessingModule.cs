@@ -7,7 +7,14 @@ interface IProcessingModule
     void Stop();
 
     void OnCreated(Ubii.Processing.ProcessingModule.Types.Status status);
-    void OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object, object>> inputs, Dictionary<string, Func<object, object>> outputs);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    /// <param name="inputs"></param>
+    /// <returns>Dictionary with outputs created during processing</returns>
+    Dictionary<string, Func<object, object>> OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object, object>> inputs);
     void OnHalted();
     void OnDestroyed();
 

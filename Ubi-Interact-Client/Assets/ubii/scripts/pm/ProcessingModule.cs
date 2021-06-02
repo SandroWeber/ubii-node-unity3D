@@ -20,7 +20,10 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     public ProcessingMode processingMode;
     public Ubii.Processing.ProcessingModule.Types.Status status;
 
-    public Dictionary<string, Func<object, object>> ioProxy;
+    public Dictionary<string, TopicDataRecord> inputs;
+    public Dictionary<string, TopicDataRecord> outputs;
+
+    public Dictionary<string, Func<object, object>> ioProxy; // "input/asd", "output/dsa", "input/abc"
 
     public ProcessingModule(Ubii.Processing.ProcessingModule specs, string id = null)
     {
@@ -39,6 +42,10 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
             Frequency = new ProcessingMode.Types.Frequency { Hertz = 30 }
         };
         status = Ubii.Processing.ProcessingModule.Types.Status.Created;
+
+        inputs = new Dictionary<string, TopicDataRecord>();
+        outputs = new Dictionary<string, TopicDataRecord>();
+
         ioProxy = new Dictionary<string, Func<object, object>>();
     }
 
@@ -47,6 +54,9 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Start processing by pm's processing mode
+    /// </summary>
     public void Start()
     {
         if (processingMode.ModeCase == ProcessingMode.ModeOneofCase.Frequency) // Oder: processingMode.Frequency != null
@@ -59,7 +69,9 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
             Debug.Log(this.ToString() + " started");
     }
 
-
+    /// <summary>
+    /// Stop this pm, sets status to halted and removes all listeners
+    /// </summary>
     public void Stop()
     {
         if (status == Ubii.Processing.ProcessingModule.Types.Status.Halted)
@@ -72,6 +84,9 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         Debug.Log(this.ToString() + " stopped");
     }
 
+    /// <summary>
+    /// Start processing in frequency mode
+    /// </summary>
     private void StartProcessingByFrequency()
     {
         status = Ubii.Processing.ProcessingModule.Types.Status.Processing;
@@ -88,28 +103,28 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         {
             while (true)
             {
-
                 DateTime tNow = DateTime.Now;
                 TimeSpan deltaTime = tNow.Subtract(tLastProcess);
                 tLastProcess = tNow;
                 //processing
-                OnProcessing(deltaTime, ioProxy, ioProxy);
+                OnProcessing(deltaTime, ioProxy);
                 if (status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
                 {
                     Thread.Sleep(msFrequency);
                 }
-                else if( status == Ubii.Processing.ProcessingModule.Types.Status.Destroyed)
+                else if (status == Ubii.Processing.ProcessingModule.Types.Status.Destroyed)
                     cts.Cancel();
             }
         }, token);
     }
 
-    private void SetTimeout(Action p, float msFrequency)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object,object>> inputs, Dictionary<string, Func<object, object>> outputs)
+    /// <summary>
+    /// Takes inputs, callbacks generate input dictionary
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    /// <param name="inputs"></param>
+    /// <returns></returns>
+    public Dictionary<string, Func<object, object>> OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object, object>> inputs)
     {
         throw new NotImplementedException();
     }
@@ -179,7 +194,7 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         throw new NotImplementedException();
     }
 
-    internal void SetOutputSetter(string outputName, object record)
+    internal void SetOutputSetter(string outputName, Action<TopicDataRecord> record)
     {
         throw new NotImplementedException();
     }

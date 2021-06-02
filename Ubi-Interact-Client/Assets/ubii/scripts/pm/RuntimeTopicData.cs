@@ -58,7 +58,6 @@ public class RuntimeTopicData
             subscriberCallbacks.Add(topic, new List<SubscriptionToken>());
 
         SubscriptionToken token = GenerateToken(topic, callback);
-
         subscriberCallbacks[topic].Add(token);
 
         return token;
@@ -121,6 +120,9 @@ public class RuntimeTopicData
     }
 }
 
+/// <summary>
+/// Subsription token used for PMs to store each subscription
+/// </summary>
 public struct SubscriptionToken
 {
     public int id;

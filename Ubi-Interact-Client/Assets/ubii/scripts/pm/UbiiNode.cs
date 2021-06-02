@@ -19,9 +19,13 @@ public class UbiiNode : MonoBehaviour
     async void Start()
     {
         await ubiiNode.WaitForConnection();
-        await Initialize();
+        await Initialize(); 
     }
 
+    /// <summary>
+    /// Init topicDataProxy and PM Manager, subscribes sessions
+    /// </summary>
+    /// <returns>Task, async function</returns>
     private async Task Initialize()
     {
         topicdataProxy = new TopicDataProxy(this);
@@ -29,12 +33,20 @@ public class UbiiNode : MonoBehaviour
         await SubscribeSessions();
     }
 
+    /// <summary>
+    /// Subscribes session start/stop
+    /// </summary>
+    /// <returns></returns>
     private async Task SubscribeSessions()
     {
         await ubiiNode.Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
         await ubiiNode.Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
     }
 
+    /// <summary>
+    /// Callback for start session subscription
+    /// </summary>
+    /// <param name="record"></param>
     private async void OnStartSession(TopicDataRecord record)
     {
         Debug.Log(nameof(OnStartSession));
@@ -75,6 +87,10 @@ public class UbiiNode : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Callback for stop session subscription
+    /// </summary>
+    /// <param name="msgSession"></param>
     private void OnStopSession(TopicDataRecord msgSession)
     {
         Debug.Log(nameof(OnStopSession));
@@ -137,6 +153,10 @@ public class UbiiNode : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Generates a timestamp
+    /// </summary>
+    /// <returns></returns>
     private Timestamp GenerateTimeStamp()
     {
         // TODO: Should be the same as in nodeJS implementation
@@ -148,6 +168,9 @@ public class UbiiNode : MonoBehaviour
     }
 }
 
+/// <summary>
+/// Topic data proxy implementation
+/// </summary>
 public class TopicDataProxy
 {
     private UbiiNode ubiiNode;

@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,20 +10,41 @@ using UnityEngine;
 
 public class ProcessingModuleManager
 {
+    /// <summary>
+    /// References all processing modules with their id as key
+    /// </summary>
     public Dictionary<string, ProcessingModule> processingModules = new Dictionary<string, ProcessingModule>();
-    private string nodeID;
 
+    /// <summary>
+    /// TopicDataProxy
+    /// </summary>
     private TopicDataProxy topicdataProxy;
+
+    /// <summary>
+    /// Stores all subscription tokens as a list for each pm
+    /// </summary>
     private Dictionary<string, List<SubscriptionToken>> pmTopicSubscriptions = new Dictionary<string, List<SubscriptionToken>>();
-    private RuntimeTopicData lockstepTopicDate = new RuntimeTopicData();
+
+    /// <summary>
+    /// IOMappings
+    /// </summary>
     private Dictionary<string, Ubii.Sessions.IOMapping> ioMappings = new Dictionary<string, Ubii.Sessions.IOMapping>();
 
+    private RuntimeTopicData lockstepTopicDate = new RuntimeTopicData();
+
+    private string nodeID;
+    
     public ProcessingModuleManager(string nodeID, object deviceManager, TopicDataProxy topicdataProxy = null)
     {
         this.nodeID = nodeID;
         this.topicdataProxy = topicdataProxy;
     }
 
+    /// <summary>
+    /// Creates a PM from given specs and adds it to the dictionary on success
+    /// </summary>
+    /// <param name="specs">PM specs</param>
+    /// <returns>Created PM</returns>
     public ProcessingModule CreateModule(Ubii.Processing.ProcessingModule specs)
     {
         ProcessingModule pm = null;
@@ -52,6 +74,11 @@ public class ProcessingModuleManager
         }
     }
 
+    /// <summary>
+    /// Add given pm
+    /// </summary>
+    /// <param name="pm">PM to add</param>
+    /// <returns><see langword="true"/> if pm was added successfully, <see langword="false"/> if given pm had no id</returns>
     private bool AddModule(ProcessingModule pm)
     {
         if (pm.id == null || pm.id == string.Empty)
@@ -64,6 +91,11 @@ public class ProcessingModuleManager
         return true;
     }
 
+    /// <summary>
+    /// Removes a module and unsubscribes all its tokens
+    /// </summary>
+    /// <param name="pm">PM to remove</param>
+    /// <returns><see langword="true"/>, if pm could be removed successfully. <see langword="false"/> if no pm with that id is registered</returns>
     public bool RemoveModule(ProcessingModule pm)
     {
         if (pm.id == null || pm.id == string.Empty)
@@ -83,7 +115,19 @@ public class ProcessingModuleManager
         return true;
     }
 
+    /// <summary>
+    /// Checks if processing module list contains a pm with given id
+    /// </summary>
+    /// <param name="id">Processing module ID to look for</param>
+    /// <returns></returns>
     public bool HasModuleID(string id) => processingModules.ContainsKey(id);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pmSpecs"></param>
+    /// <param name="sessionID"></param>
+    /// <returns>Processing module matching given specs</returns>
     public ProcessingModule GetModuleBySpecs(ProcessingModule pmSpecs, string sessionID)
     {
         ProcessingModule module = GetModuleByID(pmSpecs.id);
@@ -91,19 +135,39 @@ public class ProcessingModuleManager
             module = GetModuleByName(pmSpecs.name, sessionID);
         return module;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id">Id of processing module</param>
+    /// <returns>Processing module with given id, null if not existing</returns>
     private ProcessingModule GetModuleByID(string id) => processingModules[id];
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="name">Name of processing module</param>
+    /// <param name="sessionID">Session ID</param>
+    /// <returns>Processing module with given name, null if not existing</returns>
     private ProcessingModule GetModuleByName(string name, string sessionID)
     {
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Starts processing module
+    /// </summary>
+    /// <param name="pmSpec">Processing module to start</param>
     public void StartModule(ProcessingModule pmSpec)
     {
         ProcessingModule pm = processingModules[pmSpec.id];
         pm?.Start();
     }
 
+    /// <summary>
+    /// Stops module and unsubscribes its tokens from the topic data proxy
+    /// </summary>
+    /// <param name="pmSpec">Processing module to stop</param>
     public void StopModule(ProcessingModule pmSpec)
     {
         ProcessingModule pm = processingModules[pmSpec.id];
@@ -119,6 +183,11 @@ public class ProcessingModuleManager
         }
     }
 
+    /// <summary>
+    /// Applies IO Mappings
+    /// </summary>
+    /// <param name="ioMappings"></param>
+    /// <param name="sessionID"></param>
     public void ApplyIOMappings(RepeatedField<IOMapping> ioMappings, string sessionID)
     {
         Debug.Log("\nApplyIOMappings");
@@ -205,11 +274,8 @@ public class ProcessingModuleManager
 
                 if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
                 {
-                    string messageFormat = processingModule.GetIOMessageFormat(outputMapping.OutputName);
-                    TopicDataRecord type = GetTopicDataTypeFromMessageFormat(messageFormat);
-                    processingModule.SetOutputSetter(outputMapping.OutputName, null);
-                    topicdataProxy.Publish(type);
-
+                    TopicDataRecord type = processingModule.outputs[outputMapping.OutputName];
+                    processingModule.SetOutputSetter(outputMapping.OutputName, _ => topicdataProxy.Publish(type));
                 }
                 else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
                 {
@@ -231,26 +297,20 @@ public class ProcessingModuleManager
         }
     }
 
-    /// <summary>
-    /// Finds out type and returns topicdatarecord
-    /// </summary>
-    /// <param name="messageFormat"></param>
-    /// <returns></returns>
-    private TopicDataRecord GetTopicDataTypeFromMessageFormat(string messageFormat)
-    {
-        throw new NotImplementedException();
-    }
-
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
     {
-        throw new NotImplementedException();
+        return processingModule.outputs.Any(element => element.Key == outputMapping.OutputName);
     }
 
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
     {
-        throw new NotImplementedException();
+        return processingModule.inputs.Any(element => element.Key == inputMapping.InputName);
     }
 
+    /// <summary>
+    /// Starts modules from given session
+    /// </summary>
+    /// <param name="session"></param>
     public void StartSessionModules(Session session)
     {
         foreach (var pm in processingModules.Values)
@@ -260,6 +320,10 @@ public class ProcessingModuleManager
         }
     }
 
+    /// <summary>
+    /// Stops modules from given session
+    /// </summary>
+    /// <param name="session"></param>
     public void StopSessionModules(Session session)
     {
         foreach (var pm in processingModules.Values)
