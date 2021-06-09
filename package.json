@@ -1,0 +1,16 @@
+{
+    "name": "com.ubi-interact.node-unity3d",
+    "version": "0.1.0",
+    "displayName": "Ubi-Interact Node Unity3D",
+    "description": "This is the package for the Unity3D node of Ubi-Interact",
+    "unity": "2018.4",
+    "keywords": [
+        "Ubi-Interact",
+        "node",
+        "Unity3D"
+    ],
+    "author": {
+        "name": "Sandro Weber",
+        "email": "webers@in.tum.de"
+    }
+}
