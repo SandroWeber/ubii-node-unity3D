@@ -6,7 +6,7 @@ using System.Linq;
 
 public class TestSessions : MonoBehaviour
 {
-    private UbiiClient ubiiClient = null;
+    private UbiiNode ubiiNode = null;
     private UbiiConstants ubiiConstants = null;
 
     private string inputTopic, outputTopic;
@@ -16,7 +16,7 @@ public class TestSessions : MonoBehaviour
 
     void Start()
     {
-        ubiiClient = FindObjectOfType<UbiiClient>();
+        ubiiNode = FindObjectOfType<UbiiNode>();
         ubiiConstants = UbiiConstants.Instance;
 
         RunTests();
@@ -29,7 +29,7 @@ public class TestSessions : MonoBehaviour
 
     async private void RunTests()
     {
-        await ubiiClient.WaitForConnection();
+        await ubiiNode.WaitForConnection();
 
         this.CreateSpecs();
 
@@ -39,8 +39,8 @@ public class TestSessions : MonoBehaviour
 
     private void CreateSpecs()
     {
-        this.inputTopic = "/" + ubiiClient.GetID() + "/test-sessions/input/vec3";
-        this.outputTopic = "/" + ubiiClient.GetID() + "/test-sessions/output/vec3";
+        this.inputTopic = "/" + ubiiNode.GetID() + "/test-sessions/input/vec3";
+        this.outputTopic = "/" + ubiiNode.GetID() + "/test-sessions/output/vec3";
 
         this.pmSpecs = new Ubii.Processing.ProcessingModule
         {
@@ -48,8 +48,8 @@ public class TestSessions : MonoBehaviour
             OnProcessingStringified = "(inputs, outputs, state) => { outputs.outVec3 = inputs.inVec3; }",
             ProcessingMode = new Ubii.Processing.ProcessingMode { Frequency = new Ubii.Processing.ProcessingMode.Types.Frequency { Hertz = 10 } }
         };
-        this.pmSpecs.Inputs.Add(new Ubii.Processing.ModuleIO { publicName = "inVec3", MessageFormat = "ubii.dataStructure.Vector3" });
-        this.pmSpecs.Outputs.Add(new Ubii.Processing.ModuleIO { publicName = "outVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.pmSpecs.Inputs.Add(new Ubii.Processing.ModuleIO { InternalName = "inVec3", MessageFormat = "ubii.dataStructure.Vector3" });
+        this.pmSpecs.Outputs.Add(new Ubii.Processing.ModuleIO { InternalName = "outVec3", MessageFormat = "ubii.dataStructure.Vector3" });
         this.pmSpecs.Authors.Add("Sandro Weber");
 
         this.sessionSpecs = new Ubii.Sessions.Session
@@ -71,7 +71,7 @@ public class TestSessions : MonoBehaviour
     {
         bool success = false;
 
-        Ubii.Services.ServiceReply replyStart = await ubiiClient.CallService(
+        Ubii.Services.ServiceReply replyStart = await ubiiNode.CallService(
             new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START, Session = this.sessionSpecs }
         );
 
@@ -81,7 +81,7 @@ public class TestSessions : MonoBehaviour
 
             await Task.Delay(1000);
 
-            Ubii.Services.ServiceReply replyStop = await ubiiClient.CallService(
+            Ubii.Services.ServiceReply replyStop = await ubiiNode.CallService(
                 new Ubii.Services.ServiceRequest { Topic = ubiiConstants.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP, Session = this.sessionSpecs }
             );
 

@@ -16,12 +16,15 @@ using Google.Protobuf;
 using System.Threading;
 using UnityEngine.Apple.ReplayKit;
 
+/// <summary>
+/// This class manages network connections based on NetMQ to the Ubi-Interact master node.
+/// </summary>
 public class NetMQUbiiClient
 {
-    private string id;
     private string name;
     private string host;
     private int port;
+    private ITopicDataBuffer topicDataBuffer;
 
     private Client clientSpecification;
 
@@ -33,12 +36,12 @@ public class NetMQUbiiClient
 
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string id, string name, string host, int port)
+    public NetMQUbiiClient(string name, string host, int port, ITopicDataBuffer topicDataBuffer)
     {
-        this.id = id;
         this.name = name;
         this.host = host;
         this.port = port;
+        this.topicDataBuffer = topicDataBuffer;
     }
 
     public string GetClientID()
@@ -58,17 +61,10 @@ public class NetMQUbiiClient
 
     public bool IsConnected()
     {
-        /*Debug.Log("IsConnected()");
-        Debug.Log("id=" + id);
-        Debug.Log("client=" + netmqTopicDataClient);
-        if (netmqTopicDataClient != null)
-        {
-            Debug.Log("connected=" + netmqTopicDataClient.IsConnected());
-        }*/
         return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
     }
 
-    /*public Task WaitForConnection()
+    public Task WaitForConnection()
     {
         CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken token = cts.Token;
@@ -87,7 +83,7 @@ public class NetMQUbiiClient
                 cts.Cancel();
             }
         }, token);
-    }*/
+    }
 
     // CallService function called from upper layer (i.e. some MonoBehavior), returns a Task
     public Task<ServiceReply> CallService(ServiceRequest srq)
@@ -168,7 +164,6 @@ public class NetMQUbiiClient
         RepeatedField<string> subscribeTopics = new RepeatedField<string>();
 
         subscribeTopics.Add(topic);
-
 
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
@@ -363,9 +358,6 @@ public class NetMQUbiiClient
         //if(isUbiiNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
-        if (id != null && id != "")
-            clientRegistration.Client.Id = id;
-
         var task = CallService(clientRegistration);
         ServiceReply rep = await task;
         clientSpecification = rep.Client;
@@ -374,7 +366,8 @@ public class NetMQUbiiClient
 
     private void InitTopicDataClient()
     {
-        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, int.Parse(serverSpecification.PortTopicDataZmq));
+        int port = int.Parse(serverSpecification.PortTopicDataZmq);
+        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port, this.topicDataBuffer);
     }
 
     #endregion

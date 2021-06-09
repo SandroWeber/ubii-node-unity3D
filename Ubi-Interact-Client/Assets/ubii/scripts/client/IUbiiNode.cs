@@ -6,7 +6,7 @@ using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
 
-interface IUbiiClient
+interface IUbiiNode
 {
     // service related functions
     Task<ServiceReply> CallService(ServiceRequest request);

@@ -30,7 +30,7 @@ public class ProcessingModuleManager
     /// </summary>
     private Dictionary<string, Ubii.Sessions.IOMapping> ioMappings = new Dictionary<string, Ubii.Sessions.IOMapping>();
 
-    private RuntimeTopicData lockstepTopicDate = new RuntimeTopicData();
+    private TopicDataBuffer lockstepTopicData = new TopicDataBuffer();
 
     private string nodeID;
     
@@ -274,8 +274,8 @@ public class ProcessingModuleManager
 
                 if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
                 {
-                    TopicDataRecord type = processingModule.outputs[outputMapping.OutputName];
-                    processingModule.SetOutputSetter(outputMapping.OutputName, _ => topicdataProxy.Publish(type));
+                    TopicDataRecord record = processingModule.outputs[outputMapping.OutputName];
+                    processingModule.SetOutputSetter(outputMapping.OutputName, _ => topicdataProxy.Publish(record));
                 }
                 else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
                 {

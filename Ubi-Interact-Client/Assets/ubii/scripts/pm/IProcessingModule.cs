@@ -30,6 +30,7 @@ interface IProcessingModule
 
 
 }
+
 public enum PMEvents
 {
     NEW_INPUT = 1,

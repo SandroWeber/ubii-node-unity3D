@@ -7,19 +7,19 @@ using Ubii.Services;
 using Ubii.TopicData;
 using UnityEngine;
 
-public class UbiiNode : MonoBehaviour
+public class UbiiNodeDeprec : MonoBehaviour
 {
     public string nodeName = "Unity3D Ubii Node";
-    public UbiiClient ubiiNode;
+    public UbiiNode ubiiNode;
     private ProcessingModuleManager processingModuleManager;
     private ProcessingModule processingModule;
     public TopicDataProxy topicdataProxy;
-    public RuntimeTopicData topicData = new RuntimeTopicData();
+    public TopicDataBuffer topicData = new TopicDataBuffer();
 
     async void Start()
     {
         await ubiiNode.WaitForConnection();
-        await Initialize(); 
+        await Initialize();
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class UbiiNode : MonoBehaviour
     /// <returns>Task, async function</returns>
     private async Task Initialize()
     {
-        topicdataProxy = new TopicDataProxy(this);
+        topicdataProxy = new TopicDataProxy(topicData);
         processingModuleManager = new ProcessingModuleManager(ubiiNode.GetID(), null, topicdataProxy);
         await SubscribeSessions();
     }
@@ -165,39 +165,5 @@ public class UbiiNode : MonoBehaviour
             Seconds = DateTime.Now.Second,
             Nanos = (int)DateTime.Now.Ticks
         };
-    }
-}
-
-/// <summary>
-/// Topic data proxy implementation
-/// </summary>
-public class TopicDataProxy
-{
-    private UbiiNode ubiiNode;
-
-    public TopicDataProxy(UbiiNode ubiiNode)
-    {
-        this.ubiiNode = ubiiNode;
-    }
-
-    public void Publish(TopicDataRecord topicDataRecord)
-    {
-        // publish = "push" from buffer
-        ubiiNode.topicData.Push(topicDataRecord);
-    }
-
-    public TopicDataRecord Pull(string topic)
-    {
-        return ubiiNode.topicData.Pull(topic);
-    }
-
-    public SubscriptionToken Subscribe(string topic, Action<TopicDataRecord> callback)
-    {
-        return ubiiNode.topicData.Subscribe(topic, callback);
-    }
-
-    public void Unsubscribe(SubscriptionToken token)
-    {
-        ubiiNode.topicData.Unsubscribe(token);
     }
 }
