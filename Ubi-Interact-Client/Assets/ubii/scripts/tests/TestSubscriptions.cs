@@ -41,12 +41,12 @@ public class TestSubscriptions : MonoBehaviour
             success = record.Bool;
         };
 
-        await ubiiNode.Subscribe(topic, callback);
+        SubscriptionToken subToken = await ubiiNode.SubscribeTopic(topic, callback);
         ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
-            await ubiiNode.Unsubscribe(topic, callback);
+            await ubiiNode.Unsubscribe(subToken);
 
             if (success)
             {
@@ -91,7 +91,7 @@ public class TestSubscriptions : MonoBehaviour
             ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
         }
 
-        await Task.Delay(1000).ContinueWith(async (Task t) =>
+        await Task.Delay(1000).ContinueWith((Task t) =>
         {
             bool success = true;
             foreach (string topic in topics)

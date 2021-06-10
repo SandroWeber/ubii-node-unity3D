@@ -24,7 +24,6 @@ public class NetMQUbiiClient
     private string name;
     private string host;
     private int port;
-    private ITopicDataBuffer topicDataBuffer;
 
     private Client clientSpecification;
 
@@ -36,12 +35,11 @@ public class NetMQUbiiClient
 
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string name, string host, int port, ITopicDataBuffer topicDataBuffer)
+    public NetMQUbiiClient(string name, string host, int port)
     {
         this.name = name;
         this.host = host;
         this.port = port;
-        this.topicDataBuffer = topicDataBuffer;
     }
 
     public string GetClientID()
@@ -367,7 +365,7 @@ public class NetMQUbiiClient
     private void InitTopicDataClient()
     {
         int port = int.Parse(serverSpecification.PortTopicDataZmq);
-        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port, this.topicDataBuffer);
+        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
     }
 
     #endregion

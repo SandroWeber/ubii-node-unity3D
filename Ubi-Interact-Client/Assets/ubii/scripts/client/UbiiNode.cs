@@ -6,11 +6,11 @@ using System.Collections;
 using NetMQ;
 using NetMQ.Sockets;
 using System.Threading;
+using System.Collections.Generic;
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
 using Ubii.Devices;
-using System.Collections.Generic;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
@@ -40,7 +40,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task InitializeClient()
     {
-        networkClient = new NetMQUbiiClient(clientName, ip, port, topicData);
+        networkClient = new NetMQUbiiClient(clientName, ip, port);
         await networkClient.Initialize(isUbiiNode);
         OnInitialized();
     }
@@ -60,27 +60,50 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         networkClient.Publish(topicData);
     }
 
-    public async Task<SubscriptionToken> Subscribe(string topic, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
         List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(topic);
         if (subscriptions == null || subscriptions.Count == 0)
-            await networkClient.SubscribeTopic(topic, callback);
+        {
+            await networkClient.SubscribeTopic(topic, OnTopicDataRecord);
+        }
 
-        return topicData.Subscribe(topic, callback); // Add to a dictionary as well?
+        return topicData.SubscribeTopic(topic, callback); // Add to a dictionary as well?
     }
 
-    public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         List<SubscriptionToken> subscriptions = topicData.GetRegexSubscriptionTokens(regex);
         if (subscriptions == null || subscriptions.Count == 0)
-            await networkClient.SubscribeRegex(regex, callback);
+        {
+            await networkClient.SubscribeRegex(regex, OnTopicDataRecord);
+        }
 
         return topicData.SubscribeRegex(regex, callback);
     }
 
-    public Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback)
+    public async Task<bool> Unsubscribe(SubscriptionToken token)
     {
-        return networkClient.UnsubscribeTopic(topic, callback);
+        this.topicData.Unsubscribe(token);
+
+        if (token.type == SUBSCRIPTION_TOKEN_TYPE.TOPIC)
+        {
+            List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(token.topic);
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                await networkClient.UnsubscribeTopic(token.topic, OnTopicDataRecord);
+            }
+        }
+        else if (token.type == SUBSCRIPTION_TOKEN_TYPE.REGEX)
+        {
+            List<SubscriptionToken> subscriptions = topicData.GetRegexSubscriptionTokens(token.topic);
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                await networkClient.UnsubscribeRegex(token.topic, OnTopicDataRecord);
+            }
+        }
+
+        return true;
     }
 
     public Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
@@ -154,8 +177,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// <returns></returns>
     private async Task SubscribeSessionInfo()
     {
-        await Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
-        await Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
+        await SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
+        await SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
     }
 
     /// <summary>
@@ -166,7 +189,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         Debug.Log(nameof(OnStartSession));
         Debug.Log(record);
-        List<ProcessingModule> localPMs = new List<ProcessingModule>();
+        /*List<ProcessingModule> localPMs = new List<ProcessingModule>();
 
         foreach (Ubii.Processing.ProcessingModule pm in record.ProcessingModuleList.Elements)
         {
@@ -193,13 +216,13 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         ServiceReply reply = await CallService(pmRuntimeAddRequest);
         if (reply.Success != null)
         {
-            
+
             this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
             foreach (var pm in localPMs)
             {
                 this.processingModuleManager.StartModule(pm);
             }
-        }
+        }*/
     }
 
     /// <summary>
@@ -217,6 +240,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 processingModuleManager.RemoveModule(pm);
             }
         }
+    }
+
+    private void OnTopicDataRecord(TopicDataRecord record)
+    {
+        this.topicData.Publish(record);
     }
 }
 

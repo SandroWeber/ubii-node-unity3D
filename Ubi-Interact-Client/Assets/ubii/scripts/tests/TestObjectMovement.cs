@@ -19,6 +19,7 @@ public class TestObjectMovement : MonoBehaviour
     //private CancellationTokenSource cts = null;
     private bool testRunning = false;
     private float tLastPublish = 0f;
+    private SubscriptionToken subToken;
 
     private Vector3 testPosition = new Vector3();
 
@@ -55,10 +56,11 @@ public class TestObjectMovement : MonoBehaviour
         UbiiNode.OnInitialized += OnClientInitialized;
     }
 
-    private void OnDisable()
+    private async void OnDisable()
     {
         testRunning = false;
         UbiiNode.OnInitialized -= OnClientInitialized;
+        await ubiiNode.Unsubscribe(this.subToken);
     }
 
     public void OnClientInitialized()
@@ -85,7 +87,7 @@ public class TestObjectMovement : MonoBehaviour
             ubiiDevice = deviceRegistrationReply.Device;
         }
 
-        await ubiiNode.Subscribe(topicTestPublishSubscribe, (Ubii.TopicData.TopicDataRecord record) =>
+        this.subToken = await ubiiNode.SubscribeTopic(topicTestPublishSubscribe, (Ubii.TopicData.TopicDataRecord record) =>
         {
             testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
         });

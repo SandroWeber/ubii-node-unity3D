@@ -235,7 +235,7 @@ public class ProcessingModuleManager
                             callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
                         }
 
-                        SubscriptionToken subscriptionToken = topicdataProxy.Subscribe(inputMapping.Topic, callback);
+                        SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
 
                         if (!pmTopicSubscriptions.ContainsKey(processingModule.id))
                         {

@@ -39,8 +39,8 @@ public class UbiiNodeDeprec : MonoBehaviour
     /// <returns></returns>
     private async Task SubscribeSessions()
     {
-        await ubiiNode.Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
-        await ubiiNode.Subscribe(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
+        await ubiiNode.SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
+        await ubiiNode.SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
     }
 
     /// <summary>
@@ -122,14 +122,14 @@ public class UbiiNodeDeprec : MonoBehaviour
 
     public async void Subscribe(string topic, Action<TopicDataRecord> callback)
     {
-        List<SubscriptionToken> subscriptions = topicData.GetSubscriptionTokens(topic);
+        List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(topic);
         if (subscriptions == null || subscriptions.Count == 0)
-            await ubiiNode.Subscribe(topic, callback);
+            await ubiiNode.SubscribeTopic(topic, callback);
 
-        SubscriptionToken token = topicData.Subscribe(topic, callback); // Add to a dictionary as well?
+        SubscriptionToken token = topicData.SubscribeTopic(topic, callback); // Add to a dictionary as well?
     }
 
-    public Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         return ubiiNode.SubscribeRegex(regex, callback);
     }
@@ -137,9 +137,9 @@ public class UbiiNodeDeprec : MonoBehaviour
     public async void Unsubscribe(SubscriptionToken token)
     {
         topicData.Unsubscribe(token);
-        List<SubscriptionToken> subscriptions = topicData.GetSubscriptionTokens(token.topic);
+        List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(token.topic);
         if (subscriptions == null || subscriptions.Count == 0)
-            await ubiiNode.Unsubscribe(token.topic, token.callback);
+            await ubiiNode.Unsubscribe(token);
     }
 
     public Task<ServiceReply> RegisterDevice(Device ubiiDevice)

@@ -18,7 +18,6 @@ public class NetMQTopicDataClient
     private string host;
     private int port;
     private string clientID;
-    private ITopicDataBuffer topicDataBuffer;
 
     private DealerSocket socket;
     private bool connected = false;
@@ -37,12 +36,11 @@ public class NetMQTopicDataClient
 
     const int delay = 3000; // millis
 
-    public NetMQTopicDataClient(string clientID, string host = "localhost", int port = 8103, ITopicDataBuffer topicDataBuffer)
+    public NetMQTopicDataClient(string clientID, string host = "localhost", int port = 8103)
     {
         this.host = host;
         this.port = port;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
-        this.topicDataBuffer = topicDataBuffer;
 
         topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
         topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();

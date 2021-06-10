@@ -25,9 +25,14 @@ public class TopicDataProxy : ITopicDataBuffer
         return topicDataBuffer.Pull(topic);
     }
 
-    public SubscriptionToken Subscribe(string topic, Action<TopicDataRecord> callback)
+    public SubscriptionToken SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
-        return topicDataBuffer.Subscribe(topic, callback);
+        return topicDataBuffer.SubscribeTopic(topic, callback);
+    }
+
+    public SubscriptionToken SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    {
+        return topicDataBuffer.SubscribeRegex(regex, callback);
     }
 
     public void Unsubscribe(SubscriptionToken token)
@@ -40,8 +45,13 @@ public class TopicDataProxy : ITopicDataBuffer
         topicDataBuffer.Remove(topic);
     }
 
-    public List<SubscriptionToken> GetSubscriptionTokens(string topic)
+    public List<SubscriptionToken> GetTopicSubscriptionTokens(string topic)
     {
-        return topicDataBuffer.GetSubscriptionTokens(topic);
+        return topicDataBuffer.GetTopicSubscriptionTokens(topic);
+    }
+
+    public List<SubscriptionToken> GetRegexSubscriptionTokens(string regex)
+    {
+        return topicDataBuffer.GetRegexSubscriptionTokens(regex);
     }
 }

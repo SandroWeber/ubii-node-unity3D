@@ -17,9 +17,9 @@ interface IUbiiNode
     // topic data related functions
     // TODO Unsub Regex!
     void Publish(TopicData topicdata);
-    Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback);
-    Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
-    Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback);
+    Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback);
+    Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
+    Task<bool> Unsubscribe(SubscriptionToken token);
     Task<ServiceReply> RegisterDevice(Device ubiiDevice);
     Task<ServiceReply> DeregisterDevice(Device ubiiDevice);
 }

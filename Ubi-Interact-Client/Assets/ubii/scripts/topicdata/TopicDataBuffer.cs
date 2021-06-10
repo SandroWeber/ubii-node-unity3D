@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Ubii.TopicData;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public class TopicDataBuffer : ITopicDataBuffer
     private Dictionary<string, TopicDataRecord> localTopics;
     private Dictionary<string, List<SubscriptionToken>> dictTopicSubscriptionTokens;
     private Dictionary<string, List<SubscriptionToken>> dictRegexSubscriptionTokens;
-    private Dictionary<string, List<SubscriptionToken>> dictTopic2RegexTokenMatches;
+    private Dictionary<string, List<string>> dictTopic2RegexMatches;
 
     private int currentTokenId = -1;
 
@@ -19,6 +20,7 @@ public class TopicDataBuffer : ITopicDataBuffer
         localTopics = new Dictionary<string, TopicDataRecord>();
         dictTopicSubscriptionTokens = new Dictionary<string, List<SubscriptionToken>>();
         dictRegexSubscriptionTokens = new Dictionary<string, List<SubscriptionToken>>();
+        dictTopic2RegexMatches = new Dictionary<string, List<string>>();
     }
 
     /// <summary>
@@ -33,12 +35,13 @@ public class TopicDataBuffer : ITopicDataBuffer
             localTopics.Add(record.Topic, record);
             foreach (var entry in dictRegexSubscriptionTokens)
             {
-                regexString = entry.Key;
-                if (Regex.Match(record.Topic, regexString))
+                string regex = entry.Key;
+                Match match = Regex.Match(record.Topic, regex);
+                if (match.Success)
                 {
-                    if (!dictTopic2RegexTokenMatches.ContainsKey(record.Topic))
-                        dictTopic2RegexTokenMatches.Add(record.Topic, new List<SubscriptionToken>());
-                    dictTopic2RegexTokenMatches[record.Topic].Add(entry.Value);
+                    if (!dictTopic2RegexMatches.ContainsKey(record.Topic))
+                        dictTopic2RegexMatches.Add(record.Topic, new List<string>());
+                    dictTopic2RegexMatches[record.Topic].Add(regex);
                 }
             }
         }
@@ -70,7 +73,7 @@ public class TopicDataBuffer : ITopicDataBuffer
     /// <param name="topic"></param>
     /// <param name="callback"></param>
     /// <returns>Generated subscription token</returns>
-    public SubscriptionToken Subscribe(string topic, Action<TopicDataRecord> callback)
+    public SubscriptionToken SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
         if (!dictTopicSubscriptionTokens.ContainsKey(topic))
             dictTopicSubscriptionTokens.Add(topic, new List<SubscriptionToken>());
@@ -92,8 +95,10 @@ public class TopicDataBuffer : ITopicDataBuffer
     /// <param name="token">Subscription token identifying subscription and callback</param>
     public void Unsubscribe(SubscriptionToken token)
     {
-        if (dictTopicSubscriptionTokens.ContainsKey(token.topic) && dictTopicSubscriptionTokens[token.topic].Exists(callback => callback.id == token.id))
-            dictTopicSubscriptionTokens[token.topic].RemoveAll(callback => callback.id == token.id); // Alternative: RemoveAt(.Find(lambda)), but there is only 1 element anyway
+        if (dictTopicSubscriptionTokens.ContainsKey(token.topic))
+            dictTopicSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
+        else if (dictRegexSubscriptionTokens.ContainsKey(token.topic))
+            dictRegexSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
     }
 
     public SubscriptionToken SubscribeRegex(string regex, Action<TopicDataRecord> callback)
@@ -108,11 +113,12 @@ public class TopicDataBuffer : ITopicDataBuffer
         foreach (var entry in localTopics)
         {
             string topic = entry.Key;
-            if (Regex.Match(topic, regex))
+            Match match = Regex.Match(topic, regex);
+            if (match.Success)
             {
-                if (!dictTopic2RegexTokenMatches.ContainsKey(topic))
-                    dictTopic2RegexTokenMatches.Add(topic, new List<SubscriptionToken>());
-                dictTopic2RegexTokenMatches[record.Topic].Add(token);
+                if (!dictTopic2RegexMatches.ContainsKey(topic))
+                    dictTopic2RegexMatches.Add(topic, new List<string>());
+                dictTopic2RegexMatches[topic].Add(regex);
             }
         }
 
@@ -128,7 +134,7 @@ public class TopicDataBuffer : ITopicDataBuffer
 
     public List<SubscriptionToken> GetTopicSubscriptionTokens(string topic)
     {
-        return dictTopicSubscriptionTokens[topic];
+        return dictTopicSubscriptionTokens.ContainsKey(topic) ? dictTopicSubscriptionTokens[topic] : null;
     }
 
     public List<SubscriptionToken> GetRegexSubscriptionTokens(string regex)
@@ -147,11 +153,17 @@ public class TopicDataBuffer : ITopicDataBuffer
             token.callback.Invoke(record);
         }
 
-        if (dictTopic2RegexTokenMatches.ContainsKey(record.Topic))
+        if (dictTopic2RegexMatches.ContainsKey(record.Topic))
         {
-            foreach (var entry in dictTopic2RegexTokenMatches[record.Topic])
+            List<string> matchingRegexes = dictTopic2RegexMatches[record.Topic];
+            foreach (var regex in matchingRegexes)
             {
-                entry.callback.Invoke(record);
+                List<SubscriptionToken> tokens = dictRegexSubscriptionTokens[regex];
+                foreach (var token in tokens)
+                {
+                    token.callback.Invoke(record);
+                }
+                
             }
         }
     }
