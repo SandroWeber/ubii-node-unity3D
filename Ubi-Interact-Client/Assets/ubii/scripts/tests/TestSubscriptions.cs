@@ -12,6 +12,11 @@ public class TestSubscriptions : MonoBehaviour
     void Start()
     {
         ubiiNode = FindObjectOfType<UbiiNode>();
+        if (ubiiNode == null)
+        {
+            Debug.LogError("TestSubscriptions - ubii node not found!");
+            return;
+        }
 
         RunTests();
     }
@@ -23,7 +28,6 @@ public class TestSubscriptions : MonoBehaviour
 
     async private void RunTests()
     {
-        await Task.Delay(1000);
         RunTestSubscribePublish();
         await Task.Delay(1000);
         RunTestSubscribeRegex();
@@ -80,7 +84,7 @@ public class TestSubscriptions : MonoBehaviour
         }
 
         // subscribe, should cover existing topics (already published) and future new topics that have yet to be published for the first time
-        await ubiiNode.SubscribeRegex(regex, (Ubii.TopicData.TopicDataRecord record) =>
+        SubscriptionToken subToken = await ubiiNode.SubscribeRegex(regex, (Ubii.TopicData.TopicDataRecord record) =>
         {
             topics_received.Add(record.Topic);
         });
@@ -91,8 +95,10 @@ public class TestSubscriptions : MonoBehaviour
             ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
         }
 
-        await Task.Delay(1000).ContinueWith((Task t) =>
+        await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
+            await ubiiNode.Unsubscribe(subToken);
+            
             bool success = true;
             foreach (string topic in topics)
             {

@@ -42,7 +42,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         networkClient = new NetMQUbiiClient(clientName, ip, port);
         await networkClient.Initialize(isUbiiNode);
-        OnInitialized();
+        OnInitialized?.Invoke();
     }
 
     public string GetID()
@@ -76,7 +76,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         List<SubscriptionToken> subscriptions = topicData.GetRegexSubscriptionTokens(regex);
         if (subscriptions == null || subscriptions.Count == 0)
         {
-            await networkClient.SubscribeRegex(regex, OnTopicDataRecord);
+            bool success = await networkClient.SubscribeRegex(regex, OnTopicDataRecord);
         }
 
         return topicData.SubscribeRegex(regex, callback);

@@ -139,7 +139,7 @@ public class TopicDataBuffer : ITopicDataBuffer
 
     public List<SubscriptionToken> GetRegexSubscriptionTokens(string regex)
     {
-        return dictRegexSubscriptionTokens[regex];
+        return dictRegexSubscriptionTokens.ContainsKey(regex) ? dictRegexSubscriptionTokens[regex] : null;
     }
 
     //--------------------------------------
@@ -148,9 +148,12 @@ public class TopicDataBuffer : ITopicDataBuffer
 
     private void NotifySubscribers(TopicDataRecord record)
     {
-        foreach (SubscriptionToken token in dictTopicSubscriptionTokens[record.Topic])
+        if (dictTopicSubscriptionTokens.ContainsKey(record.Topic))
         {
-            token.callback.Invoke(record);
+            foreach (SubscriptionToken token in dictTopicSubscriptionTokens[record.Topic])
+            {
+                token.callback.Invoke(record);
+            }
         }
 
         if (dictTopic2RegexMatches.ContainsKey(record.Topic))
@@ -163,7 +166,7 @@ public class TopicDataBuffer : ITopicDataBuffer
                 {
                     token.callback.Invoke(record);
                 }
-                
+
             }
         }
     }
