@@ -226,8 +226,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ip: localhost
   port: 8101
-  clientName: Unity3D Client Node
-  isUbiiNode: 0
+  clientName: Unity3D Client Node - Test Object Movement
+  autoConnect: 1
+  isDedicatedProcessingNode: 0
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

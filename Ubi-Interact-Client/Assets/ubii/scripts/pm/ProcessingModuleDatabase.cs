@@ -1,29 +1,31 @@
 
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ProcessingModuleDatabase
 {
-    private Dictionary<string, ProcessingModule> dictProcessingModules;
+    private Dictionary<string, Ubii.Processing.ProcessingModule> dictProcessingModules = new Dictionary<string, Ubii.Processing.ProcessingModule>();
 
-    public bool AddModule(ProcessingModule pm)
+    public bool AddModule(Ubii.Processing.ProcessingModule pmSpecs)
     {
-        if (dictProcessingModules.ContainsKey(pm.name))
+        if (dictProcessingModules.ContainsKey(pmSpecs.Name))
         {
             return false;
         }
 
-        dictProcessingModules.Add(pm.name, pm);
+        dictProcessingModules.Add(pmSpecs.Name, pmSpecs);
+        Debug.Log("ProcessingModuleDatabase.AddModule() - " + pmSpecs.Name);
 
         return true;
     }
 
-    public ProcessingModule GetModule(string name)
+    public Ubii.Processing.ProcessingModule GetModule(string name)
     {
         return dictProcessingModules.ContainsKey(name) ? dictProcessingModules[name] : null;
     }
 
-    public List<ProcessingModule> GetAllModules()
+    public List<Ubii.Processing.ProcessingModule> GetAllModules()
     {
-        return new List<ProcessingModule>(dictProcessingModules.Values);
+        return new List<Ubii.Processing.ProcessingModule>(dictProcessingModules.Values);
     }
 }

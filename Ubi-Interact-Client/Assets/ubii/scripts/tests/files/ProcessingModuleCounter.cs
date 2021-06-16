@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Ubii.TopicData;
 
 public class ProcessingModuleCounter : ProcessingModule
 {
@@ -6,22 +8,23 @@ public class ProcessingModuleCounter : ProcessingModule
         Description = "Test Module counting up with set frequency",
         ProcessingMode = new Ubii.Processing.ProcessingMode {
             Frequency = new Ubii.Processing.ProcessingMode.Types.Frequency { Hertz = 1 }
-        }
+        },
+        Language = Ubii.Processing.ProcessingModule.Types.Language.Cs
     };
-    private int ticker = 0;
+    private int count;
     private string name = "ProcessingModuleCounter";
 
     public ProcessingModuleCounter()
     {
+        specs.Outputs.Add(new Ubii.Processing.ModuleIO { InternalName = "outCounter", MessageFormat = "int32" });
     }
 
     void OnCreated()
     {
-
+        count = 0;
     }
-
-    void OnProcessing()
+    Dictionary<string, TopicDataRecord> OnProcessing()
     {
-
+        return new Dictionary<string, TopicDataRecord>();
     }
 }

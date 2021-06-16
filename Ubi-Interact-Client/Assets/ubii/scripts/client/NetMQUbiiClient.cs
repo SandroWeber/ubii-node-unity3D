@@ -45,16 +45,6 @@ public class NetMQUbiiClient
         return clientSpecification.Id;
     }
 
-    // Initialize the ubiiClient, serviceClient and topicDataClient
-    public async Task Initialize(bool isDedicatedProcessingNode)
-    {
-        netmqServiceClient = new NetMQServiceClient(host, port);
-        await InitServerSpec();
-        Debug.Log("ServerSpecs: " + serverSpecification);
-        await InitClientReg(isDedicatedProcessingNode);
-        InitTopicDataClient();
-    }
-
     public bool IsConnected()
     {
         return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
@@ -315,6 +305,20 @@ public class NetMQUbiiClient
     #endregion
 
     #region Initialize Functions
+
+    // Initialize the ubiiClient, serviceClient and topicDataClient
+    public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
+    {
+        Debug.Log("NetworkClient.Initialize() - clientSpecs: " + clientSpecs);
+        netmqServiceClient = new NetMQServiceClient(host, port);
+        await InitServerSpec();
+        Debug.Log("ServerSpecs: " + serverSpecification);
+        await InitClientReg(clientSpecs.IsDedicatedProcessingNode);
+        InitTopicDataClient();
+
+        return clientSpecification;
+    }
+
     private async Task InitServerSpec()
     {
         // Call Service to receive serverSpecifications

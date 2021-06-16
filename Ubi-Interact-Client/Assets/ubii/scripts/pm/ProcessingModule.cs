@@ -114,13 +114,15 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
                 {
                     processingInputRecords.Add(input.InternalName, ioProxy[input.InternalName].Invoke());
                 }
+                
                 processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
                 
-                foreach (string output in processingOutputRecords.Keys)
+                foreach (string outputName in processingOutputRecords.Keys)
                 {
-                    if (ioProxy.ContainsKey(output))
-                        ioProxy[output].Invoke();
+                    if (ioProxy.ContainsKey(outputName))
+                        ioProxy[outputName].Invoke(); // this should take the output record as parameter for Invoke? I.e. Invoke(processingOutputRecords[outputName])
                 }
+
                 if (status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
                 {
                     Thread.Sleep(msFrequency);

@@ -30,10 +30,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public bool autoConnect = true;
     [Tooltip("Ubi-Interact node is used exclusively for processing modules.")]
     public bool isDedicatedProcessingNode = false;
+    
+    private Ubii.Clients.Client clientNodeSpecification;
+    private NetMQUbiiClient networkClient;
 
-    protected NetMQUbiiClient networkClient;
-
-    private ProcessingModuleDatabase processingModuleDatabase = new ProcessingModuleDatabase();
+    private ProcessingModuleDatabase _processingModuleDatabase = new ProcessingModuleDatabase();
+    public ProcessingModuleDatabase processingModuleDatabase {
+        get { return _processingModuleDatabase; }
+    }
     private ProcessingModuleManager processingModuleManager;
     private TopicDataProxy topicdataProxy;
     private TopicDataBuffer topicData = new TopicDataBuffer();
@@ -42,6 +46,16 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     async private void Start()
     {
+        clientNodeSpecification = new Ubii.Clients.Client {
+            Name = clientName,
+            IsDedicatedProcessingNode = isDedicatedProcessingNode
+        };
+        List<Ubii.Processing.ProcessingModule> pms = processingModuleDatabase.GetAllModules();
+        foreach (Ubii.Processing.ProcessingModule pm in pms)
+        {
+            clientNodeSpecification.ProcessingModules.Add(pm);
+        }
+
         if (autoConnect)
         {
             Connect();
@@ -53,12 +67,13 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         await InitializeClient();
         await SubscribeSessionInfo();
         processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
+        Debug.Log("UbiiNode.Connect() - clientSpecs: " + clientNodeSpecification);
     }
 
     public async Task InitializeClient()
     {
         networkClient = new NetMQUbiiClient(clientName, ip, port);
-        await networkClient.Initialize(isDedicatedProcessingNode);
+        clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         OnInitialized?.Invoke();
     }
 
