@@ -23,7 +23,7 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     public Dictionary<string, TopicDataRecord> inputs;
     public Dictionary<string, TopicDataRecord> outputs;
 
-    public Dictionary<string, Func<object, object>> ioProxy; // "input/asd", "output/dsa", "input/abc"
+    public Dictionary<string, Func<TopicDataRecord>> ioProxy; // "input/asd", "output/dsa", "input/abc"
 
     public ProcessingModule(Ubii.Processing.ProcessingModule specs = null, string id = null)
     {
@@ -46,7 +46,7 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         inputs = new Dictionary<string, TopicDataRecord>();
         outputs = new Dictionary<string, TopicDataRecord>();
 
-        ioProxy = new Dictionary<string, Func<object, object>>();
+        ioProxy = new Dictionary<string, Func<TopicDataRecord>>();
     }
 
     public Ubii.Processing.ProcessingModule ToProtobuf()
@@ -107,7 +107,19 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
                 TimeSpan deltaTime = tNow.Subtract(tLastProcess);
                 tLastProcess = tNow;
                 //processing
-                OnProcessing(deltaTime, ioProxy);
+                inputs = new Dictionary<string, TopicDataRecord>();
+                foreach (string key in ioProxy.Keys)
+                {
+                    if (key.Contains("input"))
+                        inputs.Add(key, ioProxy[key].Invoke());
+
+                }
+                outputs = OnProcessing(deltaTime, inputs);
+                foreach (string output in outputs.Keys)
+                {
+                    if (ioProxy.ContainsKey(output))
+                        ioProxy[output].Invoke();
+                }
                 if (status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
                 {
                     Thread.Sleep(msFrequency);
@@ -124,7 +136,7 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     /// <param name="deltaTime"></param>
     /// <param name="inputs"></param>
     /// <returns></returns>
-    public Dictionary<string, Func<object, object>> OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object, object>> inputs)
+    public Dictionary<string, TopicDataRecord> OnProcessing(TimeSpan deltaTime, Dictionary<string, TopicDataRecord> inputs)
     {
         throw new NotImplementedException();
     }
@@ -155,11 +167,6 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     }
 
     public void OnCreated(Ubii.Processing.ProcessingModule.Types.Status status)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnProcessing()
     {
         throw new NotImplementedException();
     }
@@ -198,4 +205,6 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     {
         throw new NotImplementedException();
     }
+
+
 }

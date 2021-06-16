@@ -11,6 +11,7 @@ using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
 using Ubii.Devices;
+using System.Linq;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
@@ -36,6 +37,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     private ProcessingModuleManager processingModuleManager;
     private TopicDataProxy topicdataProxy;
     private TopicDataBuffer topicData = new TopicDataBuffer();
+
+    private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
 
     async private void Start()
     {
@@ -120,14 +123,32 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         return true;
     }
 
-    public Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
+    public async Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
     {
-        return networkClient.RegisterDevice(ubiiDevice);
+        ServiceReply deviceRegReply = await networkClient.RegisterDevice(ubiiDevice);
+
+        if (deviceRegReply.Error == null)
+            registeredDevices.Add(deviceRegReply.Device.Id, deviceRegReply.Device);
+
+        return deviceRegReply;
     }
 
-    public Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice)
+    public async Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice)
     {
-        return networkClient.DeregisterDevice(ubiiDevice);
+        var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
+        if (!registeredDevices.Remove(ubiiDevice.Id))
+            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
+        else
+            Debug.Log("Deregistering " + ubiiDevice + " successful!");
+        return deviceDeregReply;
+    }
+
+    private async Task DeregisterAllDevices()
+    {
+        foreach (Device device in registeredDevices.Values.ToList())
+        {
+            await DeregisterDevice(device);
+        }
     }
 
     public bool IsConnected()
@@ -162,8 +183,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }, token);
     }
 
-    private void OnDisable()
+    private async void OnDisable()
     {
+        await DeregisterAllDevices();
         if (networkClient != null)
         {
             networkClient.ShutDown();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Ubii.TopicData;
 
 interface IProcessingModule
 {
@@ -14,7 +15,7 @@ interface IProcessingModule
     /// <param name="deltaTime"></param>
     /// <param name="inputs"></param>
     /// <returns>Dictionary with outputs created during processing</returns>
-    Dictionary<string, Func<object, object>> OnProcessing(TimeSpan deltaTime, Dictionary<string, Func<object, object>> inputs);
+    Dictionary<string, TopicDataRecord> OnProcessing(TimeSpan deltaTime, Dictionary<string, TopicDataRecord> inputs);
     void OnHalted();
     void OnDestroyed();
 

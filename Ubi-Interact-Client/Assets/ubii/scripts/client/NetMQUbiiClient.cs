@@ -31,8 +31,6 @@ public class NetMQUbiiClient
 
     private NetMQTopicDataClient netmqTopicDataClient;
 
-    private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
-
     private Server serverSpecification;
 
     public NetMQUbiiClient(string name, string host, int port)
@@ -104,11 +102,6 @@ public class NetMQUbiiClient
             Device = ubiiDevice
         });
 
-        if (reply.Error == null)
-        {
-            registeredDevices.Add(reply.Device.Id, reply.Device);
-        }
-
         return reply;
     }
 
@@ -124,21 +117,11 @@ public class NetMQUbiiClient
         {
             Debug.LogError("Deregister Device Error: " + reply.Error.Message);
         }
-        if (!registeredDevices.Remove(ubiiDevice.Id))
-        {
-            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
-        }
-        Debug.Log("Deregistering " + ubiiDevice + " successful!");
+       
         return reply;
     }
 
-    private async Task DeregisterAllDevices()
-    {
-        foreach (Device device in registeredDevices.Values.ToList())
-        {
-            await DeregisterDevice(device);
-        }
-    }
+ 
     #endregion
 
     #region Subscriptions
@@ -372,7 +355,6 @@ public class NetMQUbiiClient
 
     async public void ShutDown()
     {
-        await DeregisterAllDevices();
         await UnsubscribeAll();
         await CallService(new Ubii.Services.ServiceRequest
         {
