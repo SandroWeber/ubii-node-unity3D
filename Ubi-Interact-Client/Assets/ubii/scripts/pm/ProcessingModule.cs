@@ -20,8 +20,8 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     public ProcessingMode processingMode;
     public Ubii.Processing.ProcessingModule.Types.Status status;
 
-    public Dictionary<string, TopicDataRecord> inputs;
-    public Dictionary<string, TopicDataRecord> outputs;
+    public Dictionary<string, TopicDataRecord> processingInputRecords;
+    public Dictionary<string, TopicDataRecord> processingOutputRecords;
 
     public Dictionary<string, Func<TopicDataRecord>> ioProxy; // "input/asd", "output/dsa", "input/abc"
 
@@ -43,8 +43,8 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         };
         status = Ubii.Processing.ProcessingModule.Types.Status.Created;
 
-        inputs = new Dictionary<string, TopicDataRecord>();
-        outputs = new Dictionary<string, TopicDataRecord>();
+        processingInputRecords = new Dictionary<string, TopicDataRecord>();
+        processingOutputRecords = new Dictionary<string, TopicDataRecord>();
 
         ioProxy = new Dictionary<string, Func<TopicDataRecord>>();
     }
@@ -106,16 +106,17 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
                 DateTime tNow = DateTime.Now;
                 TimeSpan deltaTime = tNow.Subtract(tLastProcess);
                 tLastProcess = tNow;
-                //processing
-                inputs = new Dictionary<string, TopicDataRecord>();
-                foreach (string key in ioProxy.Keys)
-                {
-                    if (key.Contains("input"))
-                        inputs.Add(key, ioProxy[key].Invoke());
 
+                //processing
+                processingInputRecords.Clear();
+
+                foreach (ModuleIO input in specs.Inputs)
+                {
+                    processingInputRecords.Add(input.InternalName, ioProxy[input.InternalName].Invoke());
                 }
-                outputs = OnProcessing(deltaTime, inputs);
-                foreach (string output in outputs.Keys)
+                processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
+                
+                foreach (string output in processingOutputRecords.Keys)
                 {
                     if (ioProxy.ContainsKey(output))
                         ioProxy[output].Invoke();

@@ -274,7 +274,7 @@ public class ProcessingModuleManager
 
                 if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
                 {
-                    TopicDataRecord record = processingModule.outputs[outputMapping.OutputName];
+                    TopicDataRecord record = processingModule.processingOutputRecords[outputMapping.OutputName];
                     processingModule.SetOutputSetter(outputMapping.OutputName, _ => topicdataProxy.Publish(record));
                 }
                 else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
@@ -299,12 +299,12 @@ public class ProcessingModuleManager
 
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
     {
-        return processingModule.outputs.Any(element => element.Key == outputMapping.OutputName);
+        return processingModule.processingOutputRecords.Any(element => element.Key == outputMapping.OutputName);
     }
 
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
     {
-        return processingModule.inputs.Any(element => element.Key == inputMapping.InputName);
+        return processingModule.processingInputRecords.Any(element => element.Key == inputMapping.InputName);
     }
 
     /// <summary>
