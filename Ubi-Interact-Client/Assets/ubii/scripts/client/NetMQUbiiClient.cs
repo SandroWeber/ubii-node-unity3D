@@ -48,12 +48,12 @@ public class NetMQUbiiClient
     }
 
     // Initialize the ubiiClient, serviceClient and topicDataClient
-    public async Task Initialize(bool isUbiiNode)
+    public async Task Initialize(bool isDedicatedProcessingNode)
     {
         netmqServiceClient = new NetMQServiceClient(host, port);
         await InitServerSpec();
         Debug.Log("ServerSpecs: " + serverSpecification);
-        await InitClientReg(isUbiiNode);
+        await InitClientReg(isDedicatedProcessingNode);
         InitTopicDataClient();
     }
 
@@ -342,18 +342,18 @@ public class NetMQUbiiClient
         serverSpecification = rep.Server;
     }
 
-    private async Task InitClientReg(bool isUbiiNode)
+    private async Task InitClientReg(bool isDedicatedProcessingNode)
     {
         // Client Registration
         ServiceRequest clientRegistration = new ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
-            Client = new Client { 
+            Client = new Client {
                 Name = name,
-                IsDedicatedProcessingNode = isUbiiNode
+                IsDedicatedProcessingNode = isDedicatedProcessingNode
             },
         };
-        //if(isUbiiNode)
+        //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
         var task = CallService(clientRegistration);

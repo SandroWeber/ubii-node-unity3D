@@ -17,7 +17,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
 
-
     [Header("Network configuration")]
     [Tooltip("Host ip the client connects to. Default is localhost.")]
     public string ip = "localhost";
@@ -25,23 +24,38 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public int port = 8101;
     [Tooltip("Name for the client connection to the server. Default is Unity3D Client.")]
     public string clientName = "Unity3D Client Node";
-    public bool isUbiiNode;
+
+    [Tooltip("Automatically connect on start.")]
+    public bool autoConnect = true;
+    [Tooltip("Ubi-Interact node is used exclusively for processing modules.")]
+    public bool isDedicatedProcessingNode = false;
 
     protected NetMQUbiiClient networkClient;
+
+    private ProcessingModuleDatabase processingModuleDatabase = new ProcessingModuleDatabase();
     private ProcessingModuleManager processingModuleManager;
     private TopicDataProxy topicdataProxy;
     private TopicDataBuffer topicData = new TopicDataBuffer();
 
     async private void Start()
     {
+        if (autoConnect)
+        {
+            Connect();
+        }
+    }
+
+    public async Task Connect()
+    {
         await InitializeClient();
         await SubscribeSessionInfo();
+        processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
     }
 
     public async Task InitializeClient()
     {
         networkClient = new NetMQUbiiClient(clientName, ip, port);
-        await networkClient.Initialize(isUbiiNode);
+        await networkClient.Initialize(isDedicatedProcessingNode);
         OnInitialized?.Invoke();
     }
 

@@ -25,7 +25,7 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
 
     public Dictionary<string, Func<object, object>> ioProxy; // "input/asd", "output/dsa", "input/abc"
 
-    public ProcessingModule(Ubii.Processing.ProcessingModule specs, string id = null)
+    public ProcessingModule(Ubii.Processing.ProcessingModule specs = null, string id = null)
     {
         // TODO: !!For that to work the whole class must be serializable, is it?
         if (specs != null)
