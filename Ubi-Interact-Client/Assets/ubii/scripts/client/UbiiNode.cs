@@ -18,6 +18,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
 
+    public delegate void ConnectEventHandler();
+    public static event ConnectEventHandler OnConnected;
+
     [Header("Network configuration")]
     [Tooltip("Host ip the client connects to. Default is localhost.")]
     public string ip = "localhost";
@@ -46,35 +49,45 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     async private void Start()
     {
+        if (autoConnect)
+        {
+            Initialize();
+        }
+    }
+
+    public async Task Initialize()
+    {
         clientNodeSpecification = new Ubii.Clients.Client {
             Name = clientName,
             IsDedicatedProcessingNode = isDedicatedProcessingNode
         };
-        List<Ubii.Processing.ProcessingModule> pms = processingModuleDatabase.GetAllModules();
-        foreach (Ubii.Processing.ProcessingModule pm in pms)
+        List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllModules();
+        Debug.Log("Node init PM list: " + pmDatabaseList.Count);
+        /*for(int i = 0; i < pmDatabaseList.Count; i++)
         {
+            Debug.Log(pmDatabaseList[i]);
+            clientNodeSpecification.ProcessingModules.Add(pmDatabaseList[i]);
+        }*/
+        foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
+        {
+            Debug.Log(pm);
             clientNodeSpecification.ProcessingModules.Add(pm);
         }
+        Debug.Log("Node client specs: " + clientNodeSpecification);
 
-        if (autoConnect)
-        {
-            Connect();
-        }
-    }
-
-    public async Task Connect()
-    {
-        await InitializeClient();
+        await InitNetworkConnection();
         await SubscribeSessionInfo();
         processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
-        Debug.Log("UbiiNode.Connect() - clientSpecs: " + clientNodeSpecification);
+        OnInitialized?.Invoke();
+        
+        Debug.Log("Node client specs at end of init: " + clientNodeSpecification);
     }
 
-    public async Task InitializeClient()
+    public async Task InitNetworkConnection()
     {
         networkClient = new NetMQUbiiClient(clientName, ip, port);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-        OnInitialized?.Invoke();
+        OnConnected?.Invoke();
     }
 
     public string GetID()

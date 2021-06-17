@@ -309,10 +309,9 @@ public class NetMQUbiiClient
     // Initialize the ubiiClient, serviceClient and topicDataClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
-        Debug.Log("NetworkClient.Initialize() - clientSpecs: " + clientSpecs);
         netmqServiceClient = new NetMQServiceClient(host, port);
         await InitServerSpec();
-        Debug.Log("ServerSpecs: " + serverSpecification);
+        //Debug.Log("ServerSpecs: " + serverSpecification);
         await InitClientReg(clientSpecs.IsDedicatedProcessingNode);
         InitTopicDataClient();
 
@@ -346,7 +345,6 @@ public class NetMQUbiiClient
         var task = CallService(clientRegistration);
         ServiceReply rep = await task;
         clientSpecification = rep.Client;
-        Debug.Log("ClientSpec: " + clientSpecification);
     }
 
     private void InitTopicDataClient()
