@@ -85,7 +85,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task InitNetworkConnection()
     {
-        networkClient = new NetMQUbiiClient(clientName, ip, port);
+        networkClient = new NetMQUbiiClient(ip, port);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         OnConnected?.Invoke();
     }

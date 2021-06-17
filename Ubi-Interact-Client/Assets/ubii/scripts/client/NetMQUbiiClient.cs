@@ -21,7 +21,6 @@ using UnityEngine.Apple.ReplayKit;
 /// </summary>
 public class NetMQUbiiClient
 {
-    private string name;
     private string host;
     private int port;
 
@@ -33,9 +32,8 @@ public class NetMQUbiiClient
 
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string name, string host, int port)
+    public NetMQUbiiClient(string host, int port)
     {
-        this.name = name;
         this.host = host;
         this.port = port;
     }
@@ -312,7 +310,7 @@ public class NetMQUbiiClient
         netmqServiceClient = new NetMQServiceClient(host, port);
         await InitServerSpec();
         //Debug.Log("ServerSpecs: " + serverSpecification);
-        await InitClientReg(clientSpecs.IsDedicatedProcessingNode);
+        await InitClientReg(clientSpecs);
         InitTopicDataClient();
 
         return clientSpecification;
@@ -328,16 +326,13 @@ public class NetMQUbiiClient
         serverSpecification = rep.Server;
     }
 
-    private async Task InitClientReg(bool isDedicatedProcessingNode)
+    private async Task InitClientReg(Ubii.Clients.Client clientSpecs)
     {
         // Client Registration
         ServiceRequest clientRegistration = new ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
-            Client = new Client {
-                Name = name,
-                IsDedicatedProcessingNode = isDedicatedProcessingNode
-            },
+            Client = clientSpecs
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
