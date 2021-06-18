@@ -61,13 +61,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             Name = clientName,
             IsDedicatedProcessingNode = isDedicatedProcessingNode
         };
+
         List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllModules();
         Debug.Log("Node init PM list: " + pmDatabaseList.Count);
-        /*for(int i = 0; i < pmDatabaseList.Count; i++)
-        {
-            Debug.Log(pmDatabaseList[i]);
-            clientNodeSpecification.ProcessingModules.Add(pmDatabaseList[i]);
-        }*/
         foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
         {
             Debug.Log(pm);
@@ -75,19 +71,30 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
         Debug.Log("Node client specs: " + clientNodeSpecification);
 
-        await InitNetworkConnection();
-        await SubscribeSessionInfo();
-        processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
-        OnInitialized?.Invoke();
-        
-        Debug.Log("Node client specs at end of init: " + clientNodeSpecification);
+        bool success = await InitNetworkConnection();
+        if (success)
+        {
+            await SubscribeSessionInfo();
+            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
+            OnInitialized?.Invoke();
+            Debug.Log("Node client specs at end of init: " + clientNodeSpecification);
+        }
+        else{
+            Debug.LogError("UbiiNode.Initialize() - failed to establish network connection to master node");
+        }
     }
 
-    public async Task InitNetworkConnection()
+    public async Task<bool> InitNetworkConnection()
     {
         networkClient = new NetMQUbiiClient(ip, port);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
+        if (clientNodeSpecification == null)
+        {
+            return false;
+        }
+
         OnConnected?.Invoke();
+        return true;
     }
 
     public string GetID()

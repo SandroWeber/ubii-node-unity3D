@@ -40,7 +40,7 @@ public class NetMQUbiiClient
 
     public string GetClientID()
     {
-        return clientSpecification.Id;
+        return clientSpecification?.Id;
     }
 
     public bool IsConnected()
@@ -208,6 +208,7 @@ public class NetMQUbiiClient
         }
         return true;
     }
+
     #endregion
 
     #region Regex
@@ -265,6 +266,7 @@ public class NetMQUbiiClient
         }
         return true;
     }
+
     private async Task<bool> UnsubscribeRegex(string regex)
     {
         ServiceRequest unsubscribeRequest = new ServiceRequest
@@ -285,21 +287,9 @@ public class NetMQUbiiClient
         netmqTopicDataClient.RemoveTopicDataRegex(regex);
         return true;
     }
-    #endregion
-    /// <summary>
-    /// Unsubscribe from all topics/regex, called before shutdown
-    /// </summary>
-    /// <returns></returns>
-    private async Task UnsubscribeAll()
-    {
-        await UnsubscribeTopic(netmqTopicDataClient.GetAllSubscribedTopics());
 
-        List<string> subscribedRegex = netmqTopicDataClient.GetAllSubscribedRegex();
-        foreach (string regex in subscribedRegex.ToList())
-        {
-            await UnsubscribeRegex(regex);
-        }
-    }
+    #endregion
+
     #endregion
 
     #region Initialize Functions
@@ -310,7 +300,7 @@ public class NetMQUbiiClient
         netmqServiceClient = new NetMQServiceClient(host, port);
         await InitServerSpec();
         //Debug.Log("ServerSpecs: " + serverSpecification);
-        await InitClientReg(clientSpecs);
+        bool success = await InitClientRegistration(clientSpecs);
         InitTopicDataClient();
 
         return clientSpecification;
@@ -326,9 +316,8 @@ public class NetMQUbiiClient
         serverSpecification = rep.Server;
     }
 
-    private async Task InitClientReg(Ubii.Clients.Client clientSpecs)
+    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
     {
-        // Client Registration
         ServiceRequest clientRegistration = new ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
@@ -337,9 +326,18 @@ public class NetMQUbiiClient
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
-        var task = CallService(clientRegistration);
-        ServiceReply rep = await task;
-        clientSpecification = rep.Client;
+        ServiceReply reply = await CallService(clientRegistration);
+        if (reply.Client != null)
+        {
+            clientSpecification = reply.Client;
+            return true;
+        }
+        else if (reply.Error != null)
+        {
+            Debug.LogError("NetMQUbiiClient.InitClientRegistration() - " + reply);
+        }
+        
+        return false;
     }
 
     private void InitTopicDataClient()
@@ -352,7 +350,6 @@ public class NetMQUbiiClient
 
     async public void ShutDown()
     {
-        await UnsubscribeAll();
         await CallService(new Ubii.Services.ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
