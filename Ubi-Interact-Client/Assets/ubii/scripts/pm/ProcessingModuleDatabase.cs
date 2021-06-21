@@ -1,31 +1,48 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface IProcessingModuleDatabaseEntry
+{
+    Ubii.Processing.ProcessingModule GetSpecifications();
+    ProcessingModule CreateInstance();
+}
+
 public class ProcessingModuleDatabase
 {
-    private Dictionary<string, Ubii.Processing.ProcessingModule> dictProcessingModules = new Dictionary<string, Ubii.Processing.ProcessingModule>();
+    private Dictionary<string, IProcessingModuleDatabaseEntry> dictEntries = new Dictionary<string, IProcessingModuleDatabaseEntry>();
 
-    public bool AddModule(Ubii.Processing.ProcessingModule pmSpecs)
+    public bool AddEntry(IProcessingModuleDatabaseEntry entry)
     {
-        if (dictProcessingModules.ContainsKey(pmSpecs.Name))
+        if (dictEntries.ContainsKey(entry.GetSpecifications().Name))
         {
             return false;
         }
 
-        dictProcessingModules.Add(pmSpecs.Name, pmSpecs);
-        Debug.Log("ProcessingModuleDatabase.AddModule() - " + pmSpecs.Name);
+        dictEntries.Add(entry.GetSpecifications().Name, entry);
+        Debug.Log("ProcessingModuleDatabase.AddModule() - " + entry.GetSpecifications().Name);
 
         return true;
     }
 
-    public Ubii.Processing.ProcessingModule GetModule(string name)
+    public IProcessingModuleDatabaseEntry GetEntry(string name)
     {
-        return dictProcessingModules.ContainsKey(name) ? dictProcessingModules[name] : null;
+        return dictEntries[name];
     }
 
-    public List<Ubii.Processing.ProcessingModule> GetAllModules()
+    public List<IProcessingModuleDatabaseEntry> GetAllEntries()
     {
-        return new List<Ubii.Processing.ProcessingModule>(dictProcessingModules.Values);
+        return new List<IProcessingModuleDatabaseEntry>(dictEntries.Values);
+    }
+
+    public List<Ubii.Processing.ProcessingModule> GetAllSpecifications()
+    {
+        List<Ubii.Processing.ProcessingModule> list = new List<Ubii.Processing.ProcessingModule>();
+        foreach (var entry in dictEntries.Values)
+        {
+            list.Add(entry.GetSpecifications());
+        }
+        return list;
     }
 }

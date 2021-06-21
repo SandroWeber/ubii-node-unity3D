@@ -6,7 +6,7 @@ public class TestProcessingModules : MonoBehaviour
 {
     private UbiiNode ubiiNode = null;
 
-    private ProcessingModuleCounter pmFrequencyCounter = new ProcessingModuleCounter();
+    private TestProcessingModuleCounter pmFrequencyCounter = new TestProcessingModuleCounter();
 
     private Ubii.Sessions.Session ubiiSession;
 
@@ -16,7 +16,7 @@ public class TestProcessingModules : MonoBehaviour
     void Start()
     {
         ubiiNode = FindObjectOfType<UbiiNode>();
-        ubiiNode.processingModuleDatabase.AddModule(pmFrequencyCounter.specs);
+        ubiiNode.processingModuleDatabase.AddEntry(new TestProcessingModuleCounterDatabaseEntry());
 
         UbiiNode.OnInitialized += OnUbiiInitialized;
         ubiiNode.Initialize();
@@ -35,11 +35,11 @@ public class TestProcessingModules : MonoBehaviour
         ubiiSession = new Ubii.Sessions.Session { Name = "Test Processing Modules Counter" };
 
         ubiiSession.ProcessingModules.Add(new Ubii.Processing.ProcessingModule {
-            Name = pmFrequencyCounter.specs.Name
+            Name = TestProcessingModuleCounter.specs.Name
         });
         
         Ubii.Sessions.IOMapping ioMapping = new Ubii.Sessions.IOMapping();
-        ioMapping.ProcessingModuleName = pmFrequencyCounter.specs.Name;
+        ioMapping.ProcessingModuleName = TestProcessingModuleCounter.specs.Name;
         ioMapping.OutputMappings.Add(new Ubii.Sessions.TopicOutputMapping {
             OutputName = "outCounter",
             Topic = topicFrequencyCounter

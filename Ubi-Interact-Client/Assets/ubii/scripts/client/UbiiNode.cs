@@ -62,7 +62,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             IsDedicatedProcessingNode = isDedicatedProcessingNode
         };
 
-        List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllModules();
+        List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllSpecifications();
         Debug.Log("Node init PM list: " + pmDatabaseList.Count);
         foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
         {
@@ -99,7 +99,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public string GetID()
     {
-        return networkClient.GetClientID();
+        return clientNodeSpecification.Id;
     }
 
     public Task<ServiceReply> CallService(ServiceRequest request)
@@ -260,17 +260,17 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         Debug.Log(nameof(OnStartSession));
         Debug.Log(record);
-        /*List<ProcessingModule> localPMs = new List<ProcessingModule>();
 
+        List<ProcessingModule> localPMs = new List<ProcessingModule>();
         foreach (Ubii.Processing.ProcessingModule pm in record.ProcessingModuleList.Elements)
         {
-            if (pm.NodeId == this.processingModule.nodeID)
+            if (pm.NodeId == this.GetID())
             {
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
-        Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
+        /*Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
         foreach (ProcessingModule pm in localPMs)
         {
             elements.Add(pm.ToProtobuf());
