@@ -30,14 +30,15 @@ public class ProcessingModuleManager
     /// </summary>
     private Dictionary<string, Ubii.Sessions.IOMapping> ioMappings = new Dictionary<string, Ubii.Sessions.IOMapping>();
 
-    private TopicDataBuffer lockstepTopicData = new TopicDataBuffer();
+    private ProcessingModuleDatabase pmDatabase = null;
 
     private string nodeID;
     
-    public ProcessingModuleManager(string nodeID, object deviceManager, TopicDataProxy topicdataProxy = null)
+    public ProcessingModuleManager(string nodeID, object deviceManager, ProcessingModuleDatabase pmDatabase, TopicDataProxy topicdataProxy = null)
     {
         this.nodeID = nodeID;
         this.topicdataProxy = topicdataProxy;
+        this.pmDatabase = pmDatabase;
     }
 
     /// <summary>
@@ -48,9 +49,9 @@ public class ProcessingModuleManager
     public ProcessingModule CreateModule(Ubii.Processing.ProcessingModule specs)
     {
         ProcessingModule pm = null;
-        if (ProcessingModuleStorage.HasEntry(specs.Name))
+        if (pmDatabase.HasEntry(specs.Name))
         {
-            pm = ProcessingModuleStorage.CreateInstance(specs);
+            pm = pmDatabase.CreateInstance(specs.Name);
             // Some TODOs from nodeJS implementation here..
         }
         else

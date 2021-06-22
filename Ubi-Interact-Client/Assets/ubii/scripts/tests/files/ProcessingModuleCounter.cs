@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Ubii.TopicData;
+using UnityEngine;
 
 public struct TestProcessingModuleCounterDatabaseEntry : IProcessingModuleDatabaseEntry
 {
@@ -32,10 +33,13 @@ public class TestProcessingModuleCounter : ProcessingModule
     void OnCreated()
     {
         count = 0;
+        Debug.Log("TestProcessingModuleCounter.OnCreated() - count=" + count);
     }
 
     Dictionary<string, TopicDataRecord> OnProcessing()
     {
+        count++;
+        Debug.Log("TestProcessingModuleCounter.OnProcessing() - count=" + count);
         return new Dictionary<string, TopicDataRecord>();
     }
 }

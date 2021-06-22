@@ -26,6 +26,11 @@ public class ProcessingModuleDatabase
         return true;
     }
 
+    public bool HasEntry(string name)
+    {
+        return dictEntries.ContainsKey(name);
+    }
+
     public IProcessingModuleDatabaseEntry GetEntry(string name)
     {
         return dictEntries[name];
@@ -44,5 +49,20 @@ public class ProcessingModuleDatabase
             list.Add(entry.GetSpecifications());
         }
         return list;
+    }
+
+    public ProcessingModule CreateInstance(string name)
+    {
+        try
+        {
+            IProcessingModuleDatabaseEntry entry = GetEntry(name);
+            return entry.CreateInstance();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
+
     }
 }

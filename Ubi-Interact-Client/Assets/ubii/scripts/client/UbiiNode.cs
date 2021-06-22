@@ -74,8 +74,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         bool success = await InitNetworkConnection();
         if (success)
         {
+            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, null);
             await SubscribeSessionInfo();
-            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, null);
             OnInitialized?.Invoke();
             Debug.Log("Node client specs at end of init: " + clientNodeSpecification);
         }
@@ -252,11 +252,16 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         await SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
     }
 
+    private void OnTopicDataRecord(TopicDataRecord record)
+    {
+        this.topicData.Publish(record);
+    }
+
     /// <summary>
     /// Callback for start session subscription
     /// </summary>
     /// <param name="record"></param>
-    private async void OnStartSession(TopicDataRecord record)
+    public async void OnStartSession(TopicDataRecord record)
     {
         Debug.Log(nameof(OnStartSession));
         Debug.Log(record);
@@ -270,7 +275,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
-        /*Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
+
+        Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
         foreach (ProcessingModule pm in localPMs)
         {
             elements.Add(pm.ToProtobuf());
@@ -293,29 +299,24 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             {
                 this.processingModuleManager.StartModule(pm);
             }
-        }*/
+        }
     }
 
     /// <summary>
     /// Callback for stop session subscription
     /// </summary>
     /// <param name="msgSession"></param>
-    private void OnStopSession(TopicDataRecord msgSession)
+    public void OnStopSession(TopicDataRecord msgSession)
     {
         Debug.Log(nameof(OnStopSession));
-        foreach (ProcessingModule pm in processingModuleManager.processingModules.Values)
+        foreach (ProcessingModule pm in this.processingModuleManager.processingModules.Values)
         {
             if (pm.sessionID == msgSession.Session.Id)
             {
-                processingModuleManager.StopModule(pm);
-                processingModuleManager.RemoveModule(pm);
+                this.processingModuleManager.StopModule(pm);
+                this.processingModuleManager.RemoveModule(pm);
             }
         }
-    }
-
-    private void OnTopicDataRecord(TopicDataRecord record)
-    {
-        this.topicData.Publish(record);
     }
 }
 

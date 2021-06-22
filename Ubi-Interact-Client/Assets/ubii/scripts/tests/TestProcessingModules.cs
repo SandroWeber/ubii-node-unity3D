@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class TestProcessingModules : MonoBehaviour
@@ -55,6 +56,18 @@ public class TestProcessingModules : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
-        Debug.Log(reply);
+        Debug.Log("test PMs reply to start session: " + reply);
+        if (reply.Session != null)
+        {
+            ubiiSession = reply.Session;
+        }
+        
+        await Task.Delay(5000);
+        
+        reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
+            Session = ubiiSession
+        });
+        Debug.Log("test PMs reply to stop session: " + reply);
     }
 }
