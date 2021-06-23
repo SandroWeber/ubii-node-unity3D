@@ -41,7 +41,6 @@ class NetMQServiceClient : IUbiiServiceClient
 
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-
         TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
         bool success = false;
         while (!success)

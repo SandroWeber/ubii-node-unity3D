@@ -1,57 +1,64 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Ubii.Processing;
-using Ubii.TopicData;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
+
+using Google.Protobuf.Collections;
+using Ubii.Processing;
+using Ubii.TopicData;
 
 [Serializable]
-public class ProcessingModule : IProcessingModule // add the generic stuff for ioProxy, OnProcessing input parameter types
+public class ProcessingModule : IProcessingModule
 {
-    public string nodeID;
-    public string sessionID;
-    public string name;
-    public string id;
     private Ubii.Processing.ProcessingModule specs;
-    private Ubii.Processing.ProcessingModule.Types.Language language;
-
-    public ProcessingMode processingMode;
-    public Ubii.Processing.ProcessingModule.Types.Status status;
+    public Ubii.Processing.ProcessingModule Specs { get { return specs; } }
 
     public Dictionary<string, TopicDataRecord> processingInputRecords;
     public Dictionary<string, TopicDataRecord> processingOutputRecords;
 
-    public Dictionary<string, Func<TopicDataRecord>> ioProxy; // "input/asd", "output/dsa", "input/abc"
+    public Dictionary<string, Func<TopicDataRecord>> dictInputGetters;
+    public Dictionary<string, Action<TopicDataRecord>> dictOutputSetters;
 
-    public ProcessingModule(Ubii.Processing.ProcessingModule specs = null, string id = null)
+    private CancellationTokenSource cts = null;
+
+    // proto specification accessors
+    public string Id { get { return this.specs.Id; } }
+    public string Name { get { return this.specs.Name; } }
+    public string SessionId { get { return this.specs.SessionId; } }
+    public Ubii.Processing.ProcessingModule.Types.Language Language { get { return this.specs.Language; } }
+    public ProcessingMode ProcessingMode { get { return this.specs.ProcessingMode; } }
+    public Ubii.Processing.ProcessingModule.Types.Status Status { get { return this.specs.Status; } }
+    public RepeatedField<Ubii.Processing.ModuleIO> Inputs { get { return this.specs.Inputs; } }
+    public RepeatedField<Ubii.Processing.ModuleIO> Outputs { get { return this.specs.Outputs; } }
+
+    public ProcessingModule(Ubii.Processing.ProcessingModule specs = null)
     {
         // TODO: !!For that to work the whole class must be serializable, is it?
-        if (specs != null)
-            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(specs), this);
+        /*if (specs != null)
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(specs), this);*/
 
         // Auto-generated, remove if code above works
         this.specs = specs;
 
-        this.id = id == null ? Guid.NewGuid().ToString() : id;
-        this.language = Ubii.Processing.ProcessingModule.Types.Language.Cs;
+        this.specs.Id = this.specs.Id == null ? Guid.NewGuid().ToString() : this.specs.Id;
+        this.specs.Language = Ubii.Processing.ProcessingModule.Types.Language.Cs;
 
-        processingMode = new ProcessingMode
+        Debug.Log(this.ToString() + " - specs: " + this.specs);
+        if (this.specs.ProcessingMode == null)
         {
-            Frequency = new ProcessingMode.Types.Frequency { Hertz = 30 }
-        };
-        status = Ubii.Processing.ProcessingModule.Types.Status.Created;
+            this.specs.ProcessingMode = new ProcessingMode
+            {
+                Frequency = new ProcessingMode.Types.Frequency { Hertz = 30 }
+            };
+        }
 
-        processingInputRecords = new Dictionary<string, TopicDataRecord>();
-        processingOutputRecords = new Dictionary<string, TopicDataRecord>();
+        this.processingInputRecords = new Dictionary<string, TopicDataRecord>();
+        this.processingOutputRecords = new Dictionary<string, TopicDataRecord>();
+        this.dictInputGetters = new Dictionary<string, Func<TopicDataRecord>>();
 
-        ioProxy = new Dictionary<string, Func<TopicDataRecord>>();
-    }
-
-    public Ubii.Processing.ProcessingModule ToProtobuf()
-    {
-        throw new NotImplementedException();
+        this.specs.Status = Ubii.Processing.ProcessingModule.Types.Status.Created;
     }
 
     /// <summary>
@@ -59,13 +66,13 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     /// </summary>
     public void Start()
     {
-        if (processingMode.ModeCase == ProcessingMode.ModeOneofCase.Frequency) // Oder: processingMode.Frequency != null
+        if (this.specs.ProcessingMode.ModeCase == ProcessingMode.ModeOneofCase.Frequency) // Oder: processingMode.Frequency != null
         {
             StartProcessingByFrequency();
         }
         // TODO: Add other processingModes later
 
-        if (status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
+        if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
             Debug.Log(this.ToString() + " started");
     }
 
@@ -74,11 +81,12 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     /// </summary>
     public void Stop()
     {
-        if (status == Ubii.Processing.ProcessingModule.Types.Status.Halted)
+        Debug.Log(this.ToString() + " - Stop()");
+        if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Halted)
             return;
 
+        this.specs.Status = Ubii.Processing.ProcessingModule.Types.Status.Halted;
         OnHalted();
-        status = Ubii.Processing.ProcessingModule.Types.Status.Halted;
         RemoveAllListeners(PMEvents.NEW_INPUT);
         // this.OnProcessingLockstepPass = () => { ..} TODO ? -> later
         Debug.Log(this.ToString() + " stopped");
@@ -89,19 +97,20 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     /// </summary>
     private void StartProcessingByFrequency()
     {
-        status = Ubii.Processing.ProcessingModule.Types.Status.Processing;
+        this.specs.Status = Ubii.Processing.ProcessingModule.Types.Status.Processing;
 
         DateTime tLastProcess = DateTime.Now;
-        int msFrequency = 1000 / processingMode.Frequency.Hertz;
+        int msFrequency = 1000 / this.specs.ProcessingMode.Frequency.Hertz;
+        Debug.Log(this.ToString() + " - StartProcessingByFrequency() - msFrequency=" + msFrequency);
 
 
         // TODO: Token must be used to cancel task before shutting this down -> cts.Cancel()
-        CancellationTokenSource cts = new CancellationTokenSource(); // global?
+        this.cts = new CancellationTokenSource(); // global?
         CancellationToken token = cts.Token;
 
         Task processIteration = Task.Run(() =>
         {
-            while (true)
+            while (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
             {
                 DateTime tNow = DateTime.Now;
                 TimeSpan deltaTime = tNow.Subtract(tLastProcess);
@@ -112,26 +121,32 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
 
                 foreach (ModuleIO input in specs.Inputs)
                 {
-                    processingInputRecords.Add(input.InternalName, ioProxy[input.InternalName].Invoke());
-                }
-                
-                processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
-                
-                foreach (string outputName in processingOutputRecords.Keys)
-                {
-                    if (ioProxy.ContainsKey(outputName))
-                        ioProxy[outputName].Invoke(); // this should take the output record as parameter for Invoke? I.e. Invoke(processingOutputRecords[outputName])
+                    processingInputRecords.Add(input.InternalName, dictInputGetters[input.InternalName].Invoke());
                 }
 
-                if (status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
+                processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
+
+                foreach (string outputName in processingOutputRecords.Keys)
+                {
+                    if (dictInputGetters.ContainsKey(outputName))
+                        dictInputGetters[outputName].Invoke(); // this should take the output record as parameter for Invoke? I.e. Invoke(processingOutputRecords[outputName])
+                }
+
+                if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
                 {
                     Thread.Sleep(msFrequency);
                 }
-                else if (status == Ubii.Processing.ProcessingModule.Types.Status.Destroyed)
-                    cts.Cancel();
+                else
+                {
+                    this.cts.Cancel();
+                }
             }
         }, token);
     }
+
+    #region lifecycle
+
+    public virtual void OnCreated() { }
 
     /// <summary>
     /// Takes inputs, callbacks generate input dictionary
@@ -139,27 +154,22 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
     /// <param name="deltaTime"></param>
     /// <param name="inputs"></param>
     /// <returns></returns>
-    public Dictionary<string, TopicDataRecord> OnProcessing(TimeSpan deltaTime, Dictionary<string, TopicDataRecord> inputs)
+    public virtual Dictionary<string, TopicDataRecord> OnProcessing(TimeSpan deltaTime, Dictionary<string, TopicDataRecord> inputs)
+    {
+        throw new NotImplementedException();
+    }
+    public virtual void OnHalted() { }
+
+    public virtual void OnDestroyed() { }
+
+    #endregion
+
+    private void RemoveAllListeners(PMEvents pmEvent)
     {
         throw new NotImplementedException();
     }
 
-    private void RemoveAllListeners(PMEvents nEW_INPUT)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnHalted()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetInputGetter(string inputName, Func<TopicDataRecord> p)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Emit(PMEvents nEW_INPUT, string inputName)
+    public void Emit(PMEvents pmEvent, string inputName)
     {
         throw new NotImplementedException();
     }
@@ -169,24 +179,28 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         throw new NotImplementedException();
     }
 
-    public void OnCreated(Ubii.Processing.ProcessingModule.Types.Status status)
+    public void SetInputGetter(string inputName, Func<TopicDataRecord> getter)
     {
-        throw new NotImplementedException();
+        if (this.dictInputGetters.ContainsKey(inputName))
+        {
+            this.dictInputGetters[inputName] = getter;
+        }
+        else
+        {
+            this.dictInputGetters.Add(inputName, getter);
+        }
     }
 
-    public void OnDestroyed()
+    public void SetOutputSetter(string outputName, Action<TopicDataRecord> setter)
     {
-        throw new NotImplementedException();
-    }
-
-    public void SetInputGetter()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetOutputGetter()
-    {
-        throw new NotImplementedException();
+        if (this.dictOutputSetters.ContainsKey(outputName))
+        {
+            this.dictOutputSetters[outputName] = setter;
+        }
+        else
+        {
+            this.dictOutputSetters.Add(outputName, setter);
+        }
     }
 
     public Action ReadInput(string name)
@@ -204,10 +218,17 @@ public class ProcessingModule : IProcessingModule // add the generic stuff for i
         throw new NotImplementedException();
     }
 
-    internal void SetOutputSetter(string outputName, Action<TopicDataRecord> record)
+    #region utility
+
+    public Ubii.Processing.ProcessingModule ToProtobuf()
     {
-        throw new NotImplementedException();
+        return this.specs;
     }
 
+    public string ToString()
+    {
+        return "ProcessingModule '" + this.Name + "' (ID " + this.Id + ")";
+    }
 
+    #endregion
 }

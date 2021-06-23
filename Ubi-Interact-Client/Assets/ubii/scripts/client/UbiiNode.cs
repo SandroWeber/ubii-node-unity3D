@@ -33,15 +33,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public bool autoConnect = true;
     [Tooltip("Ubi-Interact node is used exclusively for processing modules.")]
     public bool isDedicatedProcessingNode = false;
-    
+
     private Ubii.Clients.Client clientNodeSpecification;
     private NetMQUbiiClient networkClient;
 
     private ProcessingModuleDatabase _processingModuleDatabase = new ProcessingModuleDatabase();
-    public ProcessingModuleDatabase processingModuleDatabase {
-        get { return _processingModuleDatabase; }
-    }
+    public ProcessingModuleDatabase processingModuleDatabase { get { return _processingModuleDatabase; } }
     private ProcessingModuleManager processingModuleManager;
+    public ProcessingModuleManager ProcessingModuleManager { get { return processingModuleManager; } }
     private TopicDataProxy topicdataProxy;
     private TopicDataBuffer topicData = new TopicDataBuffer();
 
@@ -57,19 +56,18 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task Initialize()
     {
-        clientNodeSpecification = new Ubii.Clients.Client {
+        clientNodeSpecification = new Ubii.Clients.Client
+        {
             Name = clientName,
             IsDedicatedProcessingNode = isDedicatedProcessingNode
         };
 
         List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllSpecifications();
-        Debug.Log("Node init PM list: " + pmDatabaseList.Count);
+        //Debug.Log("Node init PM list: " + pmDatabaseList.Count);
         foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
         {
-            Debug.Log(pm);
             clientNodeSpecification.ProcessingModules.Add(pm);
         }
-        Debug.Log("Node client specs: " + clientNodeSpecification);
 
         bool success = await InitNetworkConnection();
         if (success)
@@ -77,9 +75,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, null);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
-            Debug.Log("Node client specs at end of init: " + clientNodeSpecification);
+            Debug.Log("Node client specs: " + clientNodeSpecification);
         }
-        else{
+        else
+        {
             Debug.LogError("UbiiNode.Initialize() - failed to establish network connection to master node");
         }
     }
@@ -263,15 +262,16 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// <param name="record"></param>
     public async void OnStartSession(TopicDataRecord record)
     {
-        Debug.Log(nameof(OnStartSession));
-        Debug.Log(record);
+        Debug.Log(nameof(OnStartSession) + ": " + record);
 
         List<ProcessingModule> localPMs = new List<ProcessingModule>();
-        foreach (Ubii.Processing.ProcessingModule pm in record.ProcessingModuleList.Elements)
+        foreach (Ubii.Processing.ProcessingModule pm in record.Session.ProcessingModules)
         {
             if (pm.NodeId == this.GetID())
             {
+                Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
+                Debug.Log("UbiiNode.OnStartSession() - created instance: " + newModule.ToString());
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
@@ -289,16 +289,22 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 Elements = { elements }
             }
         };
+        Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
 
         ServiceReply reply = await CallService(pmRuntimeAddRequest);
+        //Debug.Log("start session runtime add PMs reply: " + reply);
         if (reply.Success != null)
         {
-
             this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
+            Debug.Log("UbiiNode.OnStartSession() - after ApplyIOMappings, valid localPMs: " + localPMs);
             foreach (var pm in localPMs)
             {
-                this.processingModuleManager.StartModule(pm);
+                this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
             }
+        }
+        else
+        {
+            //TODO: delete modules 
         }
     }
 
@@ -311,9 +317,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         Debug.Log(nameof(OnStopSession));
         foreach (ProcessingModule pm in this.processingModuleManager.processingModules.Values)
         {
-            if (pm.sessionID == msgSession.Session.Id)
+            if (pm.SessionId == msgSession.Session.Id)
             {
-                this.processingModuleManager.StopModule(pm);
+                this.processingModuleManager.StopModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
                 this.processingModuleManager.RemoveModule(pm);
             }
         }

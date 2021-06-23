@@ -6,7 +6,7 @@ using UnityEngine;
 public interface IProcessingModuleDatabaseEntry
 {
     Ubii.Processing.ProcessingModule GetSpecifications();
-    ProcessingModule CreateInstance();
+    ProcessingModule CreateInstance(Ubii.Processing.ProcessingModule specs);
 }
 
 public class ProcessingModuleDatabase
@@ -21,7 +21,7 @@ public class ProcessingModuleDatabase
         }
 
         dictEntries.Add(entry.GetSpecifications().Name, entry);
-        Debug.Log("ProcessingModuleDatabase.AddModule() - " + entry.GetSpecifications().Name);
+        //Debug.Log("PMDatabase.AddEntry() - " + entry.GetSpecifications());
 
         return true;
     }
@@ -51,16 +51,16 @@ public class ProcessingModuleDatabase
         return list;
     }
 
-    public ProcessingModule CreateInstance(string name)
+    public ProcessingModule CreateInstance(Ubii.Processing.ProcessingModule specs)
     {
         try
         {
-            IProcessingModuleDatabaseEntry entry = GetEntry(name);
-            return entry.CreateInstance();
+            IProcessingModuleDatabaseEntry entry = GetEntry(specs.Name);
+            return entry.CreateInstance(specs);
         }
         catch (Exception e)
         {
-            Debug.LogError(e);
+            Debug.LogError(e.ToString());
             return null;
         }
 

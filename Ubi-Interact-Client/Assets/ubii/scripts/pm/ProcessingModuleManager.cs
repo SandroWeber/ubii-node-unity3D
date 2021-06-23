@@ -33,7 +33,7 @@ public class ProcessingModuleManager
     private ProcessingModuleDatabase pmDatabase = null;
 
     private string nodeID;
-    
+
     public ProcessingModuleManager(string nodeID, object deviceManager, ProcessingModuleDatabase pmDatabase, TopicDataProxy topicdataProxy = null)
     {
         this.nodeID = nodeID;
@@ -51,8 +51,12 @@ public class ProcessingModuleManager
         ProcessingModule pm = null;
         if (pmDatabase.HasEntry(specs.Name))
         {
-            pm = pmDatabase.CreateInstance(specs.Name);
-            // Some TODOs from nodeJS implementation here..
+            Ubii.Processing.ProcessingModule detailedSpecs = pmDatabase.GetEntry(specs.Name).GetSpecifications();
+            detailedSpecs.Id = specs.Id;
+            detailedSpecs.NodeId = specs.NodeId;
+            detailedSpecs.SessionId = specs.SessionId;
+
+            pm = pmDatabase.CreateInstance(detailedSpecs);
         }
         else
         {
@@ -63,14 +67,14 @@ public class ProcessingModuleManager
             }
             pm = new ProcessingModule(specs);
         }
-        pm.nodeID = this.nodeID;
 
         bool success = AddModule(pm);
         if (!success)
             return null;
         else
         {
-            pm?.OnCreated(pm.status);
+            Debug.Log("PMManager.CreateModule() - add module success: " + pm.ToString());
+            pm.OnCreated();
             return pm;
         }
     }
@@ -82,13 +86,14 @@ public class ProcessingModuleManager
     /// <returns><see langword="true"/> if pm was added successfully, <see langword="false"/> if given pm had no id</returns>
     private bool AddModule(ProcessingModule pm)
     {
-        if (pm.id == null || pm.id == string.Empty)
+        if (pm.Id == null || pm.Id == string.Empty)
         {
-            Debug.Log("ProcessingModuleManager: Module " + pm.name + " does not have an ID, can't add it");
+            Debug.LogError("ProcessingModuleManager: Module " + pm.Name + " does not have an ID, can't add it");
             return false;
         }
 
-        processingModules.Add(pm.id, pm);
+        this.processingModules.Add(pm.Id, pm);
+        //Debug.Log("ProcessingModuleManager.AddModule() - " + pm.ToString());
         return true;
     }
 
@@ -99,20 +104,20 @@ public class ProcessingModuleManager
     /// <returns><see langword="true"/>, if pm could be removed successfully. <see langword="false"/> if no pm with that id is registered</returns>
     public bool RemoveModule(ProcessingModule pm)
     {
-        if (pm.id == null || pm.id == string.Empty)
+        if (pm.Id == null || pm.Id == string.Empty)
         {
-            Debug.LogError("ProcessingModuleManager: Module " + pm.name + " does not have an ID, can't remove it");
+            Debug.LogError("ProcessingModuleManager: Module " + pm.Name + " does not have an ID, can't remove it");
             return false;
         }
 
-        if (pmTopicSubscriptions.ContainsKey(pm.id))
+        if (pmTopicSubscriptions.ContainsKey(pm.Id))
         {
-            List<SubscriptionToken> subscriptionTokens = pmTopicSubscriptions[pm.id];
+            List<SubscriptionToken> subscriptionTokens = pmTopicSubscriptions[pm.Id];
             subscriptionTokens?.ForEach(token => topicdataProxy.Unsubscribe(token));
-            pmTopicSubscriptions.Remove(pm.id);
+            pmTopicSubscriptions.Remove(pm.Id);
         }
 
-        pmTopicSubscriptions.Remove(pm.id);
+        pmTopicSubscriptions.Remove(pm.Id);
         return true;
     }
 
@@ -129,11 +134,11 @@ public class ProcessingModuleManager
     /// <param name="pmSpecs"></param>
     /// <param name="sessionID"></param>
     /// <returns>Processing module matching given specs</returns>
-    public ProcessingModule GetModuleBySpecs(ProcessingModule pmSpecs, string sessionID)
+    public ProcessingModule GetModuleBySpecs(Ubii.Processing.ProcessingModule pmSpecs, string sessionID)
     {
-        ProcessingModule module = GetModuleByID(pmSpecs.id);
+        ProcessingModule module = GetModuleByID(pmSpecs.Id);
         if (module == null)
-            module = GetModuleByName(pmSpecs.name, sessionID);
+            module = GetModuleByName(pmSpecs.Name, sessionID);
         return module;
     }
 
@@ -159,9 +164,11 @@ public class ProcessingModuleManager
     /// Starts processing module
     /// </summary>
     /// <param name="pmSpec">Processing module to start</param>
-    public void StartModule(ProcessingModule pmSpec)
+    public void StartModule(Ubii.Processing.ProcessingModule pmSpec)
     {
-        ProcessingModule pm = processingModules[pmSpec.id];
+        Debug.Log("PMManager.StartModule() - specs: " + pmSpec);
+        ProcessingModule pm = processingModules[pmSpec.Id];
+        Debug.Log("PMManager.StartModule() - pm: " + pm.ToString());
         pm?.Start();
     }
 
@@ -169,12 +176,12 @@ public class ProcessingModuleManager
     /// Stops module and unsubscribes its tokens from the topic data proxy
     /// </summary>
     /// <param name="pmSpec">Processing module to stop</param>
-    public void StopModule(ProcessingModule pmSpec)
+    public void StopModule(Ubii.Processing.ProcessingModule pmSpec)
     {
-        ProcessingModule pm = processingModules[pmSpec.id];
+        ProcessingModule pm = processingModules[pmSpec.Id];
         pm?.Stop();
 
-        List<SubscriptionToken> subs = pmTopicSubscriptions[pmSpec.id];
+        List<SubscriptionToken> subs = pmTopicSubscriptions[pmSpec.Id];
         if (subs != null)
         {
             foreach (SubscriptionToken token in subs)
@@ -191,13 +198,14 @@ public class ProcessingModuleManager
     /// <param name="sessionID"></param>
     public void ApplyIOMappings(RepeatedField<IOMapping> ioMappings, string sessionID)
     {
-        Debug.Log("\nApplyIOMappings");
+        Debug.Log("ApplyIOMappings - ioMappings: " + ioMappings);
 
         // TODO: Check this when ioMappings type changes?
         IEnumerable<IOMapping> applicableIOMappings = ioMappings.Where(ioMapping => processingModules.ContainsKey(ioMapping.ProcessingModuleId));
 
         foreach (IOMapping mapping in applicableIOMappings)
         {
+            Debug.Log("ApplyIOMappings - applicableIOMapping: " + mapping);
             this.ioMappings[mapping.ProcessingModuleId] = mapping;
             ProcessingModule processingModule = GetModuleByID(mapping.ProcessingModuleId) != null ? GetModuleByID(mapping.ProcessingModuleId) : GetModuleByName(mapping.ProcessingModuleName, sessionID);
 
@@ -208,13 +216,13 @@ public class ProcessingModuleManager
                 return;
             }
 
-            bool isLockstep = processingModule.processingMode.Lockstep != null;
+            bool isLockstep = processingModule.ProcessingMode.Lockstep != null;
 
             foreach (TopicInputMapping inputMapping in mapping.InputMappings)
             {
                 if (!IsValidIOMapping(processingModule, inputMapping))
                 {
-                    Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.name + "->" + inputMapping.InputName + " is invalid");
+                    Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + inputMapping.InputName + " is invalid");
                     return;
                 }
 
@@ -231,25 +239,25 @@ public class ProcessingModuleManager
                     {
                         Action<TopicDataRecord> callback = null;
 
-                        if (processingModule.processingMode?.TriggerOnInput != null)
+                        if (processingModule.ProcessingMode?.TriggerOnInput != null)
                         {
                             callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
                         }
 
                         SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
 
-                        if (!pmTopicSubscriptions.ContainsKey(processingModule.id))
+                        if (!pmTopicSubscriptions.ContainsKey(processingModule.Id))
                         {
-                            pmTopicSubscriptions.Add(processingModule.id, new List<SubscriptionToken>());
+                            pmTopicSubscriptions.Add(processingModule.Id, new List<SubscriptionToken>());
                         }
-                        pmTopicSubscriptions[processingModule.id].Add(subscriptionToken);
+                        pmTopicSubscriptions[processingModule.Id].Add(subscriptionToken);
                     }
                 }
                 else if (inputMapping.TopicSourceCase == TopicInputMapping.TopicSourceOneofCase.TopicMux)
                 {
                     // ~TODO, device Manager ?
                     string multiplexer;
-                    if(inputMapping.TopicMux.Id != null)
+                    if (inputMapping.TopicMux.Id != null)
                     {
                         multiplexer = "missing code"; // this.deviceManager.getTopicMux(inputMapping.TopicMux.Id) in js file?
                     }
@@ -267,45 +275,50 @@ public class ProcessingModuleManager
 
             foreach (TopicOutputMapping outputMapping in mapping.OutputMappings)
             {
-                if (!IsValidIOMapping(processingModule, outputMapping))
-                {
-                    Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.name + "->" + outputMapping.OutputName + " is invalid");
-                    return;
-                }
-
-                if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
-                {
-                    TopicDataRecord record = processingModule.processingOutputRecords[outputMapping.OutputName];
-                    processingModule.SetOutputSetter(outputMapping.OutputName, _ => topicdataProxy.Publish(record));
-                }
-                else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
-                {
-                    //let demultiplexer = undefined;
-                    //if (topicDestination.id)
-                    //{
-                    //    demultiplexer = this.deviceManager.getTopicDemux(topicDestination.id);
-                    //}
-                    //else
-                    //{
-                    //    let topicDataBuffer = isLockstep ? this.lockstepTopicData : this.topicData;
-                    //    demultiplexer = this.deviceManager.createTopicDemuxerBySpecs(topicDestination, topicDataBuffer);
-                    //}
-                    //processingModule.setOutputSetter(outputMapping.outputName, (value) => {
-                    //    demultiplexer.push(value);
-                    //});
-                }
+                ApplyOutputMapping(processingModule, outputMapping);
             }
+        }
+    }
+
+    private void ApplyOutputMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
+    {
+        Debug.Log("ApplyIOMappings() - outputMapping: " + outputMapping);
+        if (!IsValidIOMapping(processingModule, outputMapping))
+        {
+            Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + outputMapping.OutputName + " is invalid");
+        }
+        Debug.Log("ApplyIOMappings() - outputMapping is valid, TopicDestinationCase=" + outputMapping.TopicDestinationCase);
+
+        if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
+        {
+            processingModule.SetOutputSetter(outputMapping.OutputName, (TopicDataRecord record) => topicdataProxy.Publish(record));
+        }
+        else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
+        {
+            //let demultiplexer = undefined;
+            //if (topicDestination.Id)
+            //{
+            //    demultiplexer = this.deviceManager.getTopicDemux(topicDestination.Id);
+            //}
+            //else
+            //{
+            //    let topicDataBuffer = isLockstep ? this.lockstepTopicData : this.topicData;
+            //    demultiplexer = this.deviceManager.createTopicDemuxerBySpecs(topicDestination, topicDataBuffer);
+            //}
+            //processingModule.setOutputSetter(outputMapping.outputName, (value) => {
+            //    demultiplexer.push(value);
+            //});
         }
     }
 
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
     {
-        return processingModule.processingOutputRecords.Any(element => element.Key == outputMapping.OutputName);
+        return processingModule.Outputs.Any(output => output.InternalName == outputMapping.OutputName);
     }
 
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
     {
-        return processingModule.processingInputRecords.Any(element => element.Key == inputMapping.InputName);
+        return processingModule.Inputs.Any(input => input.InternalName == inputMapping.InputName);
     }
 
     /// <summary>
@@ -316,7 +329,7 @@ public class ProcessingModuleManager
     {
         foreach (var pm in processingModules.Values)
         {
-            if (pm.sessionID == session.Id)
+            if (pm.SessionId == session.Id)
                 pm.Start();
         }
     }
@@ -329,7 +342,7 @@ public class ProcessingModuleManager
     {
         foreach (var pm in processingModules.Values)
         {
-            if (pm.sessionID == session.Id)
+            if (pm.SessionId == session.Id)
                 pm.Stop();
         }
     }

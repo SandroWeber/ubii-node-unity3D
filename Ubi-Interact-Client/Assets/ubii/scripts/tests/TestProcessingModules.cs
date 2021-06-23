@@ -7,11 +7,11 @@ public class TestProcessingModules : MonoBehaviour
 {
     private UbiiNode ubiiNode = null;
 
-    private TestProcessingModuleCounter pmFrequencyCounter = new TestProcessingModuleCounter();
-
     private Ubii.Sessions.Session ubiiSession;
 
     private string topicFrequencyCounter;
+
+    private ProcessingModule pm = null;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +27,11 @@ public class TestProcessingModules : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void OnDisable()
+    {
+        ubiiNode.ProcessingModuleManager.StopSessionModules(ubiiSession);
     }
 
     public void OnUbiiInitialized()
@@ -56,7 +61,7 @@ public class TestProcessingModules : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
-        Debug.Log("test PMs reply to start session: " + reply);
+        Debug.Log("TestProcessingModules.RunTest() - reply to start session: " + reply);
         if (reply.Session != null)
         {
             ubiiSession = reply.Session;
@@ -68,6 +73,6 @@ public class TestProcessingModules : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
             Session = ubiiSession
         });
-        Debug.Log("test PMs reply to stop session: " + reply);
+        Debug.Log("TestProcessingModules.RunTest() - reply to stop session: " + reply);
     }
 }

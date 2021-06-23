@@ -7,7 +7,7 @@ interface IProcessingModule
     void Start();
     void Stop();
 
-    void OnCreated(Ubii.Processing.ProcessingModule.Types.Status status);
+    void OnCreated();
 
     /// <summary>
     /// 
@@ -19,8 +19,8 @@ interface IProcessingModule
     void OnHalted();
     void OnDestroyed();
 
-    void SetInputGetter();
-    void SetOutputGetter();
+    void SetInputGetter(string inputName, Func<TopicDataRecord> getter);
+    void SetOutputSetter(string outputName, Action<TopicDataRecord> setter);
 
     Action ReadInput(string name);
     void WriteOutput(string name, string value);
