@@ -8,16 +8,18 @@ using Ubii.TopicData;
 public class TopicDataProxy : ITopicDataBuffer
 {
     private TopicDataBuffer topicDataBuffer;
+    private NetMQUbiiClient networkClient;
 
-    public TopicDataProxy(TopicDataBuffer topicDataBuffer)
+    public TopicDataProxy(TopicDataBuffer topicDataBuffer, NetMQUbiiClient networkClient)
     {
         this.topicDataBuffer = topicDataBuffer;
+        this.networkClient = networkClient;
     }
 
     public void Publish(TopicDataRecord topicDataRecord)
     {
         // Send to master node instead of pushing it directly to buffer
-        topicDataBuffer.Publish(topicDataRecord);
+        networkClient.PublishRecordImmediately(topicDataRecord);
     }
 
     public TopicDataRecord Pull(string topic)

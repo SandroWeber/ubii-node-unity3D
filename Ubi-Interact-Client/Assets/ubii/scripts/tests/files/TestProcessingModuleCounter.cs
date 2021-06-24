@@ -32,8 +32,9 @@ public class TestProcessingModuleCounter : ProcessingModule
     // internal state
     private int count = 0;
 
-    public TestProcessingModuleCounter(Ubii.Processing.ProcessingModule specs) : base(specs) { 
-       this.Specs.ProcessingMode = this.Specs.ProcessingMode != null ? this.Specs.ProcessingMode : TestProcessingModuleCounter.specs.ProcessingMode;
+    public TestProcessingModuleCounter(Ubii.Processing.ProcessingModule specs) : base(specs)
+    {
+        this.Specs.ProcessingMode = this.Specs.ProcessingMode != null ? this.Specs.ProcessingMode : TestProcessingModuleCounter.specs.ProcessingMode;
     }
 
     public override void OnCreated()
@@ -47,6 +48,8 @@ public class TestProcessingModuleCounter : ProcessingModule
         this.count++;
         Debug.Log("TestProcessingModuleCounter.OnProcessing() - count=" + count);
 
-        return new Dictionary<string, Ubii.TopicData.TopicDataRecord>();
+        return new Dictionary<string, Ubii.TopicData.TopicDataRecord>() {
+            {"outCounter", new Ubii.TopicData.TopicDataRecord { Int32 = count }}
+        };
     }
 }

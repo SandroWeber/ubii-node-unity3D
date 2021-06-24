@@ -216,61 +216,9 @@ public class ProcessingModuleManager
                 return;
             }
 
-            bool isLockstep = processingModule.ProcessingMode.Lockstep != null;
-
             foreach (TopicInputMapping inputMapping in mapping.InputMappings)
             {
-                if (!IsValidIOMapping(processingModule, inputMapping))
-                {
-                    Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + inputMapping.InputName + " is invalid");
-                    return;
-                }
-
-                if (inputMapping.TopicSourceCase == TopicInputMapping.TopicSourceOneofCase.Topic)
-                {
-                    var topicDataBuffer = this.topicdataProxy; // What about isLockstep?
-                    processingModule.SetInputGetter(inputMapping.InputName, () =>
-                    {
-                        var entry = topicDataBuffer.Pull(inputMapping.Topic);
-                        return entry;
-                    });
-
-                    if (!isLockstep)
-                    {
-                        Action<TopicDataRecord> callback = null;
-
-                        if (processingModule.ProcessingMode?.TriggerOnInput != null)
-                        {
-                            callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
-                        }
-
-                        SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
-
-                        if (!pmTopicSubscriptions.ContainsKey(processingModule.Id))
-                        {
-                            pmTopicSubscriptions.Add(processingModule.Id, new List<SubscriptionToken>());
-                        }
-                        pmTopicSubscriptions[processingModule.Id].Add(subscriptionToken);
-                    }
-                }
-                else if (inputMapping.TopicSourceCase == TopicInputMapping.TopicSourceOneofCase.TopicMux)
-                {
-                    // ~TODO, device Manager ?
-                    string multiplexer;
-                    if (inputMapping.TopicMux.Id != null)
-                    {
-                        multiplexer = "missing code"; // this.deviceManager.getTopicMux(inputMapping.TopicMux.Id) in js file?
-                    }
-                    else
-                    {
-                        //multiplexer = this.deviceManager.createTopicMuxerBySpecs(inputMapping.TopicMux, topicDataProxy); in js file?
-                    }
-                    processingModule.SetInputGetter(inputMapping.InputName, () =>
-                    {
-                        //return multiplexer.Get()
-                        return null;
-                    });
-                }
+                ApplyInputMapping(processingModule, inputMapping);
             }
 
             foreach (TopicOutputMapping outputMapping in mapping.OutputMappings)
@@ -280,18 +228,77 @@ public class ProcessingModuleManager
         }
     }
 
+    private void ApplyInputMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
+    {
+        if (!IsValidIOMapping(processingModule, inputMapping))
+        {
+            Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + inputMapping.InputName + " is invalid");
+            return;
+        }
+
+        bool isLockstep = processingModule.ProcessingMode.Lockstep != null;
+
+        if (inputMapping.TopicSourceCase == TopicInputMapping.TopicSourceOneofCase.Topic)
+        {
+            var topicDataBuffer = this.topicdataProxy; // What about isLockstep?
+            processingModule.SetInputGetter(inputMapping.InputName, () =>
+            {
+                var entry = topicDataBuffer.Pull(inputMapping.Topic);
+                return entry;
+            });
+
+            if (!isLockstep)
+            {
+                Action<TopicDataRecord> callback = null;
+
+                if (processingModule.ProcessingMode?.TriggerOnInput != null)
+                {
+                    callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
+                }
+
+                SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
+
+                if (!pmTopicSubscriptions.ContainsKey(processingModule.Id))
+                {
+                    pmTopicSubscriptions.Add(processingModule.Id, new List<SubscriptionToken>());
+                }
+                pmTopicSubscriptions[processingModule.Id].Add(subscriptionToken);
+            }
+        }
+        else if (inputMapping.TopicSourceCase == TopicInputMapping.TopicSourceOneofCase.TopicMux)
+        {
+            // ~TODO, device Manager ?
+            string multiplexer;
+            if (inputMapping.TopicMux.Id != null)
+            {
+                multiplexer = "missing code"; // this.deviceManager.getTopicMux(inputMapping.TopicMux.Id) in js file?
+            }
+            else
+            {
+                //multiplexer = this.deviceManager.createTopicMuxerBySpecs(inputMapping.TopicMux, topicDataProxy); in js file?
+            }
+            processingModule.SetInputGetter(inputMapping.InputName, () =>
+            {
+                //return multiplexer.Get()
+                return null;
+            });
+        }
+    }
+
     private void ApplyOutputMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
     {
-        Debug.Log("ApplyIOMappings() - outputMapping: " + outputMapping);
         if (!IsValidIOMapping(processingModule, outputMapping))
         {
             Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + outputMapping.OutputName + " is invalid");
         }
-        Debug.Log("ApplyIOMappings() - outputMapping is valid, TopicDestinationCase=" + outputMapping.TopicDestinationCase);
 
         if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.Topic)
         {
-            processingModule.SetOutputSetter(outputMapping.OutputName, (TopicDataRecord record) => topicdataProxy.Publish(record));
+            processingModule.SetOutputSetter(outputMapping.OutputName, (TopicDataRecord record) => {
+                record.Topic = outputMapping.Topic;
+                Debug.Log("output for '" + outputMapping.OutputName + "' : " + record);
+                topicdataProxy.Publish(record);
+            });
         }
         else if (outputMapping.TopicDestinationCase == TopicOutputMapping.TopicDestinationOneofCase.TopicDemux)
         {

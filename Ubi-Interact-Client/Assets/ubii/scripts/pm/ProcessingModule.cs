@@ -18,8 +18,8 @@ public class ProcessingModule : IProcessingModule
     public Dictionary<string, TopicDataRecord> processingInputRecords;
     public Dictionary<string, TopicDataRecord> processingOutputRecords;
 
-    public Dictionary<string, Func<TopicDataRecord>> dictInputGetters;
-    public Dictionary<string, Action<TopicDataRecord>> dictOutputSetters;
+    public Dictionary<string, Func<TopicDataRecord>> dictInputGetters = new Dictionary<string, Func<TopicDataRecord>>();
+    public Dictionary<string, Action<TopicDataRecord>> dictOutputSetters = new Dictionary<string, Action<TopicDataRecord>>();
 
     private CancellationTokenSource cts = null;
 
@@ -56,7 +56,6 @@ public class ProcessingModule : IProcessingModule
 
         this.processingInputRecords = new Dictionary<string, TopicDataRecord>();
         this.processingOutputRecords = new Dictionary<string, TopicDataRecord>();
-        this.dictInputGetters = new Dictionary<string, Func<TopicDataRecord>>();
 
         this.specs.Status = Ubii.Processing.ProcessingModule.Types.Status.Created;
     }
@@ -81,7 +80,6 @@ public class ProcessingModule : IProcessingModule
     /// </summary>
     public void Stop()
     {
-        Debug.Log(this.ToString() + " - Stop()");
         if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Halted)
             return;
 
@@ -126,10 +124,12 @@ public class ProcessingModule : IProcessingModule
 
                 processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
 
-                foreach (string outputName in processingOutputRecords.Keys)
+                foreach (var entry in processingOutputRecords)
                 {
-                    if (dictInputGetters.ContainsKey(outputName))
-                        dictInputGetters[outputName].Invoke(); // this should take the output record as parameter for Invoke? I.e. Invoke(processingOutputRecords[outputName])
+                    string outputName = entry.Key;
+                    TopicDataRecord record = entry.Value;
+                    if (dictOutputSetters.ContainsKey(outputName))
+                        dictOutputSetters[outputName].Invoke(record);
                 }
 
                 if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
@@ -203,15 +203,15 @@ public class ProcessingModule : IProcessingModule
         }
     }
 
-    public Action ReadInput(string name)
+    /*public TopicDataRecord GetInput(string name)
     {
         throw new NotImplementedException();
     }
 
-    public void WriteOutput(string name, string value)
+    public void SetOutput(string name, TopicDataRecord output)
     {
         throw new NotImplementedException();
-    }
+    }*/
 
     public bool CheckInternalName(string internalName)
     {

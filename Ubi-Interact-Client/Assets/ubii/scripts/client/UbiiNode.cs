@@ -41,7 +41,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public ProcessingModuleDatabase processingModuleDatabase { get { return _processingModuleDatabase; } }
     private ProcessingModuleManager processingModuleManager;
     public ProcessingModuleManager ProcessingModuleManager { get { return processingModuleManager; } }
-    private TopicDataProxy topicdataProxy;
+    private TopicDataProxy topicDataProxy;
     private TopicDataBuffer topicData = new TopicDataBuffer();
 
     private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
@@ -72,7 +72,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         bool success = await InitNetworkConnection();
         if (success)
         {
-            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, null);
+            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, this.topicDataProxy);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
             Debug.Log("Node client specs: " + clientNodeSpecification);
@@ -93,6 +93,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
 
         OnConnected?.Invoke();
+        this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
         return true;
     }
 
@@ -295,11 +296,18 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         //Debug.Log("start session runtime add PMs reply: " + reply);
         if (reply.Success != null)
         {
-            this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
-            Debug.Log("UbiiNode.OnStartSession() - after ApplyIOMappings, valid localPMs: " + localPMs);
-            foreach (var pm in localPMs)
+            try
             {
-                this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
+                this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
+                Debug.Log("UbiiNode.OnStartSession() - after ApplyIOMappings, valid localPMs: " + localPMs);
+                foreach (var pm in localPMs)
+                {
+                    this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.ToString());
             }
         }
         else

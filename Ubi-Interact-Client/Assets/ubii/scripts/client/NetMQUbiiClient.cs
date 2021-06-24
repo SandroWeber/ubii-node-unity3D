@@ -81,6 +81,18 @@ public class NetMQUbiiClient
         netmqTopicDataClient.SendTopicData(topicData);
     }
 
+    public void PublishRecord(TopicDataRecord record)
+    {
+
+    }
+
+    public void PublishRecordImmediately(TopicDataRecord record)
+    {
+        netmqTopicDataClient.SendTopicData(new Ubii.TopicData.TopicData {
+            TopicDataRecord = record
+        });
+    }
+
     #region Devices
     public async Task<ServiceReply> RegisterDevice(Device ubiiDevice)
     {

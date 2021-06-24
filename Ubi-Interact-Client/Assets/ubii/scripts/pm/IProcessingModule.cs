@@ -22,10 +22,8 @@ interface IProcessingModule
     void SetInputGetter(string inputName, Func<TopicDataRecord> getter);
     void SetOutputSetter(string outputName, Action<TopicDataRecord> setter);
 
-    Action ReadInput(string name);
-    void WriteOutput(string name, string value);
-
-    bool CheckInternalName(string internalName);
+    /*TopicDataRecord GetInput(string name);
+    void SetOutput(string name, TopicDataRecord output);*/
     string GetIOMessageFormat(string outputName);
     string ToString();
 
