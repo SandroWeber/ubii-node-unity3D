@@ -299,7 +299,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             try
             {
                 this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
-                Debug.Log("UbiiNode.OnStartSession() - after ApplyIOMappings, valid localPMs: " + localPMs);
                 foreach (var pm in localPMs)
                 {
                     this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });

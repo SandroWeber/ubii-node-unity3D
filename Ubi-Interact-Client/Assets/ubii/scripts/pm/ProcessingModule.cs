@@ -117,19 +117,27 @@ public class ProcessingModule : IProcessingModule
                 //processing
                 processingInputRecords.Clear();
 
-                foreach (ModuleIO input in specs.Inputs)
+                try
                 {
-                    processingInputRecords.Add(input.InternalName, dictInputGetters[input.InternalName].Invoke());
+
+                    foreach (ModuleIO input in specs.Inputs)
+                    {
+                        processingInputRecords.Add(input.InternalName, dictInputGetters[input.InternalName].Invoke());
+                    }
+
+                    processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
+
+                    foreach (var entry in processingOutputRecords)
+                    {
+                        string outputName = entry.Key;
+                        TopicDataRecord record = entry.Value;
+                        if (dictOutputSetters.ContainsKey(outputName))
+                            dictOutputSetters[outputName].Invoke(record);
+                    }
                 }
-
-                processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
-
-                foreach (var entry in processingOutputRecords)
+                catch (Exception e)
                 {
-                    string outputName = entry.Key;
-                    TopicDataRecord record = entry.Value;
-                    if (dictOutputSetters.ContainsKey(outputName))
-                        dictOutputSetters[outputName].Invoke(record);
+                    Debug.LogError(e);
                 }
 
                 if (this.specs.Status == Ubii.Processing.ProcessingModule.Types.Status.Processing)
@@ -166,21 +174,17 @@ public class ProcessingModule : IProcessingModule
 
     private void RemoveAllListeners(PMEvents pmEvent)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public void Emit(PMEvents pmEvent, string inputName)
     {
-        throw new NotImplementedException();
-    }
-
-    public string GetIOMessageFormat(string outputName)
-    {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public void SetInputGetter(string inputName, Func<TopicDataRecord> getter)
     {
+        Debug.Log("SetInputGetter() - " + this.Name + "->" + inputName);
         if (this.dictInputGetters.ContainsKey(inputName))
         {
             this.dictInputGetters[inputName] = getter;
@@ -219,6 +223,20 @@ public class ProcessingModule : IProcessingModule
     }
 
     #region utility
+
+    public string GetIOMessageFormat(string ioName)
+    {
+        foreach (Ubii.Processing.ModuleIO input in this.specs.Inputs)
+        {
+            if (input.InternalName == ioName) return input.MessageFormat;
+        }
+        foreach (Ubii.Processing.ModuleIO output in this.specs.Outputs)
+        {
+            if (output.InternalName == ioName) return output.MessageFormat;
+        }
+
+        return null;
+    }
 
     public Ubii.Processing.ProcessingModule ToProtobuf()
     {

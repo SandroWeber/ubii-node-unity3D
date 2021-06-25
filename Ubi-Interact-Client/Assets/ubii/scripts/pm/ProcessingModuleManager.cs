@@ -166,9 +166,7 @@ public class ProcessingModuleManager
     /// <param name="pmSpec">Processing module to start</param>
     public void StartModule(Ubii.Processing.ProcessingModule pmSpec)
     {
-        Debug.Log("PMManager.StartModule() - specs: " + pmSpec);
         ProcessingModule pm = processingModules[pmSpec.Id];
-        Debug.Log("PMManager.StartModule() - pm: " + pm.ToString());
         pm?.Start();
     }
 
@@ -235,6 +233,7 @@ public class ProcessingModuleManager
             Debug.LogError("ProcessingModuleManager: IO-Mapping for module " + processingModule.Name + "->" + inputMapping.InputName + " is invalid");
             return;
         }
+        Debug.Log("ApplyInputMapping() - " + processingModule.Name + "->" + inputMapping.InputName);
 
         bool isLockstep = processingModule.ProcessingMode.Lockstep != null;
 
@@ -256,8 +255,8 @@ public class ProcessingModuleManager
                     callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
                 }
 
+                // subscribe to topic and save token
                 SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
-
                 if (!pmTopicSubscriptions.ContainsKey(processingModule.Id))
                 {
                     pmTopicSubscriptions.Add(processingModule.Id, new List<SubscriptionToken>());
@@ -318,14 +317,14 @@ public class ProcessingModuleManager
         }
     }
 
-    private bool IsValidIOMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
-    {
-        return processingModule.Outputs.Any(output => output.InternalName == outputMapping.OutputName);
-    }
-
     private bool IsValidIOMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
     {
         return processingModule.Inputs.Any(input => input.InternalName == inputMapping.InputName);
+    }
+
+    private bool IsValidIOMapping(ProcessingModule processingModule, TopicOutputMapping outputMapping)
+    {
+        return processingModule.Outputs.Any(output => output.InternalName == outputMapping.OutputName);
     }
 
     /// <summary>

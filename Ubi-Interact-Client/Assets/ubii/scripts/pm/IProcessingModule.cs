@@ -24,7 +24,7 @@ interface IProcessingModule
 
     /*TopicDataRecord GetInput(string name);
     void SetOutput(string name, TopicDataRecord output);*/
-    string GetIOMessageFormat(string outputName);
+    string GetIOMessageFormat(string ioName);
     string ToString();
 
 
