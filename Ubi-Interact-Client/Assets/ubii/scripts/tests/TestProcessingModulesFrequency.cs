@@ -5,7 +5,7 @@ using UnityEngine;
 
 using Ubii.TopicData;
 
-public class TestProcessingModules : MonoBehaviour
+public class TestProcessingModulesFrequency : MonoBehaviour
 {
     private UbiiNode ubiiNode = null;
 
@@ -84,7 +84,7 @@ public class TestProcessingModules : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
-        Debug.Log("TestProcessingModules.RunTest() - reply to start session: " + reply);
+        //Debug.Log("TestProcessingModules.RunTest() - reply to start session: " + reply);
         if (reply.Session != null)
         {
             ubiiSession = reply.Session;
@@ -96,6 +96,7 @@ public class TestProcessingModules : MonoBehaviour
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
             Session = ubiiSession
         });
-        Debug.Log("TestProcessingModules.RunTest() - reply to stop session: " + reply);
+        //Debug.Log("TestProcessingModules.RunTest() - reply to stop session: " + reply);
+        Debug.Log("TestProcessingModulesFrequency SUCCESS");
     }
 }
