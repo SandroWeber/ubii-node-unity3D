@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ubii.TopicData;
 
 /// <summary>
@@ -27,19 +28,51 @@ public class TopicDataProxy : ITopicDataBuffer
         return topicDataBuffer.Pull(topic);
     }
 
-    public SubscriptionToken SubscribeTopic(string topic, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
-        return topicDataBuffer.SubscribeTopic(topic, callback);
+        List<SubscriptionToken> subscriptions = topicDataBuffer.GetTopicSubscriptionTokens(topic);
+        if (subscriptions == null || subscriptions.Count == 0)
+        {
+            await networkClient.SubscribeTopic(topic, OnTopicDataRecord);
+        }
+
+        return await topicDataBuffer.SubscribeTopic(topic, callback);
     }
 
-    public SubscriptionToken SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
-        return topicDataBuffer.SubscribeRegex(regex, callback);
+        List<SubscriptionToken> subscriptions = topicDataBuffer.GetRegexSubscriptionTokens(regex);
+        if (subscriptions == null || subscriptions.Count == 0)
+        {
+            bool success = await networkClient.SubscribeRegex(regex, OnTopicDataRecord);
+        }
+
+        return await topicDataBuffer.SubscribeRegex(regex, callback);
     }
 
-    public void Unsubscribe(SubscriptionToken token)
+    public async Task<bool> Unsubscribe(SubscriptionToken token)
     {
-        topicDataBuffer.Unsubscribe(token);
+        bool successBufferUnsubscribe = await topicDataBuffer.Unsubscribe(token);
+        if (!successBufferUnsubscribe) return false;
+
+        if (token.type == SUBSCRIPTION_TOKEN_TYPE.TOPIC)
+        {
+            List<SubscriptionToken> subscriptions = topicDataBuffer.GetTopicSubscriptionTokens(token.topic);
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                await networkClient.UnsubscribeTopic(token.topic, OnTopicDataRecord);
+            }
+        }
+        else if (token.type == SUBSCRIPTION_TOKEN_TYPE.REGEX)
+        {
+            List<SubscriptionToken> subscriptions = topicDataBuffer.GetRegexSubscriptionTokens(token.topic);
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                await networkClient.UnsubscribeRegex(token.topic, OnTopicDataRecord);
+            }
+        }
+
+        return true;
     }
 
     public void Remove(string topic)
@@ -55,5 +88,9 @@ public class TopicDataProxy : ITopicDataBuffer
     public List<SubscriptionToken> GetRegexSubscriptionTokens(string regex)
     {
         return topicDataBuffer.GetRegexSubscriptionTokens(regex);
+    }
+    private void OnTopicDataRecord(TopicDataRecord record)
+    {
+        this.topicDataBuffer.Publish(record);
     }
 }

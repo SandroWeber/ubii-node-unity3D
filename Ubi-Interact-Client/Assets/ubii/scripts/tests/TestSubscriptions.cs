@@ -50,7 +50,8 @@ public class TestSubscriptions : MonoBehaviour
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
-            await ubiiNode.Unsubscribe(subToken);
+            bool successUnsubscribe = await ubiiNode.Unsubscribe(subToken);
+            if (!successUnsubscribe) Debug.LogError("RunTestSubscribePublish Unsubscribe() FAILURE!");
 
             if (success)
             {
@@ -97,7 +98,8 @@ public class TestSubscriptions : MonoBehaviour
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
-            await ubiiNode.Unsubscribe(subToken);
+            bool successUnsubscribe = await ubiiNode.Unsubscribe(subToken);
+            if (!successUnsubscribe) Debug.LogError("RunTestSubscribeRegex Unsubscribe() FAILURE!");
             
             bool success = true;
             foreach (string topic in topics)

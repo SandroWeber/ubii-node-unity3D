@@ -72,7 +72,6 @@ public class NetMQUbiiClient
     // CallService function called from upper layer (i.e. some MonoBehavior), returns a Task
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        //Debug.Log("CallService: " + srq.Topic);
         return Task.Run(() => netmqServiceClient.CallService(srq));
     }
 

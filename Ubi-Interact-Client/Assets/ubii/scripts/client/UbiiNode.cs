@@ -46,6 +46,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
 
+    #region unity
+
     async private void Start()
     {
         if (autoConnect)
@@ -53,6 +55,20 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             Initialize();
         }
     }
+
+    private async void OnDisable()
+    {
+        await DeregisterAllDevices();
+        if (networkClient != null)
+        {
+            networkClient.ShutDown();
+        }
+        Debug.Log("Shutting down UbiiClient");
+    }
+
+    #endregion
+
+    #region initialization
 
     public async Task Initialize()
     {
@@ -97,93 +113,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         return true;
     }
 
+    #endregion
+
     public string GetID()
     {
         return clientNodeSpecification.Id;
-    }
-
-    public Task<ServiceReply> CallService(ServiceRequest request)
-    {
-        return networkClient.CallService(request);
-    }
-
-    public void Publish(TopicData topicData)
-    {
-        networkClient.Publish(topicData);
-    }
-
-    public async Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
-    {
-        List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(topic);
-        if (subscriptions == null || subscriptions.Count == 0)
-        {
-            await networkClient.SubscribeTopic(topic, OnTopicDataRecord);
-        }
-
-        return topicData.SubscribeTopic(topic, callback); // Add to a dictionary as well?
-    }
-
-    public async Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
-    {
-        List<SubscriptionToken> subscriptions = topicData.GetRegexSubscriptionTokens(regex);
-        if (subscriptions == null || subscriptions.Count == 0)
-        {
-            bool success = await networkClient.SubscribeRegex(regex, OnTopicDataRecord);
-        }
-
-        return topicData.SubscribeRegex(regex, callback);
-    }
-
-    public async Task<bool> Unsubscribe(SubscriptionToken token)
-    {
-        this.topicData.Unsubscribe(token);
-
-        if (token.type == SUBSCRIPTION_TOKEN_TYPE.TOPIC)
-        {
-            List<SubscriptionToken> subscriptions = topicData.GetTopicSubscriptionTokens(token.topic);
-            if (subscriptions == null || subscriptions.Count == 0)
-            {
-                await networkClient.UnsubscribeTopic(token.topic, OnTopicDataRecord);
-            }
-        }
-        else if (token.type == SUBSCRIPTION_TOKEN_TYPE.REGEX)
-        {
-            List<SubscriptionToken> subscriptions = topicData.GetRegexSubscriptionTokens(token.topic);
-            if (subscriptions == null || subscriptions.Count == 0)
-            {
-                await networkClient.UnsubscribeRegex(token.topic, OnTopicDataRecord);
-            }
-        }
-
-        return true;
-    }
-
-    public async Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
-    {
-        ServiceReply deviceRegReply = await networkClient.RegisterDevice(ubiiDevice);
-
-        if (deviceRegReply.Error == null)
-            registeredDevices.Add(deviceRegReply.Device.Id, deviceRegReply.Device);
-
-        return deviceRegReply;
-    }
-
-    public async Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice)
-    {
-        var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
-        if (!registeredDevices.Remove(ubiiDevice.Id))
-            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
-        else
-            Debug.Log("Deregistering " + ubiiDevice + " successful!");
-        return deviceDeregReply;
-    }
-
-    private async Task DeregisterAllDevices()
-    {
-        foreach (Device device in registeredDevices.Values.ToList())
-        {
-            await DeregisterDevice(device);
-        }
     }
 
     public bool IsConnected()
@@ -218,21 +152,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }, token);
     }
 
-    private async void OnDisable()
-    {
-        await DeregisterAllDevices();
-        if (networkClient != null)
-        {
-            networkClient.ShutDown();
-        }
-        Debug.Log("Shutting down UbiiClient");
-    }
-
     /// <summary>
     /// Generates a timestamp
     /// </summary>
     /// <returns></returns>
-    private Timestamp GenerateTimeStamp()
+    public Timestamp GenerateTimeStamp()
     {
         // TODO: Should be the same as in nodeJS implementation
         return new Timestamp
@@ -240,6 +164,59 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             Seconds = DateTime.Now.Second,
             Nanos = (int)DateTime.Now.Ticks
         };
+    }
+
+    public Task<ServiceReply> CallService(ServiceRequest request)
+    {
+        return networkClient.CallService(request);
+    }
+
+    public void Publish(TopicData topicData)
+    {
+        networkClient.Publish(topicData);
+    }
+
+    public Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
+    {
+        return topicDataProxy.SubscribeTopic(topic, callback);
+    }
+
+    public Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    {
+        return topicDataProxy.SubscribeRegex(regex, callback);
+    }
+
+    public Task<bool> Unsubscribe(SubscriptionToken token)
+    {
+        return this.topicDataProxy.Unsubscribe(token);
+    }
+
+    public async Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
+    {
+        ServiceReply deviceRegReply = await networkClient.RegisterDevice(ubiiDevice);
+
+        if (deviceRegReply.Error == null)
+            registeredDevices.Add(deviceRegReply.Device.Id, deviceRegReply.Device);
+
+        return deviceRegReply;
+    }
+
+    public async Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice)
+    {
+        var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
+        if (!registeredDevices.Remove(ubiiDevice.Id))
+            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
+        else
+            Debug.Log("Deregistering " + ubiiDevice + " successful!");
+        return deviceDeregReply;
+    }
+
+    private async Task DeregisterAllDevices()
+    {
+        foreach (Device device in registeredDevices.Values.ToList())
+        {
+            await DeregisterDevice(device);
+        }
     }
 
     /// <summary>
@@ -250,11 +227,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         await SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.START_SESSION, OnStartSession);
         await SubscribeTopic(UbiiConstants.Instance.DEFAULT_TOPICS.INFO_TOPICS.STOP_SESSION, OnStopSession);
-    }
-
-    private void OnTopicDataRecord(TopicDataRecord record)
-    {
-        this.topicData.Publish(record);
     }
 
     /// <summary>

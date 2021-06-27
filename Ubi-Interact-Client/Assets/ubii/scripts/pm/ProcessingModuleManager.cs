@@ -226,7 +226,7 @@ public class ProcessingModuleManager
         }
     }
 
-    private void ApplyInputMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
+    private async void ApplyInputMapping(ProcessingModule processingModule, TopicInputMapping inputMapping)
     {
         if (!IsValidIOMapping(processingModule, inputMapping))
         {
@@ -254,9 +254,13 @@ public class ProcessingModuleManager
                 {
                     callback = _ => { processingModule.Emit(PMEvents.NEW_INPUT, inputMapping.InputName); }; // TODO: what kind of callback event?
                 }
+                else
+                {
+                    callback = _ => {};
+                }
 
                 // subscribe to topic and save token
-                SubscriptionToken subscriptionToken = topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
+                SubscriptionToken subscriptionToken = await topicdataProxy.SubscribeTopic(inputMapping.Topic, callback);
                 if (!pmTopicSubscriptions.ContainsKey(processingModule.Id))
                 {
                     pmTopicSubscriptions.Add(processingModule.Id, new List<SubscriptionToken>());

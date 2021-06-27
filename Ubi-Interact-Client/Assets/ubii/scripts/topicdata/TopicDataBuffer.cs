@@ -73,7 +73,7 @@ public class TopicDataBuffer : ITopicDataBuffer
     /// <param name="topic"></param>
     /// <param name="callback"></param>
     /// <returns>Generated subscription token</returns>
-    public SubscriptionToken SubscribeTopic(string topic, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
         if (!dictTopicSubscriptionTokens.ContainsKey(topic))
             dictTopicSubscriptionTokens.Add(topic, new List<SubscriptionToken>());
@@ -84,24 +84,7 @@ public class TopicDataBuffer : ITopicDataBuffer
         return token;
     }
 
-    public void SubscribeAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Unsubscribes callback from topic
-    /// </summary>
-    /// <param name="token">Subscription token identifying subscription and callback</param>
-    public void Unsubscribe(SubscriptionToken token)
-    {
-        if (dictTopicSubscriptionTokens.ContainsKey(token.topic))
-            dictTopicSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
-        else if (dictRegexSubscriptionTokens.ContainsKey(token.topic))
-            dictRegexSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
-    }
-
-    public SubscriptionToken SubscribeRegex(string regex, Action<TopicDataRecord> callback)
+    public async Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback)
     {
         SubscriptionToken token = GenerateToken(regex, callback, SUBSCRIPTION_TOKEN_TYPE.REGEX);
 
@@ -123,6 +106,32 @@ public class TopicDataBuffer : ITopicDataBuffer
         }
 
         return token;
+    }
+
+    public void SubscribeAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unsubscribes callback from topic
+    /// </summary>
+    /// <param name="token">Subscription token identifying subscription and callback</param>
+    public Task<bool> Unsubscribe(SubscriptionToken token)
+    {
+        bool existingTopic = false;
+        if (dictTopicSubscriptionTokens.ContainsKey(token.topic))
+        {
+            dictTopicSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
+            existingTopic = true;
+        }
+        else if (dictRegexSubscriptionTokens.ContainsKey(token.topic))
+        {
+            dictRegexSubscriptionTokens[token.topic].RemoveAll(entry => entry.id == token.id);
+            existingTopic = true;
+        }
+
+        return Task.FromResult(existingTopic);
     }
 
     public void Remove(string topic)
