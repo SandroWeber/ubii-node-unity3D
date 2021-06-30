@@ -34,6 +34,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Tooltip("Ubi-Interact node is used exclusively for processing modules.")]
     public bool isDedicatedProcessingNode = false;
 
+    [Tooltip("Sets the delay for publishing records")]
+    [Range(1,5000)]
+    public int publishDelay = 25;
     private Ubii.Clients.Client clientNodeSpecification;
     private NetMQUbiiClient networkClient;
 
@@ -86,6 +89,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
 
         bool success = await InitNetworkConnection();
+        networkClient.SetPublishDelay(publishDelay);
         if (success)
         {
             processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, this.topicDataProxy);
@@ -171,9 +175,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         return networkClient.CallService(request);
     }
 
-    public void Publish(TopicData topicData)
+    public void Publish(TopicDataRecord record)
     {
-        networkClient.Publish(topicData);
+        networkClient.Publish(record);
+    }
+    
+    public void SetPublishDelay(int millisecs)
+    {
+        networkClient.SetPublishDelay(millisecs);
     }
 
     public Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)

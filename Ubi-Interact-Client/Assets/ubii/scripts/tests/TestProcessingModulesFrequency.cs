@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
 using Ubii.TopicData;
 
 public class TestProcessingModulesFrequency : MonoBehaviour
@@ -30,7 +29,6 @@ public class TestProcessingModulesFrequency : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     void OnDisable()
@@ -42,20 +40,23 @@ public class TestProcessingModulesFrequency : MonoBehaviour
     {
         topicFrequencyCounter = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter";
         topicFrequencyCounterTickValue = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter/tick_value";
-        
-        ubiiSession = new Ubii.Sessions.Session { Name = "Test Processing Modules Counter" };
 
-        ubiiSession.ProcessingModules.Add(new Ubii.Processing.ProcessingModule {
+        ubiiSession = new Ubii.Sessions.Session {Name = "Test Processing Modules Counter"};
+
+        ubiiSession.ProcessingModules.Add(new Ubii.Processing.ProcessingModule
+        {
             Name = TestPMFrequencyCounter.specs.Name
         });
-        
+
         Ubii.Sessions.IOMapping ioMapping = new Ubii.Sessions.IOMapping();
         ioMapping.ProcessingModuleName = TestPMFrequencyCounter.specs.Name;
-        ioMapping.InputMappings.Add(new Ubii.Sessions.TopicInputMapping {
+        ioMapping.InputMappings.Add(new Ubii.Sessions.TopicInputMapping
+        {
             InputName = "counterTick",
             Topic = topicFrequencyCounterTickValue
         });
-        ioMapping.OutputMappings.Add(new Ubii.Sessions.TopicOutputMapping {
+        ioMapping.OutputMappings.Add(new Ubii.Sessions.TopicOutputMapping
+        {
             OutputName = "outCounter",
             Topic = topicFrequencyCounter
         });
@@ -63,16 +64,17 @@ public class TestProcessingModulesFrequency : MonoBehaviour
 
         expectedCounter = 0;
         tickValue = 2;
-        ubiiNode.Publish(new TopicData {
-            TopicDataRecord = new TopicDataRecord { 
-                Topic = topicFrequencyCounterTickValue,
-                Int32 = tickValue
-            }
+        ubiiNode.Publish(new TopicDataRecord
+        {
+            Topic = topicFrequencyCounterTickValue,
+            Int32 = tickValue
         });
 
-        ubiiNode.SubscribeTopic(topicFrequencyCounter, (TopicDataRecord record) => {
+        ubiiNode.SubscribeTopic(topicFrequencyCounter, (TopicDataRecord record) =>
+        {
             expectedCounter += tickValue;
-            Debug.Assert(record.Int32 == expectedCounter, "counter from PM expected to be " + expectedCounter + " but was actually " + record.Int32);
+            Debug.Assert(record.Int32 == expectedCounter,
+                "counter from PM expected to be " + expectedCounter + " but was actually " + record.Int32);
         });
 
         RunTest();
@@ -80,7 +82,8 @@ public class TestProcessingModulesFrequency : MonoBehaviour
 
     public async void RunTest()
     {
-        Ubii.Services.ServiceReply reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest {
+        Ubii.Services.ServiceReply reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest
+        {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
             Session = ubiiSession
         });
@@ -89,10 +92,11 @@ public class TestProcessingModulesFrequency : MonoBehaviour
         {
             ubiiSession = reply.Session;
         }
-        
+
         await Task.Delay(5000);
-        
-        reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest {
+
+        reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest
+        {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_STOP,
             Session = ubiiSession
         });

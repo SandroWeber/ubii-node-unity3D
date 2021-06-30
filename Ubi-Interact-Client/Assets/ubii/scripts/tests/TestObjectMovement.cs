@@ -6,10 +6,8 @@ using UnityEngine;
 
 public class TestObjectMovement : MonoBehaviour
 {
-    [SerializeField]
-    private int testStartDelaySeconds = 5;
-    [SerializeField]
-    private GameObject targetObject = null;
+    [SerializeField] private int testStartDelaySeconds = 5;
+    [SerializeField] private GameObject targetObject = null;
 
     private UbiiNode ubiiNode = null;
     private string deviceName = "TestObjectMovement - Device";
@@ -38,15 +36,11 @@ public class TestObjectMovement : MonoBehaviour
         if (testRunning && tNow > tLastPublish + 1)
         {
             Vector3 randomPosition = Random.insideUnitSphere;
-            ubiiNode.Publish(
-                new Ubii.TopicData.TopicData
-                {
-                    TopicDataRecord = new Ubii.TopicData.TopicDataRecord
-                    {
-                        Topic = topicTestPublishSubscribe,
-                        Vector3 = new Ubii.DataStructure.Vector3 { X = randomPosition.x, Y = randomPosition.y, Z = randomPosition.z }
-                    }
-                });
+            ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord
+            {
+                Topic = topicTestPublishSubscribe,
+                Vector3 = new Ubii.DataStructure.Vector3 {X = randomPosition.x, Y = randomPosition.y, Z = randomPosition.z}
+            });
             tLastPublish = tNow;
         }
     }
@@ -65,7 +59,7 @@ public class TestObjectMovement : MonoBehaviour
 
     public void OnClientInitialized()
     {
-        Invoke("StartTest", testStartDelaySeconds);  //StartTest();
+        Invoke("StartTest", testStartDelaySeconds); //StartTest();
         return;
     }
 
@@ -87,10 +81,11 @@ public class TestObjectMovement : MonoBehaviour
             ubiiDevice = deviceRegistrationReply.Device;
         }
 
-        this.subToken = await ubiiNode.SubscribeTopic(topicTestPublishSubscribe, (Ubii.TopicData.TopicDataRecord record) =>
-        {
-            testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
-        });
+        this.subToken = await ubiiNode.SubscribeTopic(topicTestPublishSubscribe,
+            (Ubii.TopicData.TopicDataRecord record) =>
+            {
+                testPosition.Set((float) record.Vector3.X, (float) record.Vector3.Y, (float) record.Vector3.Z);
+            });
 
         testRunning = true;
     }
@@ -99,7 +94,12 @@ public class TestObjectMovement : MonoBehaviour
     {
         topicTestPublishSubscribe = "/" + ubiiNode.GetID() + "/test_publish_subscribe/object_movement";
 
-        ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiNode.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
-        ubiiDevice.Components.Add(new Ubii.Devices.Component { IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = "ubii.dataStructure.Vector3", Topic = topicTestPublishSubscribe });
+        ubiiDevice = new Ubii.Devices.Device
+            {Name = deviceName, ClientId = ubiiNode.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant};
+        ubiiDevice.Components.Add(new Ubii.Devices.Component
+        {
+            IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = "ubii.dataStructure.Vector3",
+            Topic = topicTestPublishSubscribe
+        });
     }
 }

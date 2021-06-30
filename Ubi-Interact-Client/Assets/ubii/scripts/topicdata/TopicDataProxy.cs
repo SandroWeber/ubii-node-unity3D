@@ -20,7 +20,8 @@ public class TopicDataProxy : ITopicDataBuffer
     public void Publish(TopicDataRecord topicDataRecord)
     {
         // Send to master node instead of pushing it directly to buffer
-        networkClient.PublishRecordImmediately(topicDataRecord);
+        //networkClient.PublishRecordImmediately(topicDataRecord);
+        networkClient.Publish(topicDataRecord);
     }
 
     public TopicDataRecord Pull(string topic)

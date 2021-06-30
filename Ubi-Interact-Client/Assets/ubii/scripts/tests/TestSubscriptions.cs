@@ -46,7 +46,7 @@ public class TestSubscriptions : MonoBehaviour
         };
 
         SubscriptionToken subToken = await ubiiNode.SubscribeTopic(topic, callback);
-        ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
+        ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
@@ -81,7 +81,7 @@ public class TestSubscriptions : MonoBehaviour
         // publish some topics first to have pre-existing topics before subscription
         for (int i = 0; i < 5; i++)
         {
-            ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
+            ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true });
         }
 
         // subscribe, should cover existing topics (already published) and future new topics that have yet to be published for the first time
@@ -93,7 +93,7 @@ public class TestSubscriptions : MonoBehaviour
         // publish all topics, including ones already published and new ones
         for (int i = 0; i < 10; i++)
         {
-            ubiiNode.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
+            ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true });
         }
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>

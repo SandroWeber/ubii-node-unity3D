@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using Google.Protobuf;
 using System.Threading;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Google.Protobuf.Collections;
 
 public class NetMQTopicDataClient
 {
@@ -23,25 +25,27 @@ public class NetMQTopicDataClient
     private bool connected = false;
 
     private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks =
+        new Dictionary<string, List<Action<TopicDataRecord>>>();
+
     private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
 
-
+    private ConcurrentBag<TopicDataRecord> recordsToPublish = new ConcurrentBag<TopicDataRecord>();
 
     CancellationTokenSource cts = new CancellationTokenSource();
     CancellationToken cancellationToken;
 
-
-    const int delay = 3000; // millis
+    private int delay = 25; // millis
 
     public NetMQTopicDataClient(string clientID, string host = "localhost", int port = 8103)
     {
         this.host = host;
         this.port = port;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
-
+        
         topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
         topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
 
@@ -83,13 +87,40 @@ public class NetMQTopicDataClient
             while (running)
             {
                 Thread.Sleep(delay);
-                if(cancellationToken.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     Debug.Log("Cancelling task");
                     break;
                 }
+                FlushRecordsToPublish();
             }
         }, cancellationToken);
+    }
+
+    private void FlushRecordsToPublish()
+    {
+        if (recordsToPublish.IsEmpty) return;
+
+        RepeatedField<TopicDataRecord> repeatedField = new RepeatedField<TopicDataRecord>();
+        while (!recordsToPublish.IsEmpty)
+        {
+            if (recordsToPublish.TryTake(out TopicDataRecord record))
+            {
+                repeatedField.Add(record);
+            }
+        }
+
+        TopicDataRecordList recordList = new TopicDataRecordList()
+        {
+            Elements = {repeatedField},
+        };
+
+        TopicData td = new TopicData()
+        {
+            TopicDataRecordList = recordList
+        };
+
+        SendTopicDataImmediately(td);
     }
 
     public bool IsConnected()
@@ -124,17 +155,21 @@ public class NetMQTopicDataClient
 
     public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
     {
-        if (!this.topicdataCallbacks.ContainsKey(topic)) {
+        if (!this.topicdataCallbacks.ContainsKey(topic))
+        {
             this.topicdataCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
         }
+
         this.topicdataCallbacks[topic].Add(callback);
     }
 
     public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        if (!this.topicdataRegexCallbacks.ContainsKey(regex)) {
+        if (!this.topicdataRegexCallbacks.ContainsKey(regex))
+        {
             this.topicdataRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
         }
+
         this.topicdataRegexCallbacks[regex].Add(callback);
     }
 
@@ -168,7 +203,17 @@ public class NetMQTopicDataClient
         return topicdataRegexCallbacks.Keys.ToList();
     }
 
-    public void SendTopicData(TopicData td)
+    public void SetPublishDelay(int millisecs)
+    {
+        delay = millisecs;
+    }
+
+    public void SendTopicData(TopicDataRecord record)
+    {
+        recordsToPublish.Add(record);
+    }
+
+    public void SendTopicDataImmediately(TopicData td)
     {
         byte[] buffer = td.ToByteArray();
         socket.SendFrame(buffer);
@@ -177,22 +222,24 @@ public class NetMQTopicDataClient
     // Called when data received
     void OnMessage(object sender, NetMQSocketEventArgs e)
     {
-
         e.Socket.ReceiveFrameBytes(out bool hasmore);
         TopicData topicData = new TopicData { };
         if (hasmore)
         {
             byte[] bytes = e.Socket.ReceiveFrameBytes(out hasmore);
 
-            if (bytes.Length == 4) {
+            if (bytes.Length == 4)
+            {
                 string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                if (msgString == "PING") {
+                if (msgString == "PING")
+                {
                     // PING message
                     socket.SendFrame(Encoding.UTF8.GetBytes("PONG"));
                     return;
                 }
             }
-            else {
+            else
+            {
                 topicData.MergeFrom(bytes);
             }
         }
@@ -234,17 +281,25 @@ public class NetMQTopicDataClient
     public void TearDown()
     {
         Debug.Log("TearDown TopicDataClient");
+        SetPublishDelay(1);
         topicdataCallbacks.Clear();
         topicdataRegexCallbacks.Clear();
         cts.Cancel();
         running = false;
         connected = false;
+
         NetMQConfig.Cleanup(false);
-        if (poller.IsRunning)
+
+        try
         {
-            poller.StopAsync();
-            poller.Stop();
+            if (poller.IsRunning)
+            {
+                poller.StopAsync();
+                poller.Stop();
+            }
+        }
+        catch (Exception)
+        {
         }
     }
-
 }

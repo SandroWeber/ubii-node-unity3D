@@ -16,7 +16,7 @@ interface IUbiiNode
 
     // topic data related functions
     // TODO Unsub Regex!
-    void Publish(TopicData topicdata);
+    void Publish(TopicDataRecord record);
     Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback);
     Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
     Task<bool> Unsubscribe(SubscriptionToken token);

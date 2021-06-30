@@ -48,6 +48,11 @@ public class NetMQUbiiClient
         return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
     }
 
+    public void SetPublishDelay(int millisecs)
+    {
+        netmqTopicDataClient.SetPublishDelay(millisecs);
+    }
+
     public Task WaitForConnection()
     {
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -75,19 +80,14 @@ public class NetMQUbiiClient
         return Task.Run(() => netmqServiceClient.CallService(srq));
     }
 
-    public void Publish(TopicData topicData)
+    public void Publish(TopicDataRecord record)
     {
-        netmqTopicDataClient.SendTopicData(topicData);
-    }
-
-    public void PublishRecord(TopicDataRecord record)
-    {
-
+        netmqTopicDataClient.SendTopicData(record);
     }
 
     public void PublishRecordImmediately(TopicDataRecord record)
     {
-        netmqTopicDataClient.SendTopicData(new Ubii.TopicData.TopicData {
+        netmqTopicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData {
             TopicDataRecord = record
         });
     }
