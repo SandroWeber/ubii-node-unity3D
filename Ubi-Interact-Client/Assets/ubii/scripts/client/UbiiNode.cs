@@ -35,7 +35,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public bool isDedicatedProcessingNode = false;
 
     [Tooltip("Sets the delay for publishing records")]
-    [Range(1,5000)]
+    [Range(1, 5000)]
     public int publishDelay = 25;
     private Ubii.Clients.Client clientNodeSpecification;
     private NetMQUbiiClient networkClient;
@@ -51,11 +51,19 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region unity
 
-    async private void Start()
+    private void Start()
     {
         if (autoConnect)
         {
-            Initialize();
+            try
+            {
+                Initialize();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
         }
     }
 
@@ -177,9 +185,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public void Publish(TopicDataRecord record)
     {
-        networkClient.Publish(record);
+        topicDataProxy.Publish(record);
     }
-    
+
+    public void PublishImmediately(TopicDataRecord record)
+    {
+        topicDataProxy.PublishImmediately(record);
+    }
+
     public void SetPublishDelay(int millisecs)
     {
         networkClient.SetPublishDelay(millisecs);
@@ -244,16 +257,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// <param name="record"></param>
     public async void OnStartSession(TopicDataRecord record)
     {
-        Debug.Log(nameof(OnStartSession) + ": " + record);
-
         List<ProcessingModule> localPMs = new List<ProcessingModule>();
         foreach (Ubii.Processing.ProcessingModule pm in record.Session.ProcessingModules)
         {
             if (pm.NodeId == this.GetID())
             {
-                Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
+                //Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
-                Debug.Log("UbiiNode.OnStartSession() - created instance: " + newModule.ToString());
+                //Debug.Log("UbiiNode.OnStartSession() - created instance: " + newModule.ToString());
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
@@ -271,7 +282,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 Elements = { elements }
             }
         };
-        Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
+        //Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
 
         ServiceReply reply = await CallService(pmRuntimeAddRequest);
         //Debug.Log("start session runtime add PMs reply: " + reply);
@@ -279,7 +290,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             try
             {
-                this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
+                bool success = await this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
                 foreach (var pm in localPMs)
                 {
                     this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
@@ -302,7 +313,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// <param name="msgSession"></param>
     public void OnStopSession(TopicDataRecord msgSession)
     {
-        Debug.Log(nameof(OnStopSession));
         foreach (ProcessingModule pm in this.processingModuleManager.processingModules.Values)
         {
             if (pm.SessionId == msgSession.Session.Id)

@@ -45,7 +45,7 @@ public class TestPMFrequencyCounter : ProcessingModule
 
     public override Dictionary<string, Ubii.TopicData.TopicDataRecord> OnProcessing(TimeSpan deltaTime, Dictionary<string, Ubii.TopicData.TopicDataRecord> inputs)
     {
-        if (inputs["counterTick"] != null )
+        if (inputs["counterTick"] != null)
         {
             this.counter += inputs["counterTick"].Int32;
         }

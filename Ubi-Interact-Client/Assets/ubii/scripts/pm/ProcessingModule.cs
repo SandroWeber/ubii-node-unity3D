@@ -45,7 +45,6 @@ public class ProcessingModule : IProcessingModule
         this.specs.Id = this.specs.Id == null ? Guid.NewGuid().ToString() : this.specs.Id;
         this.specs.Language = Ubii.Processing.ProcessingModule.Types.Language.Cs;
 
-        Debug.Log(this.ToString() + " - specs: " + this.specs);
         if (this.specs.ProcessingMode == null)
         {
             this.specs.ProcessingMode = new ProcessingMode
@@ -99,8 +98,6 @@ public class ProcessingModule : IProcessingModule
 
         DateTime tLastProcess = DateTime.Now;
         int msFrequency = 1000 / this.specs.ProcessingMode.Frequency.Hertz;
-        Debug.Log(this.ToString() + " - StartProcessingByFrequency() - msFrequency=" + msFrequency);
-
 
         // TODO: Token must be used to cancel task before shutting this down -> cts.Cancel()
         this.cts = new CancellationTokenSource(); // global?
@@ -119,12 +116,10 @@ public class ProcessingModule : IProcessingModule
 
                 try
                 {
-
                     foreach (ModuleIO input in specs.Inputs)
                     {
                         processingInputRecords.Add(input.InternalName, dictInputGetters[input.InternalName].Invoke());
                     }
-
                     processingOutputRecords = OnProcessing(deltaTime, processingInputRecords);
 
                     foreach (var entry in processingOutputRecords)
@@ -184,7 +179,7 @@ public class ProcessingModule : IProcessingModule
 
     public void SetInputGetter(string inputName, Func<TopicDataRecord> getter)
     {
-        Debug.Log("SetInputGetter() - " + this.Name + "->" + inputName);
+        //Debug.Log("SetInputGetter() - " + this.Name + "->" + inputName);
         if (this.dictInputGetters.ContainsKey(inputName))
         {
             this.dictInputGetters[inputName] = getter;

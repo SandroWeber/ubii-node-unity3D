@@ -45,7 +45,7 @@ public class NetMQTopicDataClient
         this.host = host;
         this.port = port;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
-        
+
         topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
         topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
 
@@ -57,7 +57,7 @@ public class NetMQTopicDataClient
         try
         {
             socket.Connect("tcp://" + host + ":" + port);
-            Debug.Log("Create Socket successful. Host: " + host + ":" + port);
+            //Debug.Log("Create Socket successful. Host: " + host + ":" + port);
             connected = true;
         }
         catch (Exception ex)
@@ -112,7 +112,7 @@ public class NetMQTopicDataClient
 
         TopicDataRecordList recordList = new TopicDataRecordList()
         {
-            Elements = {repeatedField},
+            Elements = { repeatedField },
         };
 
         TopicData td = new TopicData()
@@ -244,30 +244,17 @@ public class NetMQTopicDataClient
             }
         }
 
-        // Invoke callback 
+        // single record
         if (topicData.TopicDataRecord != null)
         {
-            string topic = topicData.TopicDataRecord.Topic;
-            if (topicdataCallbacks.ContainsKey(topic))
+            this.InvokeTopicCallbacks(topicData.TopicDataRecord);
+        }
+        // list of records
+        else if (topicData.TopicDataRecordList != null)
+        {
+            foreach (TopicDataRecord record in topicData.TopicDataRecordList.Elements)
             {
-                foreach (Action<TopicDataRecord> callback in topicdataCallbacks[topic])
-                {
-                    callback.Invoke(topicData.TopicDataRecord);
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicdataRegexCallbacks)
-                {
-                    Match m = Regex.Match(topic, entry.Key);
-                    if (m.Success)
-                    {
-                        foreach (Action<TopicDataRecord> callback in entry.Value)
-                        {
-                            callback.Invoke(topicData.TopicDataRecord);
-                        }
-                    }
-                }
+                this.InvokeTopicCallbacks(record);
             }
         }
         // catch possible error
@@ -275,6 +262,32 @@ public class NetMQTopicDataClient
         {
             Debug.LogError("topicData Error: " + topicData.Error.ToString());
             return;
+        }
+    }
+
+    private void InvokeTopicCallbacks(TopicDataRecord record)
+    {
+        string topic = record.Topic;
+        if (topicdataCallbacks.ContainsKey(topic))
+        {
+            foreach (Action<TopicDataRecord> callback in topicdataCallbacks[topic])
+            {
+                callback.Invoke(record);
+            }
+        }
+        else
+        {
+            foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicdataRegexCallbacks)
+            {
+                Match m = Regex.Match(topic, entry.Key);
+                if (m.Success)
+                {
+                    foreach (Action<TopicDataRecord> callback in entry.Value)
+                    {
+                        callback.Invoke(record);
+                    }
+                }
+            }
         }
     }
 

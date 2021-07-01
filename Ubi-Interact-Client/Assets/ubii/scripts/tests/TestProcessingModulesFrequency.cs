@@ -16,6 +16,8 @@ public class TestProcessingModulesFrequency : MonoBehaviour
 
     private int expectedCounter, tickValue;
 
+    private bool testFailure = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,12 +38,29 @@ public class TestProcessingModulesFrequency : MonoBehaviour
         ubiiNode.ProcessingModuleManager.StopSessionModules(ubiiSession);
     }
 
-    public void OnUbiiInitialized()
+    public async void OnUbiiInitialized()
     {
         topicFrequencyCounter = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter";
         topicFrequencyCounterTickValue = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter/tick_value";
 
-        ubiiSession = new Ubii.Sessions.Session {Name = "Test Processing Modules Counter"};
+        expectedCounter = 0;
+        tickValue = 2;
+        ubiiNode.PublishImmediately(new TopicDataRecord
+        {
+            Topic = topicFrequencyCounterTickValue,
+            Int32 = tickValue
+        });
+        //await Task.Delay(2000);
+
+        testFailure = false;
+        await ubiiNode.SubscribeTopic(topicFrequencyCounter, (TopicDataRecord record) =>
+        {
+            expectedCounter += tickValue;
+            testFailure = record.Int32 != expectedCounter;
+            if (testFailure) Debug.LogError("counter from PM expected to be " + expectedCounter + " but was actually " + record.Int32);
+        });
+
+        ubiiSession = new Ubii.Sessions.Session { Name = "Test Processing Modules Counter" };
 
         ubiiSession.ProcessingModules.Add(new Ubii.Processing.ProcessingModule
         {
@@ -62,26 +81,13 @@ public class TestProcessingModulesFrequency : MonoBehaviour
         });
         ubiiSession.IoMappings.Add(ioMapping);
 
-        expectedCounter = 0;
-        tickValue = 2;
-        ubiiNode.Publish(new TopicDataRecord
-        {
-            Topic = topicFrequencyCounterTickValue,
-            Int32 = tickValue
-        });
-
-        ubiiNode.SubscribeTopic(topicFrequencyCounter, (TopicDataRecord record) =>
-        {
-            expectedCounter += tickValue;
-            Debug.Assert(record.Int32 == expectedCounter,
-                "counter from PM expected to be " + expectedCounter + " but was actually " + record.Int32);
-        });
-
         RunTest();
     }
 
     public async void RunTest()
     {
+        Debug.Log("TestProcessingModulesFrequency started ...");
+        
         Ubii.Services.ServiceReply reply = await ubiiNode.CallService(new Ubii.Services.ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SESSION_RUNTIME_START,
@@ -101,6 +107,15 @@ public class TestProcessingModulesFrequency : MonoBehaviour
             Session = ubiiSession
         });
         //Debug.Log("TestProcessingModules.RunTest() - reply to stop session: " + reply);
-        Debug.Log("TestProcessingModulesFrequency SUCCESS");
+
+        if (testFailure)
+        {
+            Debug.LogError("TestProcessingModulesFrequency FAILURE");
+        }
+        else
+        {
+            Debug.Log("TestProcessingModulesFrequency SUCCESS");
+        }
+
     }
 }

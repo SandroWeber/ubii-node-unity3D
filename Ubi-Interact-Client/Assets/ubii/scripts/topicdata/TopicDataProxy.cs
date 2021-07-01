@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ubii.TopicData;
+using UnityEngine;
 
 /// <summary>
 /// Topic data proxy implementation
@@ -19,9 +20,12 @@ public class TopicDataProxy : ITopicDataBuffer
 
     public void Publish(TopicDataRecord topicDataRecord)
     {
-        // Send to master node instead of pushing it directly to buffer
-        //networkClient.PublishRecordImmediately(topicDataRecord);
         networkClient.Publish(topicDataRecord);
+    }
+
+    public void PublishImmediately(TopicDataRecord topicDataRecord)
+    {
+        networkClient.PublishImmediately(topicDataRecord);
     }
 
     public TopicDataRecord Pull(string topic)
@@ -34,7 +38,8 @@ public class TopicDataProxy : ITopicDataBuffer
         List<SubscriptionToken> subscriptions = topicDataBuffer.GetTopicSubscriptionTokens(topic);
         if (subscriptions == null || subscriptions.Count == 0)
         {
-            await networkClient.SubscribeTopic(topic, OnTopicDataRecord);
+            bool success = await networkClient.SubscribeTopic(topic, OnTopicDataRecord);
+            if (!success) Debug.LogError("TopicDataProxy.SubscribeTopic() - failed to subscribe to " + topic + " at master node");
         }
 
         return await topicDataBuffer.SubscribeTopic(topic, callback);

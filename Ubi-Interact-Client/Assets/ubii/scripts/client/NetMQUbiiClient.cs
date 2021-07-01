@@ -85,7 +85,7 @@ public class NetMQUbiiClient
         netmqTopicDataClient.SendTopicData(record);
     }
 
-    public void PublishRecordImmediately(TopicDataRecord record)
+    public void PublishImmediately(TopicDataRecord record)
     {
         netmqTopicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData {
             TopicDataRecord = record
@@ -156,17 +156,18 @@ public class NetMQUbiiClient
             }
         };
 
-        var task = CallService(topicSubscription);
-        ServiceReply subReply = await task;
+        // adding callback function to dictionary
+        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
 
+        ServiceReply subReply = await CallService(topicSubscription);
+        //Debug.Log("NetMQUbiiClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
             return false;
         }
 
-        // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
         return true;
     }
 

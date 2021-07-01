@@ -161,7 +161,7 @@ public class TopicDataBuffer : ITopicDataBuffer
         {
             foreach (SubscriptionToken token in dictTopicSubscriptionTokens[record.Topic])
             {
-                token.callback.Invoke(record);
+                token.callback?.Invoke(record);
             }
         }
 
