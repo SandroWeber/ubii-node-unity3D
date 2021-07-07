@@ -6,7 +6,7 @@ using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.UtilityFunctions.Parser;
 
-interface IUbiiClient
+interface IUbiiNode
 {
     // service related functions
     Task<ServiceReply> CallService(ServiceRequest request);
@@ -15,10 +15,11 @@ interface IUbiiClient
     bool IsConnected();
 
     // topic data related functions
-    void Publish(TopicData topicdata);
-    Task<bool> Subscribe(string topic, Action<TopicDataRecord> callback);
-    Task<bool> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
-    Task<bool> Unsubscribe(string topic, Action<TopicDataRecord> callback);
+    // TODO Unsub Regex!
+    void Publish(TopicDataRecord record);
+    Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback);
+    Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
+    Task<bool> Unsubscribe(SubscriptionToken token);
     Task<ServiceReply> RegisterDevice(Device ubiiDevice);
     Task<ServiceReply> DeregisterDevice(Device ubiiDevice);
 }

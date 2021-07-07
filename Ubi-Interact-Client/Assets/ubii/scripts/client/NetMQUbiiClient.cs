@@ -16,10 +16,11 @@ using Google.Protobuf;
 using System.Threading;
 using UnityEngine.Apple.ReplayKit;
 
+/// <summary>
+/// This class manages network connections based on NetMQ to the Ubi-Interact master node.
+/// </summary>
 public class NetMQUbiiClient
 {
-    private string id;
-    private string name;
     private string host;
     private int port;
 
@@ -29,46 +30,30 @@ public class NetMQUbiiClient
 
     private NetMQTopicDataClient netmqTopicDataClient;
 
-    private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
-
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string id, string name, string host, int port)
+    public NetMQUbiiClient(string host, int port)
     {
-        this.id = id;
-        this.name = name;
         this.host = host;
         this.port = port;
     }
 
     public string GetClientID()
     {
-        return clientSpecification.Id;
-    }
-
-    // Initialize the ubiiClient, serviceClient and topicDataClient
-    public async Task Initialize()
-    {
-        netmqServiceClient = new NetMQServiceClient(host, port);
-        await InitServerSpec();
-        Debug.Log("ServerSpecs: " + serverSpecification);
-        await InitClientReg();
-        InitTopicDataClient();
+        return clientSpecification?.Id;
     }
 
     public bool IsConnected()
     {
-        /*Debug.Log("IsConnected()");
-        Debug.Log("id=" + id);
-        Debug.Log("client=" + netmqTopicDataClient);
-        if (netmqTopicDataClient != null)
-        {
-            Debug.Log("connected=" + netmqTopicDataClient.IsConnected());
-        }*/
         return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
     }
 
-    /*public Task WaitForConnection()
+    public void SetPublishDelay(int millisecs)
+    {
+        netmqTopicDataClient.SetPublishDelay(millisecs);
+    }
+
+    public Task WaitForConnection()
     {
         CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken token = cts.Token;
@@ -87,18 +72,24 @@ public class NetMQUbiiClient
                 cts.Cancel();
             }
         }, token);
-    }*/
+    }
 
     // CallService function called from upper layer (i.e. some MonoBehavior), returns a Task
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        //Debug.Log("CallService: " + srq.Topic);
         return Task.Run(() => netmqServiceClient.CallService(srq));
     }
 
-    public void Publish(TopicData topicData)
+    public void Publish(TopicDataRecord record)
     {
-        netmqTopicDataClient.SendTopicData(topicData);
+        netmqTopicDataClient.SendTopicData(record);
+    }
+
+    public void PublishImmediately(TopicDataRecord record)
+    {
+        netmqTopicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData {
+            TopicDataRecord = record
+        });
     }
 
     #region Devices
@@ -109,11 +100,6 @@ public class NetMQUbiiClient
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.DEVICE_REGISTRATION,
             Device = ubiiDevice
         });
-
-        if (reply.Error == null)
-        {
-            registeredDevices.Add(reply.Device.Id, reply.Device);
-        }
 
         return reply;
     }
@@ -130,21 +116,11 @@ public class NetMQUbiiClient
         {
             Debug.LogError("Deregister Device Error: " + reply.Error.Message);
         }
-        if (!registeredDevices.Remove(ubiiDevice.Id))
-        {
-            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
-        }
-        Debug.Log("Deregistering " + ubiiDevice + " successful!");
+       
         return reply;
     }
 
-    private async Task DeregisterAllDevices()
-    {
-        foreach (Device device in registeredDevices.Values.ToList())
-        {
-            await DeregisterDevice(device);
-        }
-    }
+ 
     #endregion
 
     #region Subscriptions
@@ -169,7 +145,6 @@ public class NetMQUbiiClient
 
         subscribeTopics.Add(topic);
 
-
         //Debug.Log("Subscribing to topic: " + topic + " (backend), subscribeRepeatedField: " + subscribeTopics.Count);
         ServiceRequest topicSubscription = new ServiceRequest
         {
@@ -181,17 +156,18 @@ public class NetMQUbiiClient
             }
         };
 
-        var task = CallService(topicSubscription);
-        ServiceReply subReply = await task;
+        // adding callback function to dictionary
+        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
 
+        ServiceReply subReply = await CallService(topicSubscription);
+        //Debug.Log("NetMQUbiiClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
             return false;
         }
 
-        // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
         return true;
     }
 
@@ -244,6 +220,7 @@ public class NetMQUbiiClient
         }
         return true;
     }
+
     #endregion
 
     #region Regex
@@ -301,6 +278,7 @@ public class NetMQUbiiClient
         }
         return true;
     }
+
     private async Task<bool> UnsubscribeRegex(string regex)
     {
         ServiceRequest unsubscribeRequest = new ServiceRequest
@@ -321,24 +299,25 @@ public class NetMQUbiiClient
         netmqTopicDataClient.RemoveTopicDataRegex(regex);
         return true;
     }
-    #endregion
-    /// <summary>
-    /// Unsubscribe from all topics/regex, called before shutdown
-    /// </summary>
-    /// <returns></returns>
-    private async Task UnsubscribeAll()
-    {
-        await UnsubscribeTopic(netmqTopicDataClient.GetAllSubscribedTopics());
 
-        List<string> subscribedRegex = netmqTopicDataClient.GetAllSubscribedRegex();
-        foreach (string regex in subscribedRegex.ToList())
-        {
-            await UnsubscribeRegex(regex);
-        }
-    }
+    #endregion
+
     #endregion
 
     #region Initialize Functions
+
+    // Initialize the ubiiClient, serviceClient and topicDataClient
+    public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
+    {
+        netmqServiceClient = new NetMQServiceClient(host, port);
+        await InitServerSpec();
+        //Debug.Log("ServerSpecs: " + serverSpecification);
+        bool success = await InitClientRegistration(clientSpecs);
+        InitTopicDataClient();
+
+        return clientSpecification;
+    }
+
     private async Task InitServerSpec()
     {
         // Call Service to receive serverSpecifications
@@ -349,35 +328,40 @@ public class NetMQUbiiClient
         serverSpecification = rep.Server;
     }
 
-    private async Task InitClientReg()
+    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
     {
-        // Client Registration
         ServiceRequest clientRegistration = new ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
-            Client = new Client { Name = name, },
+            Client = clientSpecs
         };
+        //if(isDedicatedProcessingNode)
+        //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
-        if (id != null && id != "")
-            clientRegistration.Client.Id = id;
-
-        var task = CallService(clientRegistration);
-        ServiceReply rep = await task;
-        clientSpecification = rep.Client;
-        Debug.Log("ClientSpec: " + clientSpecification);
+        ServiceReply reply = await CallService(clientRegistration);
+        if (reply.Client != null)
+        {
+            clientSpecification = reply.Client;
+            return true;
+        }
+        else if (reply.Error != null)
+        {
+            Debug.LogError("NetMQUbiiClient.InitClientRegistration() - " + reply);
+        }
+        
+        return false;
     }
 
     private void InitTopicDataClient()
     {
-        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, int.Parse(serverSpecification.PortTopicDataZmq));
+        int port = int.Parse(serverSpecification.PortTopicDataZmq);
+        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
     }
 
     #endregion
 
     async public void ShutDown()
     {
-        await DeregisterAllDevices();
-        await UnsubscribeAll();
         await CallService(new Ubii.Services.ServiceRequest
         {
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,

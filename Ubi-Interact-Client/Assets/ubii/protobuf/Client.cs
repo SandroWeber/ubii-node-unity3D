@@ -26,18 +26,20 @@ namespace Ubii.Clients {
           string.Concat(
             "Chpwcm90by9jbGllbnRzL2NsaWVudC5wcm90bxIMdWJpaS5jbGllbnRzGhpw",
             "cm90by9kZXZpY2VzL2RldmljZS5wcm90bxoncHJvdG8vcHJvY2Vzc2luZy9w",
-            "cm9jZXNzaW5nTW9kdWxlLnByb3RvIvkBCgZDbGllbnQSCgoCaWQYASABKAkS",
+            "cm9jZXNzaW5nTW9kdWxlLnByb3RvItgCCgZDbGllbnQSCgoCaWQYASABKAkS",
             "DAoEbmFtZRgCIAEoCRIlCgdkZXZpY2VzGAMgAygLMhQudWJpaS5kZXZpY2Vz",
             "LkRldmljZRIMCgR0YWdzGAQgAygJEhMKC2Rlc2NyaXB0aW9uGAUgASgJEj0K",
             "EnByb2Nlc3NpbmdfbW9kdWxlcxgGIAMoCzIhLnViaWkucHJvY2Vzc2luZy5Q",
             "cm9jZXNzaW5nTW9kdWxlEiQKHGlzX2RlZGljYXRlZF9wcm9jZXNzaW5nX25v",
             "ZGUYByABKAgSDwoHaG9zdF9pcBgIIAEoCRIVCg1tZXRhZGF0YV9qc29uGAkg",
-            "ASgJIjQKCkNsaWVudExpc3QSJgoIZWxlbWVudHMYASADKAsyFC51YmlpLmNs",
-            "aWVudHMuQ2xpZW50YgZwcm90bzM="));
+            "ASgJEikKBXN0YXRlGAogASgOMhoudWJpaS5jbGllbnRzLkNsaWVudC5TdGF0",
+            "ZSIyCgVTdGF0ZRIKCgZBQ1RJVkUQABIMCghJTkFDVElWRRABEg8KC1VOQVZB",
+            "SUxBQkxFEAIiNAoKQ2xpZW50TGlzdBImCghlbGVtZW50cxgBIAMoCzIULnVi",
+            "aWkuY2xpZW50cy5DbGllbnRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices", "Tags", "Description", "ProcessingModules", "IsDedicatedProcessingNode", "HostIp", "MetadataJson" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices", "Tags", "Description", "ProcessingModules", "IsDedicatedProcessingNode", "HostIp", "MetadataJson", "State" }, null, new[]{ typeof(global::Ubii.Clients.Client.Types.State) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.ClientList), global::Ubii.Clients.ClientList.Parser, new[]{ "Elements" }, null, null, null, null)
           }));
     }
@@ -79,6 +81,7 @@ namespace Ubii.Clients {
       isDedicatedProcessingNode_ = other.isDedicatedProcessingNode_;
       hostIp_ = other.hostIp_;
       metadataJson_ = other.metadataJson_;
+      state_ = other.state_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -183,6 +186,17 @@ namespace Ubii.Clients {
       }
     }
 
+    /// <summary>Field number for the "state" field.</summary>
+    public const int StateFieldNumber = 10;
+    private global::Ubii.Clients.Client.Types.State state_ = global::Ubii.Clients.Client.Types.State.Active;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Clients.Client.Types.State State {
+      get { return state_; }
+      set {
+        state_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Client);
@@ -205,6 +219,7 @@ namespace Ubii.Clients {
       if (IsDedicatedProcessingNode != other.IsDedicatedProcessingNode) return false;
       if (HostIp != other.HostIp) return false;
       if (MetadataJson != other.MetadataJson) return false;
+      if (State != other.State) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -220,6 +235,7 @@ namespace Ubii.Clients {
       if (IsDedicatedProcessingNode != false) hash ^= IsDedicatedProcessingNode.GetHashCode();
       if (HostIp.Length != 0) hash ^= HostIp.GetHashCode();
       if (MetadataJson.Length != 0) hash ^= MetadataJson.GetHashCode();
+      if (State != global::Ubii.Clients.Client.Types.State.Active) hash ^= State.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -260,6 +276,10 @@ namespace Ubii.Clients {
         output.WriteRawTag(74);
         output.WriteString(MetadataJson);
       }
+      if (State != global::Ubii.Clients.Client.Types.State.Active) {
+        output.WriteRawTag(80);
+        output.WriteEnum((int) State);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -288,6 +308,9 @@ namespace Ubii.Clients {
       }
       if (MetadataJson.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MetadataJson);
+      }
+      if (State != global::Ubii.Clients.Client.Types.State.Active) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -320,6 +343,9 @@ namespace Ubii.Clients {
       }
       if (other.MetadataJson.Length != 0) {
         MetadataJson = other.MetadataJson;
+      }
+      if (other.State != global::Ubii.Clients.Client.Types.State.Active) {
+        State = other.State;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -368,9 +394,26 @@ namespace Ubii.Clients {
             MetadataJson = input.ReadString();
             break;
           }
+          case 80: {
+            State = (global::Ubii.Clients.Client.Types.State) input.ReadEnum();
+            break;
+          }
         }
       }
     }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the Client message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public enum State {
+        [pbr::OriginalName("ACTIVE")] Active = 0,
+        [pbr::OriginalName("INACTIVE")] Inactive = 1,
+        [pbr::OriginalName("UNAVAILABLE")] Unavailable = 2,
+      }
+
+    }
+    #endregion
 
   }
 

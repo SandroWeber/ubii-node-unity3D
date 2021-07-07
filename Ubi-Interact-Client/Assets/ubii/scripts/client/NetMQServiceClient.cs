@@ -31,7 +31,7 @@ class NetMQServiceClient : IUbiiServiceClient
         try
         {
             socket.Connect("tcp://" + host + ":" + port);
-            Debug.Log("Create Socket successful. Host: " + host + ":" + port);
+            //Debug.Log("Create Socket successful. Host: " + host + ":" + port);
         }
         catch (Exception ex)
         {
@@ -41,7 +41,6 @@ class NetMQServiceClient : IUbiiServiceClient
 
     public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-
         TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
         bool success = false;
         while (!success)

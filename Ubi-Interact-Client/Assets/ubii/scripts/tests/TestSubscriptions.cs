@@ -7,11 +7,16 @@ using Ubii.TopicData;
 
 public class TestSubscriptions : MonoBehaviour
 {
-    private UbiiClient ubiiClient = null;
+    private UbiiNode ubiiNode = null;
 
     void Start()
     {
-        ubiiClient = FindObjectOfType<UbiiClient>();
+        ubiiNode = FindObjectOfType<UbiiNode>();
+        if (ubiiNode == null)
+        {
+            Debug.LogError("TestSubscriptions - ubii node not found!");
+            return;
+        }
 
         RunTests();
     }
@@ -23,7 +28,6 @@ public class TestSubscriptions : MonoBehaviour
 
     async private void RunTests()
     {
-        await Task.Delay(1000);
         RunTestSubscribePublish();
         await Task.Delay(1000);
         RunTestSubscribeRegex();
@@ -31,9 +35,9 @@ public class TestSubscriptions : MonoBehaviour
 
     async private void RunTestSubscribePublish()
     {
-        await ubiiClient.WaitForConnection();
+        await ubiiNode.WaitForConnection();
 
-        string topic = "/" + ubiiClient.GetID() + "/unity3D_client/test/subcribe_publish_simple";
+        string topic = "/" + ubiiNode.GetID() + "/unity3D_client/test/subcribe_publish_simple";
         bool success = false;
 
         Action<TopicDataRecord> callback = (TopicDataRecord record) =>
@@ -41,12 +45,13 @@ public class TestSubscriptions : MonoBehaviour
             success = record.Bool;
         };
 
-        await ubiiClient.Subscribe(topic, callback);
-        ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true } });
+        SubscriptionToken subToken = await ubiiNode.SubscribeTopic(topic, callback);
+        ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topic, Bool = true });
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
-            await ubiiClient.Unsubscribe(topic, callback);
+            bool successUnsubscribe = await ubiiNode.Unsubscribe(subToken);
+            if (!successUnsubscribe) Debug.LogError("RunTestSubscribePublish Unsubscribe() FAILURE!");
 
             if (success)
             {
@@ -62,25 +67,25 @@ public class TestSubscriptions : MonoBehaviour
     async private void RunTestSubscribeRegex()
     {
         // setup
-        await ubiiClient.WaitForConnection();
+        await ubiiNode.WaitForConnection();
 
         string common_topic_substring = "/unity3D_client/test/subcribe_publish_regex";
         string regex = "/*" + common_topic_substring + "/[0-9]";
         string[] topics = new string[10];
         for (int i = 0; i < 10; i++)
         {
-            topics[i] = "/" + ubiiClient.GetID() + common_topic_substring + "/" + i.ToString();
+            topics[i] = "/" + ubiiNode.GetID() + common_topic_substring + "/" + i.ToString();
         }
         List<string> topics_received = new List<string>();
 
         // publish some topics first to have pre-existing topics before subscription
         for (int i = 0; i < 5; i++)
         {
-            ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
+            ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true });
         }
 
         // subscribe, should cover existing topics (already published) and future new topics that have yet to be published for the first time
-        await ubiiClient.SubscribeRegex(regex, (Ubii.TopicData.TopicDataRecord record) =>
+        SubscriptionToken subToken = await ubiiNode.SubscribeRegex(regex, (Ubii.TopicData.TopicDataRecord record) =>
         {
             topics_received.Add(record.Topic);
         });
@@ -88,11 +93,14 @@ public class TestSubscriptions : MonoBehaviour
         // publish all topics, including ones already published and new ones
         for (int i = 0; i < 10; i++)
         {
-            ubiiClient.Publish(new Ubii.TopicData.TopicData { TopicDataRecord = new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true } });
+            ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord { Topic = topics[i], Bool = true });
         }
 
         await Task.Delay(1000).ContinueWith(async (Task t) =>
         {
+            bool successUnsubscribe = await ubiiNode.Unsubscribe(subToken);
+            if (!successUnsubscribe) Debug.LogError("RunTestSubscribeRegex Unsubscribe() FAILURE!");
+            
             bool success = true;
             foreach (string topic in topics)
             {
