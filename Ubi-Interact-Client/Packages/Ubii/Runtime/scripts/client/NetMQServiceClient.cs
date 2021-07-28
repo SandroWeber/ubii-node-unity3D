@@ -61,6 +61,7 @@ class NetMQServiceClient : IUbiiServiceClient
                 Task.Delay(100).Wait();
             }
         }
+
         return promise.Task;
     }
 

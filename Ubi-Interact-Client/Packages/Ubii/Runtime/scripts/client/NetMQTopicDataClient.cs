@@ -90,8 +90,22 @@ public class NetMQTopicDataClient
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Debug.Log("Cancelling task");
+                    try
+                    {
+                        poller.Remove(socket);
+                        socket.Close();
+                        socket.Dispose();
+                        poller.StopAsync();
+                        poller.Stop();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("ERR: " + e);
+                    }
+
                     break;
                 }
+
                 FlushRecordsToPublish();
             }
         }, cancellationToken);
@@ -112,7 +126,7 @@ public class NetMQTopicDataClient
 
         TopicDataRecordList recordList = new TopicDataRecordList()
         {
-            Elements = { repeatedField },
+            Elements = {repeatedField},
         };
 
         TopicData td = new TopicData()
@@ -300,19 +314,6 @@ public class NetMQTopicDataClient
         cts.Cancel();
         running = false;
         connected = false;
-
         NetMQConfig.Cleanup(false);
-
-        try
-        {
-            if (poller.IsRunning)
-            {
-                poller.StopAsync();
-                poller.Stop();
-            }
-        }
-        catch (Exception)
-        {
-        }
     }
 }
