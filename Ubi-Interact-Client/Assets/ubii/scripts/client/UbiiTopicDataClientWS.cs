@@ -9,7 +9,7 @@ using System.IO;
 using Ubii.TopicData;
 using Google.Protobuf;
 
-public class UbiiTopicDataClientWS
+public class UbiiTopicDataClientWS : ITopicDataClient
 {
     private string client_id;
     private string host;
@@ -18,8 +18,8 @@ public class UbiiTopicDataClientWS
 
     private Dictionary<string, Action<TopicDataRecord>> topicdata_callbacks = null;
     private bool running = false;
-    private Task process_incoming_msgs = null;
-    private CancellationToken cancellation_token_process_incoming_msgs;
+    private Task taskProcessIncomingMsgs = null;
+    private CancellationToken cancelTokenTaskProcessIncomingMsgs;
 
     public UbiiTopicDataClientWS(string client_id = null, string host = "localhost", int port = 8104)
     {
@@ -41,13 +41,13 @@ public class UbiiTopicDataClientWS
         await client_websocket.ConnectAsync(url, cancellation_token_connect);
 
         running = true;
-        cancellation_token_process_incoming_msgs = new CancellationToken();
-        process_incoming_msgs = Task.Run(async () =>
+        cancelTokenTaskProcessIncomingMsgs = new CancellationToken();
+        taskProcessIncomingMsgs = Task.Run(async () =>
         {
             while (running)
             {
                 ArraySegment<Byte> buffer = new ArraySegment<Byte>();
-                await client_websocket.ReceiveAsync(buffer, cancellation_token_process_incoming_msgs);
+                await client_websocket.ReceiveAsync(buffer, cancelTokenTaskProcessIncomingMsgs);
                 TopicData topicdata = TopicData.Parser.ParseFrom(buffer.Array);
                 Debug.Log(topicdata);
 
@@ -74,6 +74,93 @@ public class UbiiTopicDataClientWS
         }
     }
 
+    public void TearDown()
+    {
+        //TODO
+    }
+
+    public bool IsConnected()
+    {
+        //TOOD
+        return false;
+    }
+
+    public bool IsSubscribed(string topicOrRegex)
+    {
+        //TODO
+        return false;
+    }
+
+    public bool HasTopicCallbacks(string topic)
+    {
+        //TODO
+        return false;
+    }
+
+    public bool HasTopicRegexCallbacks(string regex)
+    {
+        //TODO
+        return false;
+    }
+
+    public List<string> GetAllSubscribedTopics()
+    {
+        //TODO
+        return new List<string>();
+    }
+
+    public List<string> GetAllSubscribedRegex()
+    {
+        //TODO
+        return new List<string>();
+    }
+
+    public void SetPublishDelay(int millisecs)
+    {
+        //TODO
+    }
+
+    public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    {
+        //TODO
+        this.topicdata_callbacks.Add(topic, callback);
+    }
+
+    public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    {
+        //TODO
+    }
+
+    public void RemoveAllTopicCallbacks(string topic)
+    {
+        //TODO
+    }
+
+    public void RemoveTopicCallback(string topic, Action<TopicDataRecord> callback)
+    {
+        //TODO
+    }
+
+    public void RemoveAllTopicRegexCallbacks(string regex)
+    {
+        //TODO
+    }
+
+    public void RemoveTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
+    {
+        //TODO
+    }
+
+    public void SendTopicDataRecord(TopicDataRecord record)
+    {
+        //TODO
+    }
+
+    public void SendTopicDataImmediately(TopicData td)
+    {
+        //TODO
+    }
+
     public async void Send(TopicData topicdata)
     {
         Debug.Log("topicdata: " + topicdata);
@@ -98,11 +185,6 @@ public class UbiiTopicDataClientWS
         {
             Debug.LogError(ex.ToString());
         }*/
-    }
-
-    public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
-    {
-        this.topicdata_callbacks.Add(topic, callback);
     }
 
     public void SendTestTopicData(string topic)

@@ -10,9 +10,9 @@ using UnityEngine;
 public class TopicDataProxy : ITopicDataBuffer
 {
     private TopicDataBuffer topicDataBuffer;
-    private NetMQUbiiClient networkClient;
+    private UbiiNetworkClient networkClient;
 
-    public TopicDataProxy(TopicDataBuffer topicDataBuffer, NetMQUbiiClient networkClient)
+    public TopicDataProxy(TopicDataBuffer topicDataBuffer, UbiiNetworkClient networkClient)
     {
         this.topicDataBuffer = topicDataBuffer;
         this.networkClient = networkClient;

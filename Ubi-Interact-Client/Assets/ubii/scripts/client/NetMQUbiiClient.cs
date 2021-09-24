@@ -19,8 +19,15 @@ using UnityEngine.Apple.ReplayKit;
 /// <summary>
 /// This class manages network connections based on NetMQ to the Ubi-Interact master node.
 /// </summary>
-public class NetMQUbiiClient
+public class UbiiNetworkClient
 {
+
+    public enum TOPICDATA_CONNECTION_MODE {
+        ZEROMQ = 0,
+        WEBSOCKET = 1
+    }
+    private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
+
     private string host;
     private int port;
 
@@ -28,14 +35,15 @@ public class NetMQUbiiClient
 
     private NetMQServiceClient netmqServiceClient;
 
-    private NetMQTopicDataClient netmqTopicDataClient;
+    private ITopicDataClient topicDataClient;
 
     private Server serverSpecification;
 
-    public NetMQUbiiClient(string host, int port)
+    public UbiiNetworkClient(string host, int port, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
     {
         this.host = host;
         this.port = port;
+        this.topicDataConnectionMode = topicDataConnectionMode;
     }
 
     public string GetClientID()
@@ -45,12 +53,12 @@ public class NetMQUbiiClient
 
     public bool IsConnected()
     {
-        return (clientSpecification != null && clientSpecification.Id != null && netmqTopicDataClient != null && netmqTopicDataClient.IsConnected());
+        return (clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected());
     }
 
     public void SetPublishDelay(int millisecs)
     {
-        netmqTopicDataClient.SetPublishDelay(millisecs);
+        topicDataClient.SetPublishDelay(millisecs);
     }
 
     public Task WaitForConnection()
@@ -82,12 +90,12 @@ public class NetMQUbiiClient
 
     public void Publish(TopicDataRecord record)
     {
-        netmqTopicDataClient.SendTopicData(record);
+        topicDataClient.SendTopicDataRecord(record);
     }
 
     public void PublishImmediately(TopicDataRecord record)
     {
-        netmqTopicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData {
+        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData {
             TopicDataRecord = record
         });
     }
@@ -134,9 +142,9 @@ public class NetMQUbiiClient
             return false;
         }
 
-        if (this.netmqTopicDataClient.IsSubscribed(topic))
+        if (this.topicDataClient.IsSubscribed(topic))
         {
-            netmqTopicDataClient.AddTopicDataCallback(topic, callback);
+            topicDataClient.AddTopicDataCallback(topic, callback);
             return true;
         }
 
@@ -157,14 +165,14 @@ public class NetMQUbiiClient
         };
 
         // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataCallback(topic, callback);
+        topicDataClient.AddTopicDataCallback(topic, callback);
 
         ServiceReply subReply = await CallService(topicSubscription);
-        //Debug.Log("NetMQUbiiClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
+        //Debug.Log("UbiiNetworkClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
-            netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
+            topicDataClient.RemoveTopicCallback(topic, callback);
             return false;
         }
 
@@ -180,10 +188,10 @@ public class NetMQUbiiClient
         }
 
         // removing callback function for this topic from dictionary
-        netmqTopicDataClient.RemoveTopicDataCallback(topic, callback);
+        topicDataClient.RemoveTopicCallback(topic, callback);
 
         // check if there are any callbacks left for this topic, if not, unsubscribe from topic
-        if (!this.netmqTopicDataClient.HasTopicCallbacks(topic))
+        if (!this.topicDataClient.HasTopicCallbacks(topic))
         {
             return await UnsubscribeTopic(new List<string>() { topic });
         }
@@ -216,7 +224,7 @@ public class NetMQUbiiClient
 
         foreach (string topic in topics)
         {
-            netmqTopicDataClient.RemoveTopicData(topic);
+            topicDataClient.RemoveAllTopicCallbacks(topic);
         }
         return true;
     }
@@ -232,9 +240,9 @@ public class NetMQUbiiClient
             return false;
         }
 
-        if (this.netmqTopicDataClient.IsSubscribed(regex))
+        if (this.topicDataClient.IsSubscribed(regex))
         {
-            netmqTopicDataClient.AddTopicDataRegexCallback(regex, callback);
+            topicDataClient.AddTopicDataRegexCallback(regex, callback);
             return true;
         }
 
@@ -255,7 +263,7 @@ public class NetMQUbiiClient
         }
 
         // adding callback function to dictionary
-        netmqTopicDataClient.AddTopicDataRegexCallback(regex, callback);
+        topicDataClient.AddTopicDataRegexCallback(regex, callback);
 
         return true;
     }
@@ -269,9 +277,9 @@ public class NetMQUbiiClient
         }
 
         // removing callback function from dictionary
-        netmqTopicDataClient.RemoveTopicDataRegexCallback(regex, callback);
+        topicDataClient.RemoveTopicRegexCallback(regex, callback);
 
-        if (!this.netmqTopicDataClient.HasTopicRegexCallbacks(regex))
+        if (!this.topicDataClient.HasTopicRegexCallbacks(regex))
         {
             // remove regex sub completely as no callbacks are left
             return await UnsubscribeRegex(regex);
@@ -296,7 +304,7 @@ public class NetMQUbiiClient
             return false;
         }
         // remove regex from topicdataclient
-        netmqTopicDataClient.RemoveTopicDataRegex(regex);
+        topicDataClient.RemoveAllTopicRegexCallbacks(regex);
         return true;
     }
 
@@ -346,7 +354,7 @@ public class NetMQUbiiClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError("NetMQUbiiClient.InitClientRegistration() - " + reply);
+            Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
         }
         
         return false;
@@ -355,7 +363,14 @@ public class NetMQUbiiClient
     private void InitTopicDataClient()
     {
         int port = int.Parse(serverSpecification.PortTopicDataZmq);
-        netmqTopicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
+        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ) 
+        {
+            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
+        }
+        else
+        {
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
+        }
     }
 
     #endregion
@@ -368,6 +383,6 @@ public class NetMQUbiiClient
             Client = clientSpecification
         });
         netmqServiceClient.TearDown();
-        netmqTopicDataClient.TearDown();
+        topicDataClient.TearDown();
     }
 }

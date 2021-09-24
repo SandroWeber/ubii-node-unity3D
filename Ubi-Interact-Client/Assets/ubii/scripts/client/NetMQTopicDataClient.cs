@@ -15,7 +15,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using Google.Protobuf.Collections;
 
-public class NetMQTopicDataClient
+public class NetMQTopicDataClient : ITopicDataClient
 {
     private string host;
     private int port;
@@ -173,22 +173,22 @@ public class NetMQTopicDataClient
         this.topicdataRegexCallbacks[regex].Add(callback);
     }
 
-    public void RemoveTopicData(string topic)
+    public void RemoveAllTopicCallbacks(string topic)
     {
         this.topicdataCallbacks.Remove(topic);
     }
 
-    public void RemoveTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    public void RemoveTopicCallback(string topic, Action<TopicDataRecord> callback)
     {
         this.topicdataCallbacks[topic].Remove(callback);
     }
 
-    public void RemoveTopicDataRegex(string regex)
+    public void RemoveAllTopicRegexCallbacks(string regex)
     {
         this.topicdataRegexCallbacks.Remove(regex);
     }
 
-    public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    public void RemoveTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
         this.topicdataRegexCallbacks[regex].Remove(callback);
     }
@@ -208,14 +208,14 @@ public class NetMQTopicDataClient
         delay = millisecs;
     }
 
-    public void SendTopicData(TopicDataRecord record)
+    public void SendTopicDataRecord(TopicDataRecord record)
     {
         recordsToPublish.Add(record);
     }
 
-    public void SendTopicDataImmediately(TopicData td)
+    public void SendTopicDataImmediately(TopicData topicData)
     {
-        byte[] buffer = td.ToByteArray();
+        byte[] buffer = topicData.ToByteArray();
         socket.SendFrame(buffer);
     }
 

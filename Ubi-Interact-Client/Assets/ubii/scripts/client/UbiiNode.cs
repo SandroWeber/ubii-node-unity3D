@@ -28,6 +28,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public int port = 8101;
     [Tooltip("Name for the client connection to the server. Default is Unity3D Client.")]
     public string clientName = "Unity3D Client Node";
+    [Tooltip("Which method to use for topic data connection.")]
+    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ;
 
     [Tooltip("Automatically connect on start.")]
     public bool autoConnect = true;
@@ -38,7 +40,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Range(1, 5000)]
     public int publishDelay = 25;
     private Ubii.Clients.Client clientNodeSpecification;
-    private NetMQUbiiClient networkClient;
+    private UbiiNetworkClient networkClient;
 
     private ProcessingModuleDatabase _processingModuleDatabase = new ProcessingModuleDatabase();
     public ProcessingModuleDatabase processingModuleDatabase { get { return _processingModuleDatabase; } }
@@ -113,7 +115,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task<bool> InitNetworkConnection()
     {
-        networkClient = new NetMQUbiiClient(ip, port);
+        networkClient = new UbiiNetworkClient(ip, port, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null)
         {
@@ -321,6 +323,43 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 this.processingModuleManager.RemoveModule(pm);
             }
         }
+
+        /*Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
+        foreach (ProcessingModule pm in localPMs)
+        {
+            elements.Add(pm.ToProtobuf());
+        }
+        ServiceRequest pmRuntimeAddRequest = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.PM_RUNTIME_REMOVE,
+            ProcessingModuleList = new Ubii.Processing.ProcessingModuleList
+            {
+                Elements = { elements }
+            }
+        };
+        //Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
+
+        ServiceReply reply = await CallService(pmRuntimeAddRequest);
+        //Debug.Log("start session runtime add PMs reply: " + reply);
+        if (reply.Success != null)
+        {
+            try
+            {
+                bool success = await this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
+                foreach (var pm in localPMs)
+                {
+                    this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.ToString());
+            }
+        }
+        else
+        {
+            //TODO: delete modules 
+        }*/
     }
 }
 
