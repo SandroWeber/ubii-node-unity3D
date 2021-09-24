@@ -24,10 +24,12 @@ public class NetMQTopicDataClient : ITopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
+    //TODO: to be removed and replaced with TopicDataBuffer
     private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
-
     private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks =
         new Dictionary<string, List<Action<TopicDataRecord>>>();
+
+    private ITopicDataBuffer topicDataBuffer = null;
 
     private bool running = false;
     private Task processIncomingMessages = null;
@@ -260,7 +262,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         // catch possible error
         else if (topicData.Error != null)
         {
-            Debug.LogError("topicData Error: " + topicData.Error.ToString());
+            Debug.LogError("TopicData Error: " + topicData.Error.ToString());
             return;
         }
     }

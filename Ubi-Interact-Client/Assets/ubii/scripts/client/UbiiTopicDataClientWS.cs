@@ -11,49 +11,53 @@ using Google.Protobuf;
 
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
-    private string client_id;
+    private string clientId;
     private string host;
     private int port;
-    private ClientWebSocket client_websocket = null;
+    private ClientWebSocket clientWebsocket = null;
 
-    private Dictionary<string, Action<TopicDataRecord>> topicdata_callbacks = null;
-    private bool running = false;
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicRegexCallbacks =
+        new Dictionary<string, List<Action<TopicDataRecord>>>();
+    
+    private bool connected = false;
     private Task taskProcessIncomingMsgs = null;
     private CancellationToken cancelTokenTaskProcessIncomingMsgs;
 
-    public UbiiTopicDataClientWS(string client_id = null, string host = "localhost", int port = 8104)
+    public UbiiTopicDataClientWS(string clientId = null, string host = "localhost", int port = 8104)
     {
-        this.client_id = client_id;
+        this.clientId = clientId;
         this.host = host;
         this.port = port;
-
-        topicdata_callbacks = new Dictionary<string, Action<TopicDataRecord>>();
 
         Initialize();
     }
 
     private async void Initialize()
     {
-        client_websocket = new ClientWebSocket();
+        clientWebsocket = new ClientWebSocket();
 
-        Uri url = new Uri("ws://" + this.host + ":" + this.port + "?clientID=" + this.client_id);
-        CancellationToken cancellation_token_connect = new CancellationToken();
-        await client_websocket.ConnectAsync(url, cancellation_token_connect);
+        Uri url = new Uri("ws://" + this.host + ":" + this.port + "?clientID=" + this.clientId);
+        CancellationToken cancelTokenConnect = new CancellationToken();
+        await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
 
-        running = true;
+        Debug.Log("websocket after ConnectAsync()");
+        Debug.Log(clientWebsocket);
+
+        connected = true;
         cancelTokenTaskProcessIncomingMsgs = new CancellationToken();
         taskProcessIncomingMsgs = Task.Run(async () =>
         {
-            while (running)
+            while (connected)
             {
                 ArraySegment<Byte> buffer = new ArraySegment<Byte>();
-                await client_websocket.ReceiveAsync(buffer, cancelTokenTaskProcessIncomingMsgs);
+                await clientWebsocket.ReceiveAsync(buffer, cancelTokenTaskProcessIncomingMsgs);
                 TopicData topicdata = TopicData.Parser.ParseFrom(buffer.Array);
                 Debug.Log(topicdata);
 
                 if (topicdata.TopicDataRecord != null)
                 {
-                    topicdata_callbacks[topicdata.TopicDataRecord.Topic]?.Invoke(topicdata.TopicDataRecord);
+                    topicCallbacks[topicdata.TopicDataRecord.Topic]?.Invoke(topicdata.TopicDataRecord);
                 }
                 else if (topicdata.Error != null)
                 {
@@ -63,32 +67,26 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         });
     }
 
-    public async void DeInitialize()
+    public async void TearDown()
     {
-        running = false;
-        if (client_websocket != null)
+        connected = false;
+        if (clientWebsocket != null)
         {
-            CancellationToken cancellation_token = new CancellationToken();
-            await client_websocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellation_token);
-            client_websocket.Dispose();
+            CancellationToken cancellationToken = new CancellationToken();
+            await clientWebsocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
+            clientWebsocket.Dispose();
         }
-    }
-
-    public void TearDown()
-    {
-        //TODO
     }
 
     public bool IsConnected()
     {
-        //TOOD
-        return false;
+        return this.connected;
     }
 
     public bool IsSubscribed(string topicOrRegex)
     {
         //TODO
-        return false;
+        return this.topicCallbacks.ContainsKey(topicOrRegex) || this.topicRegexCallbacks.ContainsKey(topicOrRegex);
     }
 
     public bool HasTopicCallbacks(string topic)
@@ -123,7 +121,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
     {
         //TODO
-        this.topicdata_callbacks.Add(topic, callback);
+        this.topicCallbacks.Add(topic, callback);
     }
 
     public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
@@ -176,10 +174,10 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         var array_segment = new ArraySegment<Byte>(bytebuffer);
         Debug.Log("array_segment length: " + array_segment.Count);
         CancellationToken cancellation_token = new CancellationToken();
-        await client_websocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);
+        await clientWebsocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);
         /*try
         {
-            await client_websocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);
+            await clientWebsocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);
         }
         catch (Exception ex)
         {
