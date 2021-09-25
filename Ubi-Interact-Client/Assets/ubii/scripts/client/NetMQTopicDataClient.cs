@@ -99,6 +99,31 @@ public class NetMQTopicDataClient : ITopicDataClient
         }, cancellationToken);
     }
 
+    public void TearDown()
+    {
+        Debug.Log("TearDown TopicDataClient");
+        SetPublishDelay(1);
+        topicdataCallbacks.Clear();
+        topicdataRegexCallbacks.Clear();
+        cts.Cancel();
+        running = false;
+        connected = false;
+
+        NetMQConfig.Cleanup(false);
+
+        try
+        {
+            if (poller.IsRunning)
+            {
+                poller.StopAsync();
+                poller.Stop();
+            }
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     private void FlushRecordsToPublish()
     {
         if (recordsToPublish.IsEmpty) return;
@@ -155,7 +180,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         return this.topicdataRegexCallbacks[regex].Count > 0;
     }
 
-    public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    public void AddTopicCallback(string topic, Action<TopicDataRecord> callback)
     {
         if (!this.topicdataCallbacks.ContainsKey(topic))
         {
@@ -165,7 +190,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         this.topicdataCallbacks[topic].Add(callback);
     }
 
-    public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    public void AddTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
         if (!this.topicdataRegexCallbacks.ContainsKey(regex))
         {
@@ -252,7 +277,7 @@ public class NetMQTopicDataClient : ITopicDataClient
             this.InvokeTopicCallbacks(topicData.TopicDataRecord);
         }
         // list of records
-        else if (topicData.TopicDataRecordList != null)
+        if (topicData.TopicDataRecordList != null)
         {
             foreach (TopicDataRecord record in topicData.TopicDataRecordList.Elements)
             {
@@ -260,7 +285,7 @@ public class NetMQTopicDataClient : ITopicDataClient
             }
         }
         // catch possible error
-        else if (topicData.Error != null)
+        if (topicData.Error != null)
         {
             Debug.LogError("TopicData Error: " + topicData.Error.ToString());
             return;
@@ -290,31 +315,6 @@ public class NetMQTopicDataClient : ITopicDataClient
                     }
                 }
             }
-        }
-    }
-
-    public void TearDown()
-    {
-        Debug.Log("TearDown TopicDataClient");
-        SetPublishDelay(1);
-        topicdataCallbacks.Clear();
-        topicdataRegexCallbacks.Clear();
-        cts.Cancel();
-        running = false;
-        connected = false;
-
-        NetMQConfig.Cleanup(false);
-
-        try
-        {
-            if (poller.IsRunning)
-            {
-                poller.StopAsync();
-                poller.Stop();
-            }
-        }
-        catch (Exception)
-        {
         }
     }
 }

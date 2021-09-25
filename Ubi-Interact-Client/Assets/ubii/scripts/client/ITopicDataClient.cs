@@ -20,12 +20,12 @@ interface ITopicDataClient
     List<string> GetAllSubscribedRegex();
     void SetPublishDelay(int millisecs);
 
-    void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback);
-    void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback);
-    void RemoveAllTopicCallbacks(string topic);
+    void AddTopicCallback(string topic, Action<TopicDataRecord> callback);
+    void AddTopicRegexCallback(string regex, Action<TopicDataRecord> callback);
     void RemoveTopicCallback(string topic, Action<TopicDataRecord> callback);
-    void RemoveAllTopicRegexCallbacks(string regex);
     void RemoveTopicRegexCallback(string regex, Action<TopicDataRecord> callback);
+    void RemoveAllTopicCallbacks(string topic);
+    void RemoveAllTopicRegexCallbacks(string regex);
     void SendTopicDataRecord(TopicDataRecord record);
     void SendTopicDataImmediately(TopicData topicData);
 }

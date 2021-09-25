@@ -144,7 +144,7 @@ public class UbiiNetworkClient
 
         if (this.topicDataClient.IsSubscribed(topic))
         {
-            topicDataClient.AddTopicDataCallback(topic, callback);
+            topicDataClient.AddTopicCallback(topic, callback);
             return true;
         }
 
@@ -165,7 +165,7 @@ public class UbiiNetworkClient
         };
 
         // adding callback function to dictionary
-        topicDataClient.AddTopicDataCallback(topic, callback);
+        topicDataClient.AddTopicCallback(topic, callback);
 
         ServiceReply subReply = await CallService(topicSubscription);
         //Debug.Log("UbiiNetworkClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
@@ -242,7 +242,7 @@ public class UbiiNetworkClient
 
         if (this.topicDataClient.IsSubscribed(regex))
         {
-            topicDataClient.AddTopicDataRegexCallback(regex, callback);
+            topicDataClient.AddTopicRegexCallback(regex, callback);
             return true;
         }
 
@@ -263,7 +263,7 @@ public class UbiiNetworkClient
         }
 
         // adding callback function to dictionary
-        topicDataClient.AddTopicDataRegexCallback(regex, callback);
+        topicDataClient.AddTopicRegexCallback(regex, callback);
 
         return true;
     }
@@ -367,7 +367,7 @@ public class UbiiNetworkClient
         {
             this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
         }
-        else
+        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.WEBSOCKET)
         {
             this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
         }

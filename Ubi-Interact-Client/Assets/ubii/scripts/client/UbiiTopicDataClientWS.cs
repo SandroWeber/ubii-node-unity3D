@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.RegularExpressions;
 
 using Ubii.TopicData;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
@@ -23,6 +26,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private bool connected = false;
     private Task taskProcessIncomingMsgs = null;
     private CancellationToken cancelTokenTaskProcessIncomingMsgs;
+    private ConcurrentBag<TopicDataRecord> recordsToPublish = new ConcurrentBag<TopicDataRecord>();
 
     public UbiiTopicDataClientWS(string clientId = null, string host = "localhost", int port = 8104)
     {
@@ -57,9 +61,10 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
                 if (topicdata.TopicDataRecord != null)
                 {
-                    topicCallbacks[topicdata.TopicDataRecord.Topic]?.Invoke(topicdata.TopicDataRecord);
+                    this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
                 }
-                else if (topicdata.Error != null)
+                
+                if (topicdata.Error != null)
                 {
                     Debug.LogError(topicdata.Error.ToString());
                 }
@@ -118,13 +123,17 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         //TODO
     }
 
-    public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    public void AddTopicCallback(string topic, Action<TopicDataRecord> callback)
     {
-        //TODO
-        this.topicCallbacks.Add(topic, callback);
+        if (!this.topicCallbacks.ContainsKey(topic))
+        {
+            this.topicCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
+        }
+
+        this.topicCallbacks[topic].Add(callback);
     }
 
-    public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    public void AddTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
         //TODO
     }
@@ -185,16 +194,59 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }*/
     }
 
-    public void SendTestTopicData(string topic)
+    #region private-methods
+    
+    private void FlushRecordsToPublish()
     {
-        try
+        if (recordsToPublish.IsEmpty) return;
+
+        RepeatedField<TopicDataRecord> repeatedField = new RepeatedField<TopicDataRecord>();
+        while (!recordsToPublish.IsEmpty)
         {
-            TopicData topicdata = new TopicData { TopicDataRecord = new TopicDataRecord { Topic = topic, Double = 1 } };
-            Send(topicdata);
+            if (recordsToPublish.TryTake(out TopicDataRecord record))
+            {
+                repeatedField.Add(record);
+            }
         }
-        catch (Exception ex)
+
+        TopicDataRecordList recordList = new TopicDataRecordList()
         {
-            Debug.LogError(ex.ToString());
+            Elements = { repeatedField },
+        };
+
+        TopicData td = new TopicData()
+        {
+            TopicDataRecordList = recordList
+        };
+
+        SendTopicDataImmediately(td);
+    }
+
+    private void InvokeTopicCallbacks(TopicDataRecord record)
+    {
+        string topic = record.Topic;
+        if (topicCallbacks.ContainsKey(topic))
+        {
+            foreach (Action<TopicDataRecord> callback in topicCallbacks[topic])
+            {
+                callback.Invoke(record);
+            }
+        }
+        else
+        {
+            foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicRegexCallbacks)
+            {
+                Match m = Regex.Match(topic, entry.Key);
+                if (m.Success)
+                {
+                    foreach (Action<TopicDataRecord> callback in entry.Value)
+                    {
+                        callback.Invoke(record);
+                    }
+                }
+            }
         }
     }
+
+    #endregion private-methods
 }
