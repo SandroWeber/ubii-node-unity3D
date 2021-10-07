@@ -30,9 +30,9 @@ namespace Ubii.General {
             "U3VjY2Vzc2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.General.Success), global::Ubii.General.Success.Parser, new[]{ "Title", "Message" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.General.SuccessList), global::Ubii.General.SuccessList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.General.Success), global::Ubii.General.Success.Parser, new[]{ "Title", "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.General.SuccessList), global::Ubii.General.SuccessList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion

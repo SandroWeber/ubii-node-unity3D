@@ -33,9 +33,9 @@ namespace Ubii.DataStructure {
             "GAEgAygLMhsudWJpaS5kYXRhU3RydWN0dXJlLkltYWdlMkRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2D), global::Ubii.DataStructure.Image2D.Parser, new[]{ "Width", "Height", "DataFormat", "Data" }, null, new[]{ typeof(global::Ubii.DataStructure.Image2D.Types.DataFormat) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2DList), global::Ubii.DataStructure.Image2DList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2D), global::Ubii.DataStructure.Image2D.Parser, new[]{ "Width", "Height", "DataFormat", "Data" }, null, new[]{ typeof(global::Ubii.DataStructure.Image2D.Types.DataFormat) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Image2DList), global::Ubii.DataStructure.Image2DList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -103,7 +103,7 @@ namespace Ubii.DataStructure {
 
     /// <summary>Field number for the "data_format" field.</summary>
     public const int DataFormatFieldNumber = 3;
-    private global::Ubii.DataStructure.Image2D.Types.DataFormat dataFormat_ = global::Ubii.DataStructure.Image2D.Types.DataFormat.Gray8;
+    private global::Ubii.DataStructure.Image2D.Types.DataFormat dataFormat_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.DataStructure.Image2D.Types.DataFormat DataFormat {
       get { return dataFormat_; }
@@ -148,7 +148,7 @@ namespace Ubii.DataStructure {
       int hash = 1;
       if (Width != 0) hash ^= Width.GetHashCode();
       if (Height != 0) hash ^= Height.GetHashCode();
-      if (DataFormat != global::Ubii.DataStructure.Image2D.Types.DataFormat.Gray8) hash ^= DataFormat.GetHashCode();
+      if (DataFormat != 0) hash ^= DataFormat.GetHashCode();
       if (Data.Length != 0) hash ^= Data.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -171,7 +171,7 @@ namespace Ubii.DataStructure {
         output.WriteRawTag(16);
         output.WriteInt32(Height);
       }
-      if (DataFormat != global::Ubii.DataStructure.Image2D.Types.DataFormat.Gray8) {
+      if (DataFormat != 0) {
         output.WriteRawTag(24);
         output.WriteEnum((int) DataFormat);
       }
@@ -193,7 +193,7 @@ namespace Ubii.DataStructure {
       if (Height != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Height);
       }
-      if (DataFormat != global::Ubii.DataStructure.Image2D.Types.DataFormat.Gray8) {
+      if (DataFormat != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) DataFormat);
       }
       if (Data.Length != 0) {
@@ -216,7 +216,7 @@ namespace Ubii.DataStructure {
       if (other.Height != 0) {
         Height = other.Height;
       }
-      if (other.DataFormat != global::Ubii.DataStructure.Image2D.Types.DataFormat.Gray8) {
+      if (other.DataFormat != 0) {
         DataFormat = other.DataFormat;
       }
       if (other.Data.Length != 0) {
@@ -242,7 +242,7 @@ namespace Ubii.DataStructure {
             break;
           }
           case 24: {
-            DataFormat = (global::Ubii.DataStructure.Image2D.Types.DataFormat) input.ReadEnum();
+            dataFormat_ = (global::Ubii.DataStructure.Image2D.Types.DataFormat) input.ReadEnum();
             break;
           }
           case 34: {

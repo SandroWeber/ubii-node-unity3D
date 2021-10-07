@@ -35,8 +35,8 @@ namespace Ubii.DataStructure {
             "M0gAQg0KC29yaWVudGF0aW9uYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Pose3D), global::Ubii.DataStructure.Pose3D.Parser, new[]{ "Position", "Quaternion", "Euler" }, new[]{ "Orientation" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Pose3D), global::Ubii.DataStructure.Pose3D.Parser, new[]{ "Position", "Quaternion", "Euler" }, new[]{ "Orientation" }, null, null)
           }));
     }
     #endregion
@@ -220,7 +220,7 @@ namespace Ubii.DataStructure {
       }
       if (other.position_ != null) {
         if (position_ == null) {
-          Position = new global::Ubii.DataStructure.Vector3();
+          position_ = new global::Ubii.DataStructure.Vector3();
         }
         Position.MergeFrom(other.Position);
       }
@@ -252,9 +252,9 @@ namespace Ubii.DataStructure {
             break;
           case 10: {
             if (position_ == null) {
-              Position = new global::Ubii.DataStructure.Vector3();
+              position_ = new global::Ubii.DataStructure.Vector3();
             }
-            input.ReadMessage(Position);
+            input.ReadMessage(position_);
             break;
           }
           case 18: {

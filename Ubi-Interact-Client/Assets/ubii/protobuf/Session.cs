@@ -38,9 +38,9 @@ namespace Ubii.Sessions {
             "EgsKB1NUT1BQRUQQA2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Sessions.IoMappingsReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Sessions.SessionStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.Session), global::Ubii.Sessions.Session.Parser, new[]{ "Id", "Name", "ProcessingModules", "IoMappings", "Tags", "Description", "Authors", "Status", "Editable" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.SessionList), global::Ubii.Sessions.SessionList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.Sessions.SessionStatus), }, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.Session), global::Ubii.Sessions.Session.Parser, new[]{ "Id", "Name", "ProcessingModules", "IoMappings", "Tags", "Description", "Authors", "Status", "Editable" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.SessionList), global::Ubii.Sessions.SessionList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -174,7 +174,7 @@ namespace Ubii.Sessions {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 8;
-    private global::Ubii.Sessions.SessionStatus status_ = global::Ubii.Sessions.SessionStatus.Created;
+    private global::Ubii.Sessions.SessionStatus status_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Sessions.SessionStatus Status {
       get { return status_; }
@@ -229,7 +229,7 @@ namespace Ubii.Sessions {
       hash ^= tags_.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       hash ^= authors_.GetHashCode();
-      if (Status != global::Ubii.Sessions.SessionStatus.Created) hash ^= Status.GetHashCode();
+      if (Status != 0) hash ^= Status.GetHashCode();
       if (Editable != false) hash ^= Editable.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -260,7 +260,7 @@ namespace Ubii.Sessions {
         output.WriteString(Description);
       }
       authors_.WriteTo(output, _repeated_authors_codec);
-      if (Status != global::Ubii.Sessions.SessionStatus.Created) {
+      if (Status != 0) {
         output.WriteRawTag(64);
         output.WriteEnum((int) Status);
       }
@@ -289,7 +289,7 @@ namespace Ubii.Sessions {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
       size += authors_.CalculateSize(_repeated_authors_codec);
-      if (Status != global::Ubii.Sessions.SessionStatus.Created) {
+      if (Status != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (Editable != false) {
@@ -319,7 +319,7 @@ namespace Ubii.Sessions {
         Description = other.Description;
       }
       authors_.Add(other.authors_);
-      if (other.Status != global::Ubii.Sessions.SessionStatus.Created) {
+      if (other.Status != 0) {
         Status = other.Status;
       }
       if (other.Editable != false) {
@@ -365,7 +365,7 @@ namespace Ubii.Sessions {
             break;
           }
           case 64: {
-            Status = (global::Ubii.Sessions.SessionStatus) input.ReadEnum();
+            status_ = (global::Ubii.Sessions.SessionStatus) input.ReadEnum();
             break;
           }
           case 72: {

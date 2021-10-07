@@ -36,9 +36,9 @@ namespace Ubii.DataStructure {
             "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2D), global::Ubii.DataStructure.Object2D.Parser, new[]{ "Id", "Pose", "Size", "UserDataJson" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2DList), global::Ubii.DataStructure.Object2DList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2D), global::Ubii.DataStructure.Object2D.Parser, new[]{ "Id", "Pose", "Size", "UserDataJson" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.Object2DList), global::Ubii.DataStructure.Object2DList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -218,13 +218,13 @@ namespace Ubii.DataStructure {
       }
       if (other.pose_ != null) {
         if (pose_ == null) {
-          Pose = new global::Ubii.DataStructure.Pose2D();
+          pose_ = new global::Ubii.DataStructure.Pose2D();
         }
         Pose.MergeFrom(other.Pose);
       }
       if (other.size_ != null) {
         if (size_ == null) {
-          Size = new global::Ubii.DataStructure.Vector2();
+          size_ = new global::Ubii.DataStructure.Vector2();
         }
         Size.MergeFrom(other.Size);
       }
@@ -248,16 +248,16 @@ namespace Ubii.DataStructure {
           }
           case 18: {
             if (pose_ == null) {
-              Pose = new global::Ubii.DataStructure.Pose2D();
+              pose_ = new global::Ubii.DataStructure.Pose2D();
             }
-            input.ReadMessage(Pose);
+            input.ReadMessage(pose_);
             break;
           }
           case 26: {
             if (size_ == null) {
-              Size = new global::Ubii.DataStructure.Vector2();
+              size_ = new global::Ubii.DataStructure.Vector2();
             }
-            input.ReadMessage(Size);
+            input.ReadMessage(size_);
             break;
           }
           case 34: {

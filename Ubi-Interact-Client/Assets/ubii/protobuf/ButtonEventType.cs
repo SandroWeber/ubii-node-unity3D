@@ -29,7 +29,7 @@ namespace Ubii.DataStructure {
             "IwoPQnV0dG9uRXZlbnRUeXBlEgYKAlVQEAASCAoERE9XThABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.DataStructure.ButtonEventType), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Ubii.DataStructure.ButtonEventType), }, null));
     }
     #endregion
 

@@ -38,9 +38,9 @@ namespace Ubii.DataStructure {
             "ZW50YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.DataStructure.ButtonEventTypeReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEvent), global::Ubii.DataStructure.TouchEvent.Parser, new[]{ "Type", "Position", "Id", "Force" }, null, new[]{ typeof(global::Ubii.DataStructure.TouchEvent.Types.TouchEventType) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEventList), global::Ubii.DataStructure.TouchEventList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEvent), global::Ubii.DataStructure.TouchEvent.Parser, new[]{ "Type", "Position", "Id", "Force" }, null, new[]{ typeof(global::Ubii.DataStructure.TouchEvent.Types.TouchEventType) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.DataStructure.TouchEventList), global::Ubii.DataStructure.TouchEventList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -86,7 +86,7 @@ namespace Ubii.DataStructure {
 
     /// <summary>Field number for the "type" field.</summary>
     public const int TypeFieldNumber = 1;
-    private global::Ubii.DataStructure.TouchEvent.Types.TouchEventType type_ = global::Ubii.DataStructure.TouchEvent.Types.TouchEventType.TouchStart;
+    private global::Ubii.DataStructure.TouchEvent.Types.TouchEventType type_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.DataStructure.TouchEvent.Types.TouchEventType Type {
       get { return type_; }
@@ -151,7 +151,7 @@ namespace Ubii.DataStructure {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Type != global::Ubii.DataStructure.TouchEvent.Types.TouchEventType.TouchStart) hash ^= Type.GetHashCode();
+      if (Type != 0) hash ^= Type.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Force != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Force);
@@ -168,7 +168,7 @@ namespace Ubii.DataStructure {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Type != global::Ubii.DataStructure.TouchEvent.Types.TouchEventType.TouchStart) {
+      if (Type != 0) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Type);
       }
@@ -192,7 +192,7 @@ namespace Ubii.DataStructure {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Type != global::Ubii.DataStructure.TouchEvent.Types.TouchEventType.TouchStart) {
+      if (Type != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
       }
       if (position_ != null) {
@@ -215,12 +215,12 @@ namespace Ubii.DataStructure {
       if (other == null) {
         return;
       }
-      if (other.Type != global::Ubii.DataStructure.TouchEvent.Types.TouchEventType.TouchStart) {
+      if (other.Type != 0) {
         Type = other.Type;
       }
       if (other.position_ != null) {
         if (position_ == null) {
-          Position = new global::Ubii.DataStructure.Vector2();
+          position_ = new global::Ubii.DataStructure.Vector2();
         }
         Position.MergeFrom(other.Position);
       }
@@ -242,14 +242,14 @@ namespace Ubii.DataStructure {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Type = (global::Ubii.DataStructure.TouchEvent.Types.TouchEventType) input.ReadEnum();
+            type_ = (global::Ubii.DataStructure.TouchEvent.Types.TouchEventType) input.ReadEnum();
             break;
           }
           case 18: {
             if (position_ == null) {
-              Position = new global::Ubii.DataStructure.Vector2();
+              position_ = new global::Ubii.DataStructure.Vector2();
             }
-            input.ReadMessage(Position);
+            input.ReadMessage(position_);
             break;
           }
           case 26: {

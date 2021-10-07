@@ -34,8 +34,8 @@ namespace Ubii.TopicData {
             "AEIGCgR0eXBlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.TopicData.TopicDataRecordReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicData), global::Ubii.TopicData.TopicData.Parser, new[]{ "TopicDataRecord", "TopicDataRecordList", "Error" }, new[]{ "Type" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicData), global::Ubii.TopicData.TopicData.Parser, new[]{ "TopicDataRecord", "TopicDataRecordList", "Error" }, new[]{ "Type" }, null, null)
           }));
     }
     #endregion

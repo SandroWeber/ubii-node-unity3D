@@ -35,9 +35,9 @@ namespace Ubii.Devices {
             "ZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.ComponentReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Device), global::Ubii.Devices.Device.Parser, new[]{ "Id", "Name", "DeviceType", "Components", "ClientId", "Tags", "Description" }, null, new[]{ typeof(global::Ubii.Devices.Device.Types.DeviceType) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.DeviceList), global::Ubii.Devices.DeviceList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Device), global::Ubii.Devices.Device.Parser, new[]{ "Id", "Name", "DeviceType", "Components", "ClientId", "Tags", "Description" }, null, new[]{ typeof(global::Ubii.Devices.Device.Types.DeviceType) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.DeviceList), global::Ubii.Devices.DeviceList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -108,7 +108,7 @@ namespace Ubii.Devices {
 
     /// <summary>Field number for the "device_type" field.</summary>
     public const int DeviceTypeFieldNumber = 3;
-    private global::Ubii.Devices.Device.Types.DeviceType deviceType_ = global::Ubii.Devices.Device.Types.DeviceType.Participant;
+    private global::Ubii.Devices.Device.Types.DeviceType deviceType_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Devices.Device.Types.DeviceType DeviceType {
       get { return deviceType_; }
@@ -187,7 +187,7 @@ namespace Ubii.Devices {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (DeviceType != global::Ubii.Devices.Device.Types.DeviceType.Participant) hash ^= DeviceType.GetHashCode();
+      if (DeviceType != 0) hash ^= DeviceType.GetHashCode();
       hash ^= components_.GetHashCode();
       if (ClientId.Length != 0) hash ^= ClientId.GetHashCode();
       hash ^= tags_.GetHashCode();
@@ -213,7 +213,7 @@ namespace Ubii.Devices {
         output.WriteRawTag(18);
         output.WriteString(Name);
       }
-      if (DeviceType != global::Ubii.Devices.Device.Types.DeviceType.Participant) {
+      if (DeviceType != 0) {
         output.WriteRawTag(24);
         output.WriteEnum((int) DeviceType);
       }
@@ -241,7 +241,7 @@ namespace Ubii.Devices {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
-      if (DeviceType != global::Ubii.Devices.Device.Types.DeviceType.Participant) {
+      if (DeviceType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) DeviceType);
       }
       size += components_.CalculateSize(_repeated_components_codec);
@@ -269,7 +269,7 @@ namespace Ubii.Devices {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
-      if (other.DeviceType != global::Ubii.Devices.Device.Types.DeviceType.Participant) {
+      if (other.DeviceType != 0) {
         DeviceType = other.DeviceType;
       }
       components_.Add(other.components_);
@@ -300,7 +300,7 @@ namespace Ubii.Devices {
             break;
           }
           case 24: {
-            DeviceType = (global::Ubii.Devices.Device.Types.DeviceType) input.ReadEnum();
+            deviceType_ = (global::Ubii.Devices.Device.Types.DeviceType) input.ReadEnum();
             break;
           }
           case 34: {
