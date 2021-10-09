@@ -190,9 +190,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public void Publish(TopicDataRecordList recordList)
     {
-        if (recordList == null || recordList.elements == null) return;
+        if (recordList == null || recordList.Elements == null) return;
         
-        foreach (TopicDataRecord record in recordList.elements)
+        foreach (TopicDataRecord record in recordList.Elements)
         {
             this.Publish(record);
         }
