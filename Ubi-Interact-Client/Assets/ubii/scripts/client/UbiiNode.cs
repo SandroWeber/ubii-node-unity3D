@@ -188,6 +188,24 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy.Publish(record);
     }
 
+    public void Publish(TopicDataRecordList recordList)
+    {
+        if (recordList == null || recordList.elements == null) return;
+        
+        foreach (TopicDataRecord record in recordList.elements)
+        {
+            this.Publish(record);
+        }
+    }
+
+    public void Publish(TopicDataRecord[] recordsArray)
+    {
+        foreach (TopicDataRecord record in recordsArray)
+        {
+            this.Publish(record);
+        }
+    }
+
     public void PublishImmediately(TopicDataRecord record)
     {
         topicDataProxy.PublishImmediately(record);
