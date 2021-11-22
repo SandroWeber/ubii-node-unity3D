@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Ubii.Services;
-using NetMQ;
 using NetMQ.Sockets;
-using Google.Protobuf;
 using UnityEngine;
 using System.Threading.Tasks;
-using UnityEngine.Networking;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 class UbiiServiceClientREST : IUbiiServiceClient
 {
@@ -31,89 +26,32 @@ class UbiiServiceClientREST : IUbiiServiceClient
         this.httpClient = new HttpClient();
         this.serviceURL += this.host + ":" + this.port + this.serviceRoute;
         Debug.Log("this.serviceURL = " + this.serviceURL);
-        //StartSocket();
     }
 
-    // creates tcp connection to given host and port
-    /*private void StartSocket()
-    {
-    }*/
     public async Task<ServiceReply> CallService(ServiceRequest request)
     {
         Debug.Log("UbiiServiceClientREST.CallService()");
         Debug.Log(request.ToString());
-        try
-        {
-            StringContent content = new StringContent(request.ToString(), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await this.httpClient.PostAsync(this.serviceURL, content);
-            Debug.Log(response.ToString());
-            string responseJSON = await response.Content.ReadAsStringAsync();
-            Debug.Log("responseJSON:");
-            Debug.Log(responseJSON);
-            /*ServiceReply serviceReply = new ServiceReply();
-            JsonUtility.FromJsonOverwrite(responseJSON, serviceReply);*/
-            ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseJSON);
-            Debug.Log("serviceReply:");
-            Debug.Log(serviceReply);
-        }
-        catch (Exception exception)
-        {
-            Debug.LogError(exception.ToString());
-        }
-        /*try
-        {
-            Debug.Log("UbiiServiceClientREST.CallService()");
-            string requestJSON = request.ToString();
-            Debug.Log(requestJSON);
-            UnityWebRequest webRequest = UnityWebRequest.Post(this.serviceURL, requestJSON);
+        StringContent content = new StringContent(request.ToString(), Encoding.UTF8, "application/json");
+        HttpResponseMessage response = await this.httpClient.PostAsync(this.serviceURL, content);
+        Debug.Log(response.ToString());
+        string responseJSON = await response.Content.ReadAsStringAsync();
+        Debug.Log("responseJSON:");
+        Debug.Log(responseJSON);
+        //TODO: this is a stupid hack for the Google.Protobuf.JsonParser as the server JSON response includes an identifier for the
+        // protocol buffer oneof field "type" that would result in an error
+        string jsonModified = Regex.Replace(responseJSON, ",\"type\":\".*\"", "");
+        jsonModified = Regex.Replace(jsonModified, "\"type\":\".*\"", "");
+        Debug.Log("jsonModified:");
+        Debug.Log(jsonModified);
+        ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(jsonModified);
+        Debug.Log("serviceReply:");
+        Debug.Log(serviceReply);
 
-            UnityWebRequestAsyncOperation asyncOperation = webRequest.SendWebRequest();
-            Debug.Log("asyncOperation.isDone = " + asyncOperation.isDone);
-            while (!asyncOperation.isDone)
-            {
-                Debug.Log("waiting for web request to be done");
-                await Task.Delay(100);
-            }
+        return serviceReply;
 
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                Debug.Log(webRequest.error);
-            }
-            else
-            {
-                Debug.Log("Form upload complete!");
-                Debug.Log("\nResponse: " + webRequest.downloadHandler.text);
-            }
-        }
-        catch (Exception exception)
-        {
-            Debug.LogError(exception.ToString());
-        }
-        */
-
-        return new ServiceReply { Error = new Ubii.General.Error { Message = "not implemented" } };
+        //return new ServiceReply { Error = new Ubii.General.Error { Message = "not implemented" } };
     }
-
-    /*private IEnumerator CoroutineInterfaceCallService(ServiceRequest request)
-    {
-        Debug.Log("UbiiServiceClientREST.CoroutineInterfaceCallService()");
-        string requestJSON = request.ToString();
-        Debug.Log(requestJSON);
-
-        using (UnityWebRequest www = UnityWebRequest.Post(this.serviceURL, requestJSON))
-        {
-            yield return www.SendWebRequest();
-
-            if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                Debug.Log("Form upload complete!");
-            }
-        }
-    }*/
 
     public void TearDown()
     {
