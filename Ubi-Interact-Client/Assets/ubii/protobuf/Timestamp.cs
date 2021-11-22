@@ -25,12 +25,12 @@ namespace Ubii.TopicData {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci9wcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVjb3JkL3RpbWVzdGFtcC5w",
-            "cm90bxIOdWJpaS50b3BpY0RhdGEiKwoJVGltZXN0YW1wEg8KB3NlY29uZHMY",
-            "ASABKAMSDQoFbmFub3MYAiABKAViBnByb3RvMw=="));
+            "cm90bxIOdWJpaS50b3BpY0RhdGEiOwoJVGltZXN0YW1wEg8KB3NlY29uZHMY",
+            "ASABKAMSDQoFbmFub3MYAiABKAUSDgoGbWlsbGlzGAMgASgDYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.Timestamp), global::Ubii.TopicData.Timestamp.Parser, new[]{ "Seconds", "Nanos" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.Timestamp), global::Ubii.TopicData.Timestamp.Parser, new[]{ "Seconds", "Nanos", "Millis" }, null, null, null)
           }));
     }
     #endregion
@@ -64,6 +64,7 @@ namespace Ubii.TopicData {
     public Timestamp(Timestamp other) : this() {
       seconds_ = other.seconds_;
       nanos_ = other.nanos_;
+      millis_ = other.millis_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -94,6 +95,17 @@ namespace Ubii.TopicData {
       }
     }
 
+    /// <summary>Field number for the "millis" field.</summary>
+    public const int MillisFieldNumber = 3;
+    private long millis_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long Millis {
+      get { return millis_; }
+      set {
+        millis_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Timestamp);
@@ -109,6 +121,7 @@ namespace Ubii.TopicData {
       }
       if (Seconds != other.Seconds) return false;
       if (Nanos != other.Nanos) return false;
+      if (Millis != other.Millis) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -117,6 +130,7 @@ namespace Ubii.TopicData {
       int hash = 1;
       if (Seconds != 0L) hash ^= Seconds.GetHashCode();
       if (Nanos != 0) hash ^= Nanos.GetHashCode();
+      if (Millis != 0L) hash ^= Millis.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -138,6 +152,10 @@ namespace Ubii.TopicData {
         output.WriteRawTag(16);
         output.WriteInt32(Nanos);
       }
+      if (Millis != 0L) {
+        output.WriteRawTag(24);
+        output.WriteInt64(Millis);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -151,6 +169,9 @@ namespace Ubii.TopicData {
       }
       if (Nanos != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Nanos);
+      }
+      if (Millis != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Millis);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -169,6 +190,9 @@ namespace Ubii.TopicData {
       if (other.Nanos != 0) {
         Nanos = other.Nanos;
       }
+      if (other.Millis != 0L) {
+        Millis = other.Millis;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -186,6 +210,10 @@ namespace Ubii.TopicData {
           }
           case 16: {
             Nanos = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            Millis = input.ReadInt64();
             break;
           }
         }

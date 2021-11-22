@@ -54,13 +54,13 @@ namespace Ubii.Processing {
             "b2Nlc3NpbmcuUHJvY2Vzc2luZ01vZHVsZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode), global::Ubii.Processing.ProcessingMode.Parser, new[]{ "Frequency", "Lockstep", "TriggerOnInput" }, new[]{ "Mode" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Frequency), global::Ubii.Processing.ProcessingMode.Types.Frequency.Parser, new[]{ "Hertz" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Lockstep), global::Ubii.Processing.ProcessingMode.Types.Lockstep.Parser, new[]{ "ProcessRequestEndpoint" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput), global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput.Parser, new[]{ "MinDelayMs", "AllInputsNeedUpdate" }, null, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "InternalName", "MessageFormat" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModule), global::Ubii.Processing.ProcessingModule.Parser, new[]{ "Id", "Name", "Authors", "Tags", "Description", "NodeId", "SessionId", "Status", "ProcessingMode", "Inputs", "Outputs", "Language", "OnProcessingStringified", "OnCreatedStringified", "OnHaltedStringified", "OnDestroyedStringified" }, null, new[]{ typeof(global::Ubii.Processing.ProcessingModule.Types.Status), typeof(global::Ubii.Processing.ProcessingModule.Types.Language) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModuleList), global::Ubii.Processing.ProcessingModuleList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode), global::Ubii.Processing.ProcessingMode.Parser, new[]{ "Frequency", "Lockstep", "TriggerOnInput" }, new[]{ "Mode" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Frequency), global::Ubii.Processing.ProcessingMode.Types.Frequency.Parser, new[]{ "Hertz" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Lockstep), global::Ubii.Processing.ProcessingMode.Types.Lockstep.Parser, new[]{ "ProcessRequestEndpoint" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput), global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput.Parser, new[]{ "MinDelayMs", "AllInputsNeedUpdate" }, null, null, null)}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "InternalName", "MessageFormat" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModule), global::Ubii.Processing.ProcessingModule.Parser, new[]{ "Id", "Name", "Authors", "Tags", "Description", "NodeId", "SessionId", "Status", "ProcessingMode", "Inputs", "Outputs", "Language", "OnProcessingStringified", "OnCreatedStringified", "OnHaltedStringified", "OnDestroyedStringified" }, null, new[]{ typeof(global::Ubii.Processing.ProcessingModule.Types.Status), typeof(global::Ubii.Processing.ProcessingModule.Types.Language) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModuleList), global::Ubii.Processing.ProcessingModuleList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -1015,7 +1015,7 @@ namespace Ubii.Processing {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 8;
-    private global::Ubii.Processing.ProcessingModule.Types.Status status_ = global::Ubii.Processing.ProcessingModule.Types.Status.Initialized;
+    private global::Ubii.Processing.ProcessingModule.Types.Status status_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Processing.ProcessingModule.Types.Status Status {
       get { return status_; }
@@ -1057,7 +1057,7 @@ namespace Ubii.Processing {
 
     /// <summary>Field number for the "language" field.</summary>
     public const int LanguageFieldNumber = 12;
-    private global::Ubii.Processing.ProcessingModule.Types.Language language_ = global::Ubii.Processing.ProcessingModule.Types.Language.Cpp;
+    private global::Ubii.Processing.ProcessingModule.Types.Language language_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Processing.ProcessingModule.Types.Language Language {
       get { return language_; }
@@ -1152,11 +1152,11 @@ namespace Ubii.Processing {
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (NodeId.Length != 0) hash ^= NodeId.GetHashCode();
       if (SessionId.Length != 0) hash ^= SessionId.GetHashCode();
-      if (Status != global::Ubii.Processing.ProcessingModule.Types.Status.Initialized) hash ^= Status.GetHashCode();
+      if (Status != 0) hash ^= Status.GetHashCode();
       if (processingMode_ != null) hash ^= ProcessingMode.GetHashCode();
       hash ^= inputs_.GetHashCode();
       hash ^= outputs_.GetHashCode();
-      if (Language != global::Ubii.Processing.ProcessingModule.Types.Language.Cpp) hash ^= Language.GetHashCode();
+      if (Language != 0) hash ^= Language.GetHashCode();
       if (OnProcessingStringified.Length != 0) hash ^= OnProcessingStringified.GetHashCode();
       if (OnCreatedStringified.Length != 0) hash ^= OnCreatedStringified.GetHashCode();
       if (OnHaltedStringified.Length != 0) hash ^= OnHaltedStringified.GetHashCode();
@@ -1196,7 +1196,7 @@ namespace Ubii.Processing {
         output.WriteRawTag(58);
         output.WriteString(SessionId);
       }
-      if (Status != global::Ubii.Processing.ProcessingModule.Types.Status.Initialized) {
+      if (Status != 0) {
         output.WriteRawTag(64);
         output.WriteEnum((int) Status);
       }
@@ -1206,7 +1206,7 @@ namespace Ubii.Processing {
       }
       inputs_.WriteTo(output, _repeated_inputs_codec);
       outputs_.WriteTo(output, _repeated_outputs_codec);
-      if (Language != global::Ubii.Processing.ProcessingModule.Types.Language.Cpp) {
+      if (Language != 0) {
         output.WriteRawTag(96);
         output.WriteEnum((int) Language);
       }
@@ -1251,7 +1251,7 @@ namespace Ubii.Processing {
       if (SessionId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SessionId);
       }
-      if (Status != global::Ubii.Processing.ProcessingModule.Types.Status.Initialized) {
+      if (Status != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
       }
       if (processingMode_ != null) {
@@ -1259,7 +1259,7 @@ namespace Ubii.Processing {
       }
       size += inputs_.CalculateSize(_repeated_inputs_codec);
       size += outputs_.CalculateSize(_repeated_outputs_codec);
-      if (Language != global::Ubii.Processing.ProcessingModule.Types.Language.Cpp) {
+      if (Language != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Language);
       }
       if (OnProcessingStringified.Length != 0) {
@@ -1302,18 +1302,18 @@ namespace Ubii.Processing {
       if (other.SessionId.Length != 0) {
         SessionId = other.SessionId;
       }
-      if (other.Status != global::Ubii.Processing.ProcessingModule.Types.Status.Initialized) {
+      if (other.Status != 0) {
         Status = other.Status;
       }
       if (other.processingMode_ != null) {
         if (processingMode_ == null) {
-          ProcessingMode = new global::Ubii.Processing.ProcessingMode();
+          processingMode_ = new global::Ubii.Processing.ProcessingMode();
         }
         ProcessingMode.MergeFrom(other.ProcessingMode);
       }
       inputs_.Add(other.inputs_);
       outputs_.Add(other.outputs_);
-      if (other.Language != global::Ubii.Processing.ProcessingModule.Types.Language.Cpp) {
+      if (other.Language != 0) {
         Language = other.Language;
       }
       if (other.OnProcessingStringified.Length != 0) {
@@ -1368,14 +1368,14 @@ namespace Ubii.Processing {
             break;
           }
           case 64: {
-            Status = (global::Ubii.Processing.ProcessingModule.Types.Status) input.ReadEnum();
+            status_ = (global::Ubii.Processing.ProcessingModule.Types.Status) input.ReadEnum();
             break;
           }
           case 74: {
             if (processingMode_ == null) {
-              ProcessingMode = new global::Ubii.Processing.ProcessingMode();
+              processingMode_ = new global::Ubii.Processing.ProcessingMode();
             }
-            input.ReadMessage(ProcessingMode);
+            input.ReadMessage(processingMode_);
             break;
           }
           case 82: {
@@ -1387,7 +1387,7 @@ namespace Ubii.Processing {
             break;
           }
           case 96: {
-            Language = (global::Ubii.Processing.ProcessingModule.Types.Language) input.ReadEnum();
+            language_ = (global::Ubii.Processing.ProcessingModule.Types.Language) input.ReadEnum();
             break;
           }
           case 106: {

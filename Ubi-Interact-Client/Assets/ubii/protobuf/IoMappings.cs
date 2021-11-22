@@ -44,13 +44,13 @@ namespace Ubii.Sessions {
             "YXBwaW5nYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicInputMapping), global::Ubii.Sessions.TopicInputMapping.Parser, new[]{ "InputName", "Topic", "TopicMux" }, new[]{ "TopicSource" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicInputMappingList), global::Ubii.Sessions.TopicInputMappingList.Parser, new[]{ "Elements" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicOutputMapping), global::Ubii.Sessions.TopicOutputMapping.Parser, new[]{ "OutputName", "Topic", "TopicDemux" }, new[]{ "TopicDestination" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicOutputMappingList), global::Ubii.Sessions.TopicOutputMappingList.Parser, new[]{ "Elements" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.IOMapping), global::Ubii.Sessions.IOMapping.Parser, new[]{ "ProcessingModuleId", "InputMappings", "OutputMappings", "ProcessingModuleName" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.IOMappingList), global::Ubii.Sessions.IOMappingList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicInputMapping), global::Ubii.Sessions.TopicInputMapping.Parser, new[]{ "InputName", "Topic", "TopicMux" }, new[]{ "TopicSource" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicInputMappingList), global::Ubii.Sessions.TopicInputMappingList.Parser, new[]{ "Elements" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicOutputMapping), global::Ubii.Sessions.TopicOutputMapping.Parser, new[]{ "OutputName", "Topic", "TopicDemux" }, new[]{ "TopicDestination" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.TopicOutputMappingList), global::Ubii.Sessions.TopicOutputMappingList.Parser, new[]{ "Elements" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.IOMapping), global::Ubii.Sessions.IOMapping.Parser, new[]{ "ProcessingModuleId", "InputMappings", "OutputMappings", "ProcessingModuleName" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Sessions.IOMappingList), global::Ubii.Sessions.IOMappingList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion

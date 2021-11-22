@@ -38,9 +38,9 @@ namespace Ubii.Clients {
             "aWkuY2xpZW50cy5DbGllbnRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices", "Tags", "Description", "ProcessingModules", "IsDedicatedProcessingNode", "HostIp", "MetadataJson", "State" }, null, new[]{ typeof(global::Ubii.Clients.Client.Types.State) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.ClientList), global::Ubii.Clients.ClientList.Parser, new[]{ "Elements" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.Client), global::Ubii.Clients.Client.Parser, new[]{ "Id", "Name", "Devices", "Tags", "Description", "ProcessingModules", "IsDedicatedProcessingNode", "HostIp", "MetadataJson", "State" }, null, new[]{ typeof(global::Ubii.Clients.Client.Types.State) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Clients.ClientList), global::Ubii.Clients.ClientList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
     #endregion
@@ -188,7 +188,7 @@ namespace Ubii.Clients {
 
     /// <summary>Field number for the "state" field.</summary>
     public const int StateFieldNumber = 10;
-    private global::Ubii.Clients.Client.Types.State state_ = global::Ubii.Clients.Client.Types.State.Active;
+    private global::Ubii.Clients.Client.Types.State state_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Ubii.Clients.Client.Types.State State {
       get { return state_; }
@@ -235,7 +235,7 @@ namespace Ubii.Clients {
       if (IsDedicatedProcessingNode != false) hash ^= IsDedicatedProcessingNode.GetHashCode();
       if (HostIp.Length != 0) hash ^= HostIp.GetHashCode();
       if (MetadataJson.Length != 0) hash ^= MetadataJson.GetHashCode();
-      if (State != global::Ubii.Clients.Client.Types.State.Active) hash ^= State.GetHashCode();
+      if (State != 0) hash ^= State.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -276,7 +276,7 @@ namespace Ubii.Clients {
         output.WriteRawTag(74);
         output.WriteString(MetadataJson);
       }
-      if (State != global::Ubii.Clients.Client.Types.State.Active) {
+      if (State != 0) {
         output.WriteRawTag(80);
         output.WriteEnum((int) State);
       }
@@ -309,7 +309,7 @@ namespace Ubii.Clients {
       if (MetadataJson.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MetadataJson);
       }
-      if (State != global::Ubii.Clients.Client.Types.State.Active) {
+      if (State != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
       }
       if (_unknownFields != null) {
@@ -344,7 +344,7 @@ namespace Ubii.Clients {
       if (other.MetadataJson.Length != 0) {
         MetadataJson = other.MetadataJson;
       }
-      if (other.State != global::Ubii.Clients.Client.Types.State.Active) {
+      if (other.State != 0) {
         State = other.State;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -395,7 +395,7 @@ namespace Ubii.Clients {
             break;
           }
           case 80: {
-            State = (global::Ubii.Clients.Client.Types.State) input.ReadEnum();
+            state_ = (global::Ubii.Clients.Client.Types.State) input.ReadEnum();
             break;
           }
         }

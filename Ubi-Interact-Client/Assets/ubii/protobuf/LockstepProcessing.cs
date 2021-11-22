@@ -35,9 +35,9 @@ namespace Ubii.Processing {
             "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.TopicData.TopicDataRecordReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.LockstepProcessingRequest), global::Ubii.Processing.LockstepProcessingRequest.Parser, new[]{ "ProcessingModuleIds", "Records", "DeltaTimeMs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.LockstepProcessingReply), global::Ubii.Processing.LockstepProcessingReply.Parser, new[]{ "ProcessingModuleIds", "Records" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.LockstepProcessingRequest), global::Ubii.Processing.LockstepProcessingRequest.Parser, new[]{ "ProcessingModuleIds", "Records", "DeltaTimeMs" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.LockstepProcessingReply), global::Ubii.Processing.LockstepProcessingReply.Parser, new[]{ "ProcessingModuleIds", "Records" }, null, null, null)
           }));
     }
     #endregion

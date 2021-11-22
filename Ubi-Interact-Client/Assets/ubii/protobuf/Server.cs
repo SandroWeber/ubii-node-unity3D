@@ -32,8 +32,8 @@ namespace Ubii.Servers {
             "KAkSFgoOY29uc3RhbnRzX2pzb24YCSABKAliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs", "ConstantsJson" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs", "ConstantsJson" }, null, null, null)
           }));
     }
     #endregion
