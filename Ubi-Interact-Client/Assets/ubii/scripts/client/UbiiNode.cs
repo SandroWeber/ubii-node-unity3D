@@ -9,7 +9,6 @@ using System.Threading;
 using System.Collections.Generic;
 using Ubii.Services;
 using Ubii.TopicData;
-using Ubii.UtilityFunctions.Parser;
 using Ubii.Devices;
 using System.Linq;
 
@@ -21,13 +20,13 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public delegate void ConnectEventHandler();
     public static event ConnectEventHandler OnConnected;
 
-    [Header("Network configuration")]
-    [Tooltip("Host ip the client connects to. Default is localhost.")]
-    public string ip = "localhost";
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int port = 8101;
     [Tooltip("Name for the client connection to the server. Default is Unity3D Client.")]
     public string clientName = "Unity3D Client Node";
+
+    [Header("Network configuration")]
+    
+    [Tooltip("Which method to use for service connection.")]
+    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ;
     [Tooltip("Which method to use for topic data connection.")]
     public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ;
 
@@ -39,6 +38,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Tooltip("Sets the delay for publishing records")]
     [Range(1, 5000)]
     public int publishDelay = 25;
+    
+    [Tooltip("Host ip the client connects to. Default is localhost.")]
+    public string masterNodeAddress = "localhost";
+    [Tooltip("Port for the client connection to the server. Default is 8101.")]
+    public int portServiceZMQ = 8101;
+    [Tooltip("Port for the client connection to the server. Default is 8101.")]
+    public int portServiceREST = 8102;
+
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
 
@@ -115,7 +122,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(ip, port, this.topicDataConnectionMode);
+        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null)
         {

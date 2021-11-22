@@ -101,7 +101,7 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     public void TearDown()
     {
-        Debug.Log("TearDown TopicDataClient");
+        Debug.Log("TearDown NetMQ TopicDataClient");
         SetPublishDelay(1);
         topicdataCallbacks.Clear();
         topicdataRegexCallbacks.Clear();

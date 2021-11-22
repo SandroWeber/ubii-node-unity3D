@@ -58,6 +58,7 @@ class NetMQServiceClient : IUbiiServiceClient
             }
             catch (Exception exception)
             {
+                Debug.LogError(exception.ToString());
                 Task.Delay(100).Wait();
             }
         }

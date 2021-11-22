@@ -4,5 +4,6 @@ using Ubii.Services;
 interface IUbiiServiceClient
 {
     Task<ServiceReply> CallService(ServiceRequest request);
+    void TearDown();
 }
 

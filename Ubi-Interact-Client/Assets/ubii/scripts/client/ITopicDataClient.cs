@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Ubii.Devices;
 using Ubii.Services;
 using Ubii.TopicData;
-using Ubii.UtilityFunctions.Parser;
 
 interface ITopicDataClient
 {
