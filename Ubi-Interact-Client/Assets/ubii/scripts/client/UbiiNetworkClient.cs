@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Ubii.TopicData;
 using Ubii.Clients;
@@ -11,10 +9,7 @@ using Ubii.Servers;
 using Ubii.Services.Request;
 using Google.Protobuf.Collections;
 using UnityEngine;
-using NetMQ;
-using Google.Protobuf;
 using System.Threading;
-using UnityEngine.Apple.ReplayKit;
 
 /// <summary>
 /// This class manages network connections based on NetMQ to the Ubi-Interact master node.
@@ -25,16 +20,16 @@ public class UbiiNetworkClient
     public enum SERVICE_CONNECTION_MODE
     {
         ZEROMQ = 0,
-        REST_HTTP = 1,
-        REST_HTTPS = 2
+        HTTP = 1,
+        //HTTPS = 2
     }
     private SERVICE_CONNECTION_MODE serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
 
     public enum TOPICDATA_CONNECTION_MODE
     {
         ZEROMQ = 0,
-        WEBSOCKET_HTTP = 1,
-        WEBSOCKET_HTTPS = 2
+        HTTP = 1,
+        //HTTPS = 2
     }
     private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
 
@@ -95,10 +90,9 @@ public class UbiiNetworkClient
         }, token);
     }
 
-    // CallService function called from upper layer (i.e. some MonoBehavior), returns a Task
-    public Task<ServiceReply> CallService(ServiceRequest srq)
+    public async Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        return Task.Run(() => serviceClient.CallService(srq));
+        return await serviceClient.CallService(srq);
     }
 
     public void Publish(TopicDataRecord record)
@@ -227,9 +221,7 @@ public class UbiiNetworkClient
             }
         };
 
-        var task = CallService(topicUnsubscription);
-        ServiceReply subReply = await task;
-
+        ServiceReply subReply = await CallService(topicUnsubscription);
         if (subReply.Error != null)
         {
             Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
@@ -335,14 +327,14 @@ public class UbiiNetworkClient
         {
             serviceClient = new NetMQServiceClient(host, portServiceZMQ);
         }
-        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.REST_HTTP)
+        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
             serviceClient = new UbiiServiceClientREST("http://" + host, portServiceREST);
         }
-        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.REST_HTTPS)
+        /*else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
             serviceClient = new UbiiServiceClientREST("https://" + host, portServiceREST);
-        }
+        }*/
 
         await InitServerSpec();
         //Debug.Log("ServerSpecs: " + serverSpecification);
@@ -379,6 +371,7 @@ public class UbiiNetworkClient
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
             Client = clientSpecs
         };
+        Debug.Log("clientSpecs = " + clientSpecs);
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
@@ -398,15 +391,21 @@ public class UbiiNetworkClient
 
     private void InitTopicDataClient()
     {
-        int port = int.Parse(serverSpecification.PortTopicDataZmq);
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
+            int port = int.Parse(serverSpecification.PortTopicDataZmq);
             this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
         }
-        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.WEBSOCKET_HTTP)
+        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
             this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
         }
+        /*else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
+        {
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
+        }*/
     }
 
     #endregion

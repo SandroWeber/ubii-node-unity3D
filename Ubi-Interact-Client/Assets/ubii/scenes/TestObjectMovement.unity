@@ -258,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clientName: Unity3D Client Node - Test Object Movement
   serviceConnectionMode: 1
-  topicDataConnectionMode: 0
+  topicDataConnectionMode: 1
   autoConnect: 1
   isDedicatedProcessingNode: 0
   publishDelay: 25

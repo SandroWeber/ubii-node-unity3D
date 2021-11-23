@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Ubii.Devices;
-using Ubii.Services;
+
 using Ubii.TopicData;
 
 interface ITopicDataClient

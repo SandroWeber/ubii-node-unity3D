@@ -25,28 +25,24 @@ class UbiiServiceClientREST : IUbiiServiceClient
 
         this.httpClient = new HttpClient();
         this.serviceURL += this.host + ":" + this.port + this.serviceRoute;
-        Debug.Log("this.serviceURL = " + this.serviceURL);
     }
 
     public async Task<ServiceReply> CallService(ServiceRequest request)
     {
-        Debug.Log("UbiiServiceClientREST.CallService()");
-        Debug.Log(request.ToString());
-        StringContent content = new StringContent(request.ToString(), Encoding.UTF8, "application/json");
+        //Debug.Log("CallService request = " + request);
+        Google.Protobuf.JsonFormatter.Settings settings = new Google.Protobuf.JsonFormatter.Settings(true).WithFormatEnumsAsIntegers(true);
+        string requestJSON = new Google.Protobuf.JsonFormatter(settings).Format(request);
+        //Debug.Log("CallService requestJSON = " + requestJSON);
+        StringContent content = new StringContent(requestJSON, Encoding.UTF8, "application/json");
         HttpResponseMessage response = await this.httpClient.PostAsync(this.serviceURL, content);
-        Debug.Log(response.ToString());
+
         string responseJSON = await response.Content.ReadAsStringAsync();
-        Debug.Log("responseJSON:");
-        Debug.Log(responseJSON);
         //TODO: this is a stupid hack for the Google.Protobuf.JsonParser as the server JSON response includes an identifier for the
         // protocol buffer oneof field "type" that would result in an error
-        string jsonModified = Regex.Replace(responseJSON, ",\"type\":\".*\"", "");
-        jsonModified = Regex.Replace(jsonModified, "\"type\":\".*\"", "");
-        Debug.Log("jsonModified:");
-        Debug.Log(jsonModified);
-        ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(jsonModified);
-        Debug.Log("serviceReply:");
-        Debug.Log(serviceReply);
+        string responseCleaned = Regex.Replace(responseJSON, ",\"type\":\".*\"", "");
+        responseCleaned = Regex.Replace(responseCleaned, "\"type\":\".*\"", "");
+
+        ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseCleaned);
 
         return serviceReply;
 

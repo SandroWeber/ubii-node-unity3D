@@ -39,7 +39,7 @@ public class TestObjectMovement : MonoBehaviour
             ubiiNode.Publish(new Ubii.TopicData.TopicDataRecord
             {
                 Topic = topicTestPublishSubscribe,
-                Vector3 = new Ubii.DataStructure.Vector3 {X = randomPosition.x, Y = randomPosition.y, Z = randomPosition.z}
+                Vector3 = new Ubii.DataStructure.Vector3 { X = randomPosition.x, Y = randomPosition.y, Z = randomPosition.z }
             });
             tLastPublish = tNow;
         }
@@ -63,7 +63,7 @@ public class TestObjectMovement : MonoBehaviour
         return;
     }
 
-    async private void StartTest()
+    private async void StartTest()
     {
         if (ubiiNode == null)
         {
@@ -84,7 +84,7 @@ public class TestObjectMovement : MonoBehaviour
         this.subToken = await ubiiNode.SubscribeTopic(topicTestPublishSubscribe,
             (Ubii.TopicData.TopicDataRecord record) =>
             {
-                testPosition.Set((float) record.Vector3.X, (float) record.Vector3.Y, (float) record.Vector3.Z);
+                testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
             });
 
         testRunning = true;
@@ -94,12 +94,14 @@ public class TestObjectMovement : MonoBehaviour
     {
         topicTestPublishSubscribe = "/" + ubiiNode.GetID() + "/test_publish_subscribe/object_movement";
 
-        ubiiDevice = new Ubii.Devices.Device
-            {Name = deviceName, ClientId = ubiiNode.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant};
+        ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiNode.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
         ubiiDevice.Components.Add(new Ubii.Devices.Component
         {
-            IoType = Ubii.Devices.Component.Types.IOType.Publisher, MessageFormat = "ubii.dataStructure.Vector3",
+            Name = "Test Object Movement - random Vector3",
+            IoType = Ubii.Devices.Component.Types.IOType.Publisher,
+            MessageFormat = "ubii.dataStructure.Vector3",
             Topic = topicTestPublishSubscribe
         });
+        Debug.Log("ubiiDevice = " + ubiiDevice);
     }
 }
