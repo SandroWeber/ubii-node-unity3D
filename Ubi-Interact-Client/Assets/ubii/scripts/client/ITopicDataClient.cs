@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Ubii.TopicData;
 
@@ -24,5 +26,5 @@ interface ITopicDataClient
     void RemoveAllTopicCallbacks(string topic);
     void RemoveAllTopicRegexCallbacks(string regex);
     void SendTopicDataRecord(TopicDataRecord record);
-    void SendTopicDataImmediately(TopicData topicData);
+    Task<CancellationToken> SendTopicDataImmediately(TopicData topicData);
 }

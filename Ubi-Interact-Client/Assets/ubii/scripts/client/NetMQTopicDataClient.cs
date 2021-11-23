@@ -144,12 +144,12 @@ public class NetMQTopicDataClient : ITopicDataClient
             Elements = { repeatedField },
         };
 
-        TopicData td = new TopicData()
+        TopicData topicData = new TopicData()
         {
             TopicDataRecordList = recordList
         };
 
-        SendTopicDataImmediately(td);
+        SendTopicDataImmediately(topicData);
     }
 
     public bool IsConnected()
@@ -242,10 +242,12 @@ public class NetMQTopicDataClient : ITopicDataClient
         recordsToPublish.Add(record);
     }
 
-    public void SendTopicDataImmediately(TopicData topicData)
+    public Task<CancellationToken> SendTopicDataImmediately(TopicData topicData)
     {
         byte[] buffer = topicData.ToByteArray();
         socket.SendFrame(buffer);
+
+        return Task.FromResult(new CancellationToken(false));
     }
 
     // Called when data received

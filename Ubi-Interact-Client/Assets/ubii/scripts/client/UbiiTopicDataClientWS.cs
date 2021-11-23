@@ -18,6 +18,8 @@ using Ubii.TopicData;
 // socket functionality separate
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
+    private static int RECEIVE_BUFFER_SIZE = 5120;
+
     private string clientId;
     private string host;
     private int port;
@@ -49,12 +51,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         clientWebsocket = new ClientWebSocket();
 
         Uri url = new Uri("ws://" + this.host + ":" + this.port + "?clientID=" + this.clientId);
-        Debug.Log("UbiiTopicDataClientWS connecting to " + url);
         CancellationToken cancelTokenConnect = new CancellationToken();
         await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
-
-        Debug.Log("websocket after ConnectAsync()");
-        Debug.Log("clientWebsocket.State = " + clientWebsocket.State);
 
         connected = true;
 
@@ -62,24 +60,20 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         cancelTokenTaskProcessIncomingMsgs = new CancellationToken();
         taskProcessIncomingMsgs = Task.Run(async () =>
         {
-            while (connected)
+            while (clientWebsocket.State == WebSocketState.Open)
             {
                 try
                 {
-                    var bytebuffer = new byte[1024];
+                    var bytebuffer = new byte[RECEIVE_BUFFER_SIZE];
                     ArraySegment<byte> arraySegment = new ArraySegment<byte>(bytebuffer);
                     WebSocketReceiveResult receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, cancelTokenTaskProcessIncomingMsgs);
-                    Debug.Log("ws receiveResult.EndOfMessage = " + receiveResult.EndOfMessage);
                     if (receiveResult.EndOfMessage)
                     {
-                        Debug.Log("ws receiveResult.Count = " + receiveResult.Count);
                         if (receiveResult.Count == 4)
                         {
-                            Debug.Log("PING probably");
                             string msgString = Encoding.UTF8.GetString(arraySegment.AsMemory().ToArray(), 0, receiveResult.Count);
                             if (msgString == "PING")
                             {
-                                Debug.Log("PING received, sending PONG");
                                 // PING message
                                 await this.SendBytes(Encoding.UTF8.GetBytes("PONG"));
                             }
@@ -87,7 +81,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         else
                         {
                             TopicData topicdata = TopicData.Parser.ParseFrom(arraySegment.Array, 0, receiveResult.Count);
-                            Debug.Log(topicdata);
 
                             if (topicdata.TopicDataRecord != null)
                             {
@@ -100,12 +93,19 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                             }
                         }
                     }
-
-                    FlushRecordsToPublish();
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex.ToString());
+                    Debug.LogError("WebSocket receive exception: " + ex.ToString());
+                }
+
+                try
+                {
+                    await FlushRecordsToPublish();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("WebSocket send exception: " + ex.ToString());
                 }
             }
         });
@@ -209,60 +209,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     public void SendTopicDataRecord(TopicDataRecord record)
     {
-        Debug.Log("WS SendTopicDataRecord() record = " + record);
         recordsToPublish.Add(record);
-    }
-
-    public void SendTopicDataImmediately(TopicData topicData)
-    {
-        Debug.Log("WS SendTopicDataImmediately() topicData = " + topicData);
-        Send(topicData);
-    }
-
-    public async Task<CancellationToken> SendBytes(byte[] bytes)
-    {
-        var arraySegment = new ArraySegment<Byte>(bytes);
-        Debug.Log("arraySegment.Count: " + arraySegment.Count);
-        CancellationToken cancellationToken = new CancellationToken();
-        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, cancellationToken);
-        return cancellationToken;
-    }
-
-    public async void Send(TopicData topicdata)
-    {
-        Debug.Log("WS Send() topicdata = " + topicdata);
-
-        MemoryStream memoryStream = new MemoryStream();
-        CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
-        topicdata.WriteTo(codedOutputStream);
-        codedOutputStream.Flush();
-        Debug.Log("codedOutputStream: " + codedOutputStream);
-        var bytebuffer = memoryStream.ToArray();
-        Debug.Log("buffer length: " + bytebuffer.Length);
-
-        /*var array_segment = new ArraySegment<Byte>(bytebuffer);
-        Debug.Log("array_segment length: " + array_segment.Count);
-        CancellationToken cancellation_token = new CancellationToken();
-        await clientWebsocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);*/
-        await this.SendBytes(bytebuffer);
-
-
-        /*try
-        {
-            await clientWebsocket.SendAsync(array_segment, WebSocketMessageType.Binary, true, cancellation_token);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-        }*/
     }
 
     #region private-methods
 
-    private void FlushRecordsToPublish()
+    private async Task<CancellationToken> FlushRecordsToPublish()
     {
-        Debug.Log("FlushRecordsToPublish");
-        if (recordsToPublish.IsEmpty) return;
+        if (recordsToPublish.IsEmpty) return new CancellationToken(true);
 
         RepeatedField<TopicDataRecord> repeatedField = new RepeatedField<TopicDataRecord>();
         while (!recordsToPublish.IsEmpty)
@@ -283,7 +237,25 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             TopicDataRecordList = recordList
         };
 
-        SendTopicDataImmediately(topicData);
+        return await SendTopicDataImmediately(topicData);
+    }
+
+    public async Task<CancellationToken> SendTopicDataImmediately(TopicData topicData)
+    {
+        MemoryStream memoryStream = new MemoryStream();
+        CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
+        topicData.WriteTo(codedOutputStream);
+        codedOutputStream.Flush();
+        var bytebuffer = memoryStream.ToArray();
+        return await this.SendBytes(bytebuffer);
+    }
+
+    public async Task<CancellationToken> SendBytes(byte[] bytes)
+    {
+        var arraySegment = new ArraySegment<Byte>(bytes);
+        CancellationToken cancellationToken = new CancellationToken();
+        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, cancellationToken);
+        return cancellationToken;
     }
 
     private void InvokeTopicCallbacks(TopicDataRecord record)

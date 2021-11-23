@@ -102,6 +102,5 @@ public class TestObjectMovement : MonoBehaviour
             MessageFormat = "ubii.dataStructure.Vector3",
             Topic = topicTestPublishSubscribe
         });
-        Debug.Log("ubiiDevice = " + ubiiDevice);
     }
 }

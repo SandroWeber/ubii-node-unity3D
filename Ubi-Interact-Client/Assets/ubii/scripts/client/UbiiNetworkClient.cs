@@ -371,7 +371,6 @@ public class UbiiNetworkClient
             Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
             Client = clientSpecs
         };
-        Debug.Log("clientSpecs = " + clientSpecs);
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
 
