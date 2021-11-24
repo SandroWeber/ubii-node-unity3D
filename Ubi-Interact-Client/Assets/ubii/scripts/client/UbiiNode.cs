@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using Unity.Jobs;
-using System.Collections;
-using NetMQ;
-using NetMQ.Sockets;
 using System.Threading;
 using System.Collections.Generic;
 using Ubii.Services;
@@ -72,7 +68,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             {
                 Debug.LogError(e);
             }
-
         }
     }
 
@@ -130,6 +125,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
 
         OnConnected?.Invoke();
+        this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
         return true;
     }
