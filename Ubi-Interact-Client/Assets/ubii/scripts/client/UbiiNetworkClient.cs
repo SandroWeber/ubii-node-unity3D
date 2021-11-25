@@ -21,7 +21,7 @@ public class UbiiNetworkClient
     {
         ZEROMQ = 0,
         HTTP = 1,
-        //HTTPS = 2
+        HTTPS = 2
     }
     private SERVICE_CONNECTION_MODE serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
 
@@ -29,7 +29,7 @@ public class UbiiNetworkClient
     {
         ZEROMQ = 0,
         HTTP = 1,
-        //HTTPS = 2
+        HTTPS = 2
     }
     private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
 
@@ -53,6 +53,124 @@ public class UbiiNetworkClient
         this.serviceConnectionMode = serviceConnectionMode;
         this.topicDataConnectionMode = topicDataConnectionMode;
     }
+
+    #region Initialize/Teardown Functions
+
+    // Initialize the ubiiClient, serviceClient and topicDataClient
+    public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
+    {
+        if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
+        {
+            serviceClient = new NetMQServiceClient(host, portServiceZMQ);
+        }
+        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
+        {
+            if (!host.StartsWith("http://"))
+            {
+                host = "http://" + host;
+            }
+            serviceClient = new UbiiServiceClientREST("http://" + host, portServiceREST);
+        }
+        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
+        {
+            if (!host.StartsWith("https://"))
+            {
+                host = "https://" + host;
+            }
+            serviceClient = new UbiiServiceClientREST("https://" + host, portServiceREST);
+        }
+
+        await InitServerSpec();
+        //Debug.Log("ServerSpecs: " + serverSpecification);
+        bool success = await InitClientRegistration(clientSpecs);
+        InitTopicDataClient();
+
+        return clientSpecification;
+    }
+
+    private async Task InitServerSpec()
+    {
+        // Call Service to receive serverSpecifications
+        ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
+
+        ServiceReply reply = await CallService(serverConfigRequest);
+        if (reply.Server != null)
+        {
+            serverSpecification = reply.Server;
+        }
+        else if (reply.Error != null)
+        {
+            Debug.LogError(reply.Error.ToString());
+        }
+        else
+        {
+            Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
+        }
+    }
+
+    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
+    {
+        ServiceRequest clientRegistration = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
+            Client = clientSpecs
+        };
+        //if(isDedicatedProcessingNode)
+        //  TODO:  clientRegistration.Client.ProcessingModules = ...
+
+        ServiceReply reply = await CallService(clientRegistration);
+        if (reply.Client != null)
+        {
+            clientSpecification = reply.Client;
+            return true;
+        }
+        else if (reply.Error != null)
+        {
+            Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
+        }
+
+        return false;
+    }
+
+    private void InitTopicDataClient()
+    {
+        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
+        {
+            int port = int.Parse(serverSpecification.PortTopicDataZmq);
+            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
+        }
+        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
+        {
+            if (!host.StartsWith("ws://"))
+            {
+                host = "ws://" + host;
+            }
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, "ws://" + host, port);
+        }
+        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
+        {
+            if (!host.StartsWith("wss://"))
+            {
+                host = "wss://" + host;
+            }
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, "wss://" + host, port);
+        }
+    }
+
+    async public void ShutDown()
+    {
+        await CallService(new Ubii.Services.ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
+            Client = clientSpecification
+        });
+        serviceClient.TearDown();
+        topicDataClient.TearDown();
+    }
+
+    #endregion
 
     public string GetClientID()
     {
@@ -317,106 +435,4 @@ public class UbiiNetworkClient
     #endregion
 
     #endregion
-
-    #region Initialize Functions
-
-    // Initialize the ubiiClient, serviceClient and topicDataClient
-    public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
-    {
-        if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
-        {
-            serviceClient = new NetMQServiceClient(host, portServiceZMQ);
-        }
-        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
-        {
-            serviceClient = new UbiiServiceClientREST("http://" + host, portServiceREST);
-        }
-        /*else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
-        {
-            serviceClient = new UbiiServiceClientREST("https://" + host, portServiceREST);
-        }*/
-
-        await InitServerSpec();
-        //Debug.Log("ServerSpecs: " + serverSpecification);
-        bool success = await InitClientRegistration(clientSpecs);
-        InitTopicDataClient();
-
-        return clientSpecification;
-    }
-
-    private async Task InitServerSpec()
-    {
-        // Call Service to receive serverSpecifications
-        ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
-
-        ServiceReply reply = await CallService(serverConfigRequest);
-        if (reply.Server != null)
-        {
-            serverSpecification = reply.Server;
-        }
-        else if (reply.Error != null)
-        {
-            Debug.LogError(reply.Error.ToString());
-        }
-        else
-        {
-            Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
-        }
-    }
-
-    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
-    {
-        ServiceRequest clientRegistration = new ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_REGISTRATION,
-            Client = clientSpecs
-        };
-        //if(isDedicatedProcessingNode)
-        //  TODO:  clientRegistration.Client.ProcessingModules = ...
-
-        ServiceReply reply = await CallService(clientRegistration);
-        if (reply.Client != null)
-        {
-            clientSpecification = reply.Client;
-            return true;
-        }
-        else if (reply.Error != null)
-        {
-            Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
-        }
-
-        return false;
-    }
-
-    private void InitTopicDataClient()
-    {
-        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
-        {
-            int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
-        }
-        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
-        {
-            int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
-        }
-        /*else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
-        {
-            int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
-        }*/
-    }
-
-    #endregion
-
-    async public void ShutDown()
-    {
-        await CallService(new Ubii.Services.ServiceRequest
-        {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
-            Client = clientSpecification
-        });
-        serviceClient.TearDown();
-        topicDataClient.TearDown();
-    }
 }

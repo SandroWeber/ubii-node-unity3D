@@ -37,7 +37,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private int publishInterval = 25; // milliseconds
 
-    public UbiiTopicDataClientWS(string clientId = null, string host = "localhost", int port = 8104)
+    public UbiiTopicDataClientWS(string clientId = null, string host = "https://localhost", int port = 8104)
     {
         this.clientId = clientId;
         this.host = host;
@@ -50,7 +50,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         clientWebsocket = new ClientWebSocket();
 
-        Uri url = new Uri("ws://" + this.host + ":" + this.port + "?clientID=" + this.clientId);
+        Uri url = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
         CancellationToken cancelTokenConnect = new CancellationToken();
         await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
 
