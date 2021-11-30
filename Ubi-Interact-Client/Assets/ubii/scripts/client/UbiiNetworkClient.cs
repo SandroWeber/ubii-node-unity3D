@@ -65,19 +65,21 @@ public class UbiiNetworkClient
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
-            if (!host.StartsWith("http://"))
+            string hostURL = host;
+            if (!hostURL.StartsWith("http://"))
             {
-                host = "http://" + host;
+                hostURL = "http://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(host, portServiceREST);
+            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
-            if (!host.StartsWith("https://"))
+            string hostURL = host;
+            if (!hostURL.StartsWith("https://"))
             {
-                host = "https://" + host;
+                hostURL = "https://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(host, portServiceREST);
+            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
         }
 
         await InitServerSpec();
@@ -141,21 +143,23 @@ public class UbiiNetworkClient
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {
-            if (!host.StartsWith("ws://"))
+            string hostURL = host;
+            if (!hostURL.StartsWith("ws://"))
             {
-                host = "ws://" + host;
+                hostURL = "ws://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
         {
-            if (!host.StartsWith("wss://"))
+            string hostURL = host;
+            if (!hostURL.StartsWith("wss://"))
             {
-                host = "wss://" + host;
+                hostURL = "wss://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
         }
     }
 
