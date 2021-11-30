@@ -69,7 +69,7 @@ public class UbiiNetworkClient
             {
                 host = "http://" + host;
             }
-            serviceClient = new UbiiServiceClientREST("http://" + host, portServiceREST);
+            serviceClient = new UbiiServiceClientREST(host, portServiceREST);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
@@ -77,7 +77,7 @@ public class UbiiNetworkClient
             {
                 host = "https://" + host;
             }
-            serviceClient = new UbiiServiceClientREST("https://" + host, portServiceREST);
+            serviceClient = new UbiiServiceClientREST(host, portServiceREST);
         }
 
         await InitServerSpec();
@@ -146,7 +146,7 @@ public class UbiiNetworkClient
                 host = "ws://" + host;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, "ws://" + host, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
         {
@@ -155,7 +155,7 @@ public class UbiiNetworkClient
                 host = "wss://" + host;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, "wss://" + host, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, host, port);
         }
     }
 
