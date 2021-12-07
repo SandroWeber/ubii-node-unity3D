@@ -36,10 +36,10 @@ class UbiiServiceClientREST : IUbiiServiceClient
         string responseJSON = await response.Content.ReadAsStringAsync();
         //TODO: this is a stupid hack for the Google.Protobuf.JsonParser as the server JSON response includes an identifier for the
         // protocol buffer oneof field "type" that would result in an error
-        string responseCleaned = Regex.Replace(responseJSON, ",\"type\":\".*\"", "");
-        responseCleaned = Regex.Replace(responseCleaned, "\"type\":\".*\"", "");
+        /*string responseCleaned = Regex.Replace(responseJSON, ",\"type\":\".*\"", "");
+        responseCleaned = Regex.Replace(responseCleaned, "\"type\":\".*\"", "");*/
 
-        ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseCleaned);
+        ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseJSON);
 
         return serviceReply;
 
