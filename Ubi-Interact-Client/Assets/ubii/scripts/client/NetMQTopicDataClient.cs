@@ -1,21 +1,23 @@
-﻿using System;
-using System.Collections;
+﻿using UnityEngine;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Ubii.Services;
-using Ubii.TopicData;
+using System.Text.RegularExpressions;
+
 using NetMQ;
 using NetMQ.Sockets;
-using Google.Protobuf;
-using System.Threading;
-using UnityEngine;
-using System.Text.RegularExpressions;
-using Google.Protobuf.Collections;
 
-public class NetMQTopicDataClient
+using Google.Protobuf;
+using Google.Protobuf.Collections;
+using Ubii.TopicData;
+
+//TODO: both NetMQ and Websocket client share too much code, merge both and keep only base
+// socket functionality separate
+public class NetMQTopicDataClient : ITopicDataClient
 {
     private string host;
     private int port;
@@ -24,10 +26,12 @@ public class NetMQTopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
-
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicdataRegexCallbacks =
+    //TODO: to be removed and replaced with TopicDataBuffer
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+    private Dictionary<string, List<Action<TopicDataRecord>>> topicRegexCallbacks =
         new Dictionary<string, List<Action<TopicDataRecord>>>();
+
+    private ITopicDataBuffer topicDataBuffer = null;
 
     private bool running = false;
     private Task processIncomingMessages = null;
@@ -38,7 +42,7 @@ public class NetMQTopicDataClient
     CancellationTokenSource cts = new CancellationTokenSource();
     CancellationToken cancellationToken;
 
-    private int delay = 25; // millis
+    private int publishInterval = 25; // milliseconds
 
     public NetMQTopicDataClient(string clientID, string host = "localhost", int port = 8103)
     {
@@ -46,8 +50,8 @@ public class NetMQTopicDataClient
         this.port = port;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
 
-        topicdataCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
-        topicdataRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+        topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
+        topicRegexCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
 
         Initialize();
     }
@@ -86,7 +90,7 @@ public class NetMQTopicDataClient
 
             while (running)
             {
-                Thread.Sleep(delay);
+                Thread.Sleep(publishInterval);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Debug.Log("Cancelling task");
@@ -95,6 +99,31 @@ public class NetMQTopicDataClient
                 FlushRecordsToPublish();
             }
         }, cancellationToken);
+    }
+
+    public void TearDown()
+    {
+        Debug.Log("TearDown NetMQ TopicDataClient");
+        SetPublishDelay(1);
+        topicCallbacks.Clear();
+        topicRegexCallbacks.Clear();
+        cts.Cancel();
+        running = false;
+        connected = false;
+
+        NetMQConfig.Cleanup(false);
+
+        try
+        {
+            if (poller.IsRunning)
+            {
+                poller.StopAsync();
+                poller.Stop();
+            }
+        }
+        catch (Exception)
+        {
+        }
     }
 
     private void FlushRecordsToPublish()
@@ -115,12 +144,12 @@ public class NetMQTopicDataClient
             Elements = { repeatedField },
         };
 
-        TopicData td = new TopicData()
+        TopicData topicData = new TopicData()
         {
             TopicDataRecordList = recordList
         };
 
-        SendTopicDataImmediately(td);
+        SendTopicDataImmediately(topicData);
     }
 
     public bool IsConnected()
@@ -130,7 +159,7 @@ public class NetMQTopicDataClient
 
     public bool IsSubscribed(string topicOrRegex)
     {
-        return this.topicdataCallbacks.ContainsKey(topicOrRegex) || this.topicdataRegexCallbacks.ContainsKey(topicOrRegex);
+        return this.topicCallbacks.ContainsKey(topicOrRegex) || this.topicRegexCallbacks.ContainsKey(topicOrRegex);
     }
 
     public bool HasTopicCallbacks(string topic)
@@ -140,7 +169,7 @@ public class NetMQTopicDataClient
             return false;
         }
 
-        return this.topicdataCallbacks[topic].Count > 0;
+        return this.topicCallbacks[topic].Count > 0;
     }
 
     public bool HasTopicRegexCallbacks(string regex)
@@ -150,73 +179,75 @@ public class NetMQTopicDataClient
             return false;
         }
 
-        return this.topicdataRegexCallbacks[regex].Count > 0;
+        return this.topicRegexCallbacks[regex].Count > 0;
     }
 
-    public void AddTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    public void AddTopicCallback(string topic, Action<TopicDataRecord> callback)
     {
-        if (!this.topicdataCallbacks.ContainsKey(topic))
+        if (!this.topicCallbacks.ContainsKey(topic))
         {
-            this.topicdataCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
+            this.topicCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
         }
 
-        this.topicdataCallbacks[topic].Add(callback);
+        this.topicCallbacks[topic].Add(callback);
     }
 
-    public void AddTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    public void AddTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        if (!this.topicdataRegexCallbacks.ContainsKey(regex))
+        if (!this.topicRegexCallbacks.ContainsKey(regex))
         {
-            this.topicdataRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
+            this.topicRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
         }
 
-        this.topicdataRegexCallbacks[regex].Add(callback);
+        this.topicRegexCallbacks[regex].Add(callback);
     }
 
-    public void RemoveTopicData(string topic)
+    public void RemoveAllTopicCallbacks(string topic)
     {
-        this.topicdataCallbacks.Remove(topic);
+        this.topicCallbacks.Remove(topic);
     }
 
-    public void RemoveTopicDataCallback(string topic, Action<TopicDataRecord> callback)
+    public void RemoveTopicCallback(string topic, Action<TopicDataRecord> callback)
     {
-        this.topicdataCallbacks[topic].Remove(callback);
+        this.topicCallbacks[topic].Remove(callback);
     }
 
-    public void RemoveTopicDataRegex(string regex)
+    public void RemoveAllTopicRegexCallbacks(string regex)
     {
-        this.topicdataRegexCallbacks.Remove(regex);
+        this.topicRegexCallbacks.Remove(regex);
     }
 
-    public void RemoveTopicDataRegexCallback(string regex, Action<TopicDataRecord> callback)
+    public void RemoveTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
     {
-        this.topicdataRegexCallbacks[regex].Remove(callback);
+        this.topicRegexCallbacks[regex].Remove(callback);
     }
 
     public List<string> GetAllSubscribedTopics()
     {
-        return topicdataCallbacks.Keys.ToList();
+        return topicCallbacks.Keys.ToList();
     }
 
     public List<string> GetAllSubscribedRegex()
     {
-        return topicdataRegexCallbacks.Keys.ToList();
+        return topicRegexCallbacks.Keys.ToList();
     }
 
     public void SetPublishDelay(int millisecs)
     {
-        delay = millisecs;
+        publishInterval = millisecs;
     }
 
-    public void SendTopicData(TopicDataRecord record)
+    public void SendTopicDataRecord(TopicDataRecord record)
     {
         recordsToPublish.Add(record);
     }
 
-    public void SendTopicDataImmediately(TopicData td)
+    public Task<CancellationToken> SendTopicDataImmediately(TopicData topicData)
     {
-        byte[] buffer = td.ToByteArray();
+        byte[] buffer = topicData.ToByteArray();
         socket.SendFrame(buffer);
+
+        return Task.FromResult(new CancellationToken(false));
     }
 
     // Called when data received
@@ -250,7 +281,7 @@ public class NetMQTopicDataClient
             this.InvokeTopicCallbacks(topicData.TopicDataRecord);
         }
         // list of records
-        else if (topicData.TopicDataRecordList != null)
+        if (topicData.TopicDataRecordList != null)
         {
             foreach (TopicDataRecord record in topicData.TopicDataRecordList.Elements)
             {
@@ -258,9 +289,9 @@ public class NetMQTopicDataClient
             }
         }
         // catch possible error
-        else if (topicData.Error != null)
+        if (topicData.Error != null)
         {
-            Debug.LogError("topicData Error: " + topicData.Error.ToString());
+            Debug.LogError("TopicData Error: " + topicData.Error.ToString());
             return;
         }
     }
@@ -268,16 +299,16 @@ public class NetMQTopicDataClient
     private void InvokeTopicCallbacks(TopicDataRecord record)
     {
         string topic = record.Topic;
-        if (topicdataCallbacks.ContainsKey(topic))
+        if (topicCallbacks.ContainsKey(topic))
         {
-            foreach (Action<TopicDataRecord> callback in topicdataCallbacks[topic])
+            foreach (Action<TopicDataRecord> callback in topicCallbacks[topic])
             {
                 callback.Invoke(record);
             }
         }
         else
         {
-            foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicdataRegexCallbacks)
+            foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicRegexCallbacks)
             {
                 Match m = Regex.Match(topic, entry.Key);
                 if (m.Success)
@@ -288,31 +319,6 @@ public class NetMQTopicDataClient
                     }
                 }
             }
-        }
-    }
-
-    public void TearDown()
-    {
-        Debug.Log("TearDown TopicDataClient");
-        SetPublishDelay(1);
-        topicdataCallbacks.Clear();
-        topicdataRegexCallbacks.Clear();
-        cts.Cancel();
-        running = false;
-        connected = false;
-
-        NetMQConfig.Cleanup(false);
-
-        try
-        {
-            if (poller.IsRunning)
-            {
-                poller.StopAsync();
-                poller.Stop();
-            }
-        }
-        catch (Exception)
-        {
         }
     }
 }

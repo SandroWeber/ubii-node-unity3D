@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using Unity.Jobs;
-using System.Collections;
-using NetMQ;
-using NetMQ.Sockets;
 using System.Threading;
 using System.Collections.Generic;
 using Ubii.Services;
 using Ubii.TopicData;
-using Ubii.UtilityFunctions.Parser;
 using Ubii.Devices;
 using System.Linq;
 
@@ -21,13 +16,15 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public delegate void ConnectEventHandler();
     public static event ConnectEventHandler OnConnected;
 
-    [Header("Network configuration")]
-    [Tooltip("Host ip the client connects to. Default is localhost.")]
-    public string ip = "localhost";
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int port = 8101;
     [Tooltip("Name for the client connection to the server. Default is Unity3D Client.")]
     public string clientName = "Unity3D Client Node";
+
+    [Header("Network configuration")]
+    
+    [Tooltip("Which method to use for service connection.")]
+    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ;
+    [Tooltip("Which method to use for topic data connection.")]
+    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ;
 
     [Tooltip("Automatically connect on start.")]
     public bool autoConnect = true;
@@ -37,8 +34,16 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Tooltip("Sets the delay for publishing records")]
     [Range(1, 5000)]
     public int publishDelay = 25;
+    
+    [Tooltip("Host ip the client connects to. Default is localhost.")]
+    public string masterNodeAddress = "localhost";
+    [Tooltip("Port for the client connection to the server. Default is 8101.")]
+    public int portServiceZMQ = 8101;
+    [Tooltip("Port for the client connection to the server. Default is 8101.")]
+    public int portServiceREST = 8102;
+
     private Ubii.Clients.Client clientNodeSpecification;
-    private NetMQUbiiClient networkClient;
+    private UbiiNetworkClient networkClient;
 
     private ProcessingModuleDatabase _processingModuleDatabase = new ProcessingModuleDatabase();
     public ProcessingModuleDatabase processingModuleDatabase { get { return _processingModuleDatabase; } }
@@ -63,7 +68,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             {
                 Debug.LogError(e);
             }
-
         }
     }
 
@@ -113,7 +117,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task<bool> InitNetworkConnection()
     {
-        networkClient = new NetMQUbiiClient(ip, port);
+        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null)
         {
@@ -121,6 +125,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
 
         OnConnected?.Invoke();
+        this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
         return true;
     }
@@ -339,6 +344,43 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 this.processingModuleManager.RemoveModule(pm);
             }
         }
+
+        /*Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule> elements = new Google.Protobuf.Collections.RepeatedField<Ubii.Processing.ProcessingModule>();
+        foreach (ProcessingModule pm in localPMs)
+        {
+            elements.Add(pm.ToProtobuf());
+        }
+        ServiceRequest pmRuntimeAddRequest = new ServiceRequest
+        {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.PM_RUNTIME_REMOVE,
+            ProcessingModuleList = new Ubii.Processing.ProcessingModuleList
+            {
+                Elements = { elements }
+            }
+        };
+        //Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
+
+        ServiceReply reply = await CallService(pmRuntimeAddRequest);
+        //Debug.Log("start session runtime add PMs reply: " + reply);
+        if (reply.Success != null)
+        {
+            try
+            {
+                bool success = await this.processingModuleManager.ApplyIOMappings(record.Session.IoMappings, record.Session.Id);
+                foreach (var pm in localPMs)
+                {
+                    this.processingModuleManager.StartModule(new Ubii.Processing.ProcessingModule { Id = pm.Id });
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.ToString());
+            }
+        }
+        else
+        {
+            //TODO: delete modules 
+        }*/
     }
 }
 
