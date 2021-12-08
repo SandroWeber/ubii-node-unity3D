@@ -20,7 +20,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public string clientName = "Unity3D Client Node";
 
     [Header("Network configuration")]
-    
+
     [Tooltip("Which method to use for service connection.")]
     public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ;
     [Tooltip("Which method to use for topic data connection.")]
@@ -34,7 +34,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Tooltip("Sets the delay for publishing records")]
     [Range(1, 5000)]
     public int publishDelay = 25;
-    
+
     [Tooltip("Host ip the client connects to. Default is localhost.")]
     public string masterNodeAddress = "localhost";
     [Tooltip("Port for the client connection to the server. Default is 8101.")]
@@ -101,9 +101,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
 
         bool success = await InitNetworkConnection();
-        networkClient.SetPublishDelay(publishDelay);
         if (success)
         {
+            OnConnected?.Invoke();
+
             processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, this.topicDataProxy);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
@@ -124,9 +125,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             return false;
         }
 
-        OnConnected?.Invoke();
         this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
+        networkClient.SetPublishDelay(publishDelay);
+
         return true;
     }
 
@@ -196,7 +198,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public void Publish(TopicDataRecordList recordList)
     {
         if (recordList == null || recordList.Elements == null) return;
-        
+
         foreach (TopicDataRecord record in recordList.Elements)
         {
             this.Publish(record);
