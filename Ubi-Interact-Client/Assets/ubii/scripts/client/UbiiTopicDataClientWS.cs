@@ -30,10 +30,11 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         new Dictionary<string, List<Action<TopicDataRecord>>>();
 
     private bool connected = false;
-    private Task taskProcessIncomingMsgs = null;
-    //private Task taskSendOutgoingMessages = null;
-    private CancellationToken cancelTokenTaskProcessIncomingMsgs;
+    private Task taskProcessIncomingMsgs = null, taskFlushOutgoingMsgs = null;
+    //TODO: merge cancel tokens?
+    private CancellationToken cancelTokenReadSocket, cancelTokenWriteSocket;
     private ConcurrentBag<TopicDataRecord> recordsToPublish = new ConcurrentBag<TopicDataRecord>();
+    private MemoryStream msReadBuffer = new MemoryStream();
 
     private int publishInterval = 25; // milliseconds
 
@@ -56,59 +57,94 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
         connected = true;
 
-        //TODO: refactor
-        cancelTokenTaskProcessIncomingMsgs = new CancellationToken();
-        taskProcessIncomingMsgs = Task.Run(async () =>
+        cancelTokenReadSocket = new CancellationToken();
+        taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
+
+        cancelTokenWriteSocket = new CancellationToken();
+        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
+    }
+    
+    private async void ReadSocket()
+    {
+        while (clientWebsocket.State == WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
         {
-            while (clientWebsocket.State == WebSocketState.Open)
+            byte[] bytebuffer = new byte[RECEIVE_BUFFER_SIZE];
+            ArraySegment<byte> arraySegment = new ArraySegment<byte>(bytebuffer);
+            WebSocketReceiveResult receiveResult = null;
+
+            try
             {
-                try
+                receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, cancelTokenReadSocket);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("WebSocket receive exception: " + ex.ToString());
+            }
+
+            await msReadBuffer.WriteAsync(arraySegment.Array, arraySegment.Offset, receiveResult.Count, cancelTokenReadSocket);
+
+            if (receiveResult.EndOfMessage)
+            {
+                // PING message
+                if (receiveResult.Count == 4)
                 {
-                    var bytebuffer = new byte[RECEIVE_BUFFER_SIZE];
-                    ArraySegment<byte> arraySegment = new ArraySegment<byte>(bytebuffer);
-                    WebSocketReceiveResult receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, cancelTokenTaskProcessIncomingMsgs);
-                    if (receiveResult.EndOfMessage)
+                    string msgString = Encoding.UTF8.GetString(arraySegment.AsMemory().ToArray(), 0, receiveResult.Count);
+                    if (msgString == "PING")
                     {
-                        if (receiveResult.Count == 4)
-                        {
-                            string msgString = Encoding.UTF8.GetString(arraySegment.AsMemory().ToArray(), 0, receiveResult.Count);
-                            if (msgString == "PING")
-                            {
-                                // PING message
-                                await this.SendBytes(Encoding.UTF8.GetBytes("PONG"));
-                            }
-                        }
-                        else
-                        {
-                            TopicData topicdata = TopicData.Parser.ParseFrom(arraySegment.Array, 0, receiveResult.Count);
-
-                            if (topicdata.TopicDataRecord != null)
-                            {
-                                this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
-                            }
-
-                            if (topicdata.Error != null)
-                            {
-                                Debug.LogError(topicdata.Error.ToString());
-                            }
-                        }
+                        await this.SendBytes(Encoding.UTF8.GetBytes("PONG"));
                     }
                 }
-                catch (Exception ex)
+                // topic data
+                else
                 {
-                    Debug.LogError("WebSocket receive exception: " + ex.ToString());
-                }
+                    TopicData topicdata = null;
+                    try
+                    {
+                        topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
 
-                try
-                {
-                    await FlushRecordsToPublish();
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("WebSocket send exception: " + ex.ToString());
+                        if (topicdata.TopicDataRecord != null)
+                        {
+                            this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
+                        }
+
+                        if (topicdata.TopicDataRecordList != null)
+                        {
+                            foreach (TopicDataRecord record in topicdata.TopicDataRecordList.Elements)
+                            {
+                                this.InvokeTopicCallbacks(record);
+                            }
+                        }
+
+                        if (topicdata.Error != null)
+                        {
+                            Debug.LogError(topicdata.Error.ToString());
+                        }
+
+                        msReadBuffer.Position = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError(ex.ToString());
+                    }
                 }
             }
-        });
+        }
+    }
+
+    private async void WriteSocket()
+    {
+        //TODO: introduce publish frequency settings
+        while (clientWebsocket.State == WebSocketState.Open && !cancelTokenWriteSocket.IsCancellationRequested)
+        {
+            try
+            {
+                await FlushRecordsToPublish();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("WebSocket send exception: " + ex.ToString());
+            }
+        }
     }
 
     public async void TearDown()
