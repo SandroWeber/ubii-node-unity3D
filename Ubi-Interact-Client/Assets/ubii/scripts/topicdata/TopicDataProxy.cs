@@ -28,6 +28,11 @@ public class TopicDataProxy : ITopicDataBuffer
         networkClient.PublishImmediately(topicDataRecord);
     }
 
+    public void PublishImmediately(TopicDataRecordList topicDataRecordList)
+    {
+        networkClient.PublishImmediately(topicDataRecordList);
+    }
+
     public TopicDataRecord Pull(string topic)
     {
         return topicDataBuffer.Pull(topic);

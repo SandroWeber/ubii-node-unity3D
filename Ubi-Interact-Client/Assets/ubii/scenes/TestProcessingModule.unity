@@ -256,11 +256,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e950835de3e8f4ca36e81f776c62e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: localhost
-  port: 8101
   clientName: Unity3D Client Node - Test Processing Modules
-  autoConnect: 0
+  serviceConnectionMode: 1
+  topicDataConnectionMode: 1
+  autoConnect: 1
   isDedicatedProcessingNode: 1
+  publishDelay: 25
+  masterNodeAddress: localhost
+  portServiceZMQ: 8101
+  portServiceREST: 8102
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

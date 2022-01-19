@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 using Ubii.TopicData;
 
@@ -40,8 +38,8 @@ public class TestProcessingModulesFrequency : MonoBehaviour
 
     public async void OnUbiiInitialized()
     {
-        topicFrequencyCounter = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter";
-        topicFrequencyCounterTickValue = "/" + ubiiNode.GetID() + "/test/pm_frequency_counter/tick_value";
+        topicFrequencyCounter = "/" + ubiiNode.Id + "/test/pm_frequency_counter";
+        topicFrequencyCounterTickValue = "/" + ubiiNode.Id + "/test/pm_frequency_counter/tick_value";
 
         expectedCounter = 0;
         tickValue = 2;

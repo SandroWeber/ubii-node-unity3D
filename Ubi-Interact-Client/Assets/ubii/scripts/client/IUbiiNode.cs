@@ -7,18 +7,29 @@ using Ubii.TopicData;
 
 interface IUbiiNode
 {
-    // service related functions
-    Task<ServiceReply> CallService(ServiceRequest request);
+    string Id { get; }
+    string Name { get; }
 
-    // status related functions
+    // status
     bool IsConnected();
+    Task WaitForConnection();
 
-    // topic data related functions
-    // TODO Unsub Regex!
+    // configuration
+    void SetPublishDelay(int millisecs);
+
+    // services
+    Task<ServiceReply> CallService(ServiceRequest request);
+    Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice);
+    Task<ServiceReply> DeregisterDevice(Ubii.Devices.Device ubiiDevice);
+
+    // topic data
     void Publish(TopicDataRecord record);
+    void Publish(TopicDataRecordList recordList);
+    void PublishImmediately(TopicDataRecord record);
+    void PublishImmediately(TopicDataRecordList recordList);
     Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback);
     Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
     Task<bool> Unsubscribe(SubscriptionToken token);
-    Task<ServiceReply> RegisterDevice(Device ubiiDevice);
-    Task<ServiceReply> DeregisterDevice(Device ubiiDevice);
+
+    Timestamp GenerateTimeStamp();
 }

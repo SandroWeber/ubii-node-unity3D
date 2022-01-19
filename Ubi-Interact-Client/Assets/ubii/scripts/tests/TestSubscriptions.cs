@@ -37,7 +37,7 @@ public class TestSubscriptions : MonoBehaviour
     {
         await ubiiNode.WaitForConnection();
 
-        string topic = "/" + ubiiNode.GetID() + "/unity3D_client/test/subcribe_publish_simple";
+        string topic = "/" + ubiiNode.Id + "/unity3D_client/test/subcribe_publish_simple";
         bool success = false;
 
         Action<TopicDataRecord> callback = (TopicDataRecord record) =>
@@ -74,7 +74,7 @@ public class TestSubscriptions : MonoBehaviour
         string[] topics = new string[10];
         for (int i = 0; i < 10; i++)
         {
-            topics[i] = "/" + ubiiNode.GetID() + common_topic_substring + "/" + i.ToString();
+            topics[i] = "/" + ubiiNode.Id + common_topic_substring + "/" + i.ToString();
         }
         List<string> topics_received = new List<string>();
 

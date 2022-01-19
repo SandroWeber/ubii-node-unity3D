@@ -39,8 +39,8 @@ public class TestSessions : MonoBehaviour
 
     private void CreateSpecs()
     {
-        this.inputTopic = "/" + ubiiNode.GetID() + "/test-sessions/input/vec3";
-        this.outputTopic = "/" + ubiiNode.GetID() + "/test-sessions/output/vec3";
+        this.inputTopic = "/" + ubiiNode.Id + "/test-sessions/input/vec3";
+        this.outputTopic = "/" + ubiiNode.Id + "/test-sessions/output/vec3";
 
         this.pmSpecs = new Ubii.Processing.ProcessingModule
         {

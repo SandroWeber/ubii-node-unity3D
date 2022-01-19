@@ -230,6 +230,14 @@ public class UbiiNetworkClient
         });
     }
 
+    public void PublishImmediately(TopicDataRecordList recordList)
+    {
+        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData
+        {
+            TopicDataRecordList = recordList
+        });
+    }
+
     #region Devices
     public async Task<ServiceReply> RegisterDevice(Device ubiiDevice)
     {

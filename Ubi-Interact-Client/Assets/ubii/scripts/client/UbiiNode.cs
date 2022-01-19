@@ -105,7 +105,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             OnConnected?.Invoke();
 
-            processingModuleManager = new ProcessingModuleManager(this.GetID(), null, this.processingModuleDatabase, this.topicDataProxy);
+            processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
             Debug.Log("Node client specs: " + clientNodeSpecification);
@@ -116,7 +116,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
-    public async Task<bool> InitNetworkConnection()
+    private async Task<bool> InitNetworkConnection()
     {
         networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
@@ -134,9 +134,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #endregion
 
-    public string GetID()
+    public string Id
     {
-        return clientNodeSpecification.Id;
+        get { return clientNodeSpecification.Id; }
+    }
+
+    public string Name
+    {
+        get { return clientName; }
     }
 
     public bool IsConnected()
@@ -218,6 +223,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy.PublishImmediately(record);
     }
 
+    public void PublishImmediately(TopicDataRecordList recordList)
+    {
+        topicDataProxy.PublishImmediately(recordList);
+    }
+
     public void SetPublishDelay(int millisecs)
     {
         networkClient.SetPublishDelay(millisecs);
@@ -280,12 +290,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// Callback for start session subscription
     /// </summary>
     /// <param name="record"></param>
-    public async void OnStartSession(TopicDataRecord record)
+    private async void OnStartSession(TopicDataRecord record)
     {
         List<ProcessingModule> localPMs = new List<ProcessingModule>();
         foreach (Ubii.Processing.ProcessingModule pm in record.Session.ProcessingModules)
         {
-            if (pm.NodeId == this.GetID())
+            if (pm.NodeId == this.Id)
             {
                 //Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
@@ -336,7 +346,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     /// Callback for stop session subscription
     /// </summary>
     /// <param name="msgSession"></param>
-    public void OnStopSession(TopicDataRecord msgSession)
+    private void OnStopSession(TopicDataRecord msgSession)
     {
         foreach (ProcessingModule pm in this.processingModuleManager.processingModules.Values)
         {

@@ -88,9 +88,9 @@ public class TestObjectMovement : MonoBehaviour
 
     private void CreateUbiiSpecs()
     {
-        topicTestPublishSubscribe = "/" + ubiiNode.GetID() + "/test_publish_subscribe/object_movement";
+        topicTestPublishSubscribe = "/" + ubiiNode.Id + "/test_publish_subscribe/object_movement";
 
-        ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiNode.GetID(), DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
+        ubiiDevice = new Ubii.Devices.Device { Name = deviceName, ClientId = ubiiNode.Id, DeviceType = Ubii.Devices.Device.Types.DeviceType.Participant };
         ubiiDevice.Components.Add(new Ubii.Devices.Component
         {
             Name = "Test Object Movement - random Vector3",
