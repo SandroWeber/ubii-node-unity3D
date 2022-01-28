@@ -257,12 +257,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientName: Unity3D Client Node - Test Object Movement
-  serviceConnectionMode: 1
-  topicDataConnectionMode: 1
+  serviceConnectionMode: 2
+  topicDataConnectionMode: 2
   autoConnect: 1
   isDedicatedProcessingNode: 0
   publishDelay: 25
-  masterNodeAddress: localhost
+  masterNodeAddress: vmklinker15.in.tum.de
   portServiceZMQ: 8101
   portServiceREST: 8102
 --- !u!1 &534669902

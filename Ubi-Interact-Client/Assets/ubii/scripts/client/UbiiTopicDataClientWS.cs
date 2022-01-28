@@ -63,7 +63,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         cancelTokenWriteSocket = new CancellationToken();
         taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
     }
-    
+
     private async void ReadSocket()
     {
         while (clientWebsocket.State == WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
@@ -81,8 +81,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 Debug.LogError("WebSocket receive exception: " + ex.ToString());
             }
 
-            await msReadBuffer.WriteAsync(arraySegment.Array, arraySegment.Offset, receiveResult.Count, cancelTokenReadSocket);
-
             if (receiveResult.EndOfMessage)
             {
                 // PING message
@@ -97,6 +95,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 // topic data
                 else
                 {
+                    await msReadBuffer.WriteAsync(arraySegment.Array, arraySegment.Offset, receiveResult.Count, cancelTokenReadSocket);
                     TopicData topicdata = null;
                     try
                     {
