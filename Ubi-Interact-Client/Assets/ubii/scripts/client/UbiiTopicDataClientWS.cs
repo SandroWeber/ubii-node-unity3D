@@ -2,13 +2,18 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text;
+
+#if WINDOWS_UWP
+using Windows.Networking.Sockets;
+#else
+using System.Net.WebSockets;
+#endif
 
 using Google.Protobuf;
 using Google.Protobuf.Collections;
@@ -23,7 +28,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private string clientId;
     private string host;
     private int port;
+
+    
+
+#if WINDOWS_UWP
+    private MessageWebSocket clientWebsocket = null;
+#else
     private ClientWebSocket clientWebsocket = null;
+#endif
 
     private Dictionary<string, List<Action<TopicDataRecord>>> topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
     private Dictionary<string, List<Action<TopicDataRecord>>> topicRegexCallbacks =

@@ -59,13 +59,13 @@ public class UbiiNetworkClient
     // Initialize the ubiiClient, serviceClient and topicDataClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
+        string hostURL = host;
         if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new NetMQServiceClient(host, portServiceZMQ);
+            serviceClient = new NetMQServiceClient(hostURL, portServiceZMQ);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
-            string hostURL = host;
             if (!hostURL.StartsWith("http://"))
             {
                 hostURL = "http://" + hostURL;
@@ -74,17 +74,17 @@ public class UbiiNetworkClient
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
-            string hostURL = host;
             if (!hostURL.StartsWith("https://"))
             {
                 hostURL = "https://" + hostURL;
             }
             serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
         }
+        Debug.Log("UBII - connecting to " + hostURL);
 
         await InitServerSpec();
         //Debug.Log("ServerSpecs: " + serverSpecification);
-        bool success = await InitClientRegistration(clientSpecs);
+        bool success = await RegisterClient(clientSpecs);
         InitTopicDataClient();
 
         return clientSpecification;
@@ -110,7 +110,7 @@ public class UbiiNetworkClient
         }
     }
 
-    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
+    private async Task<bool> RegisterClient(Ubii.Clients.Client clientSpecs)
     {
         ServiceRequest clientRegistration = new ServiceRequest
         {

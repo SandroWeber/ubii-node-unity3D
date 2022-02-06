@@ -22,9 +22,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Header("Network configuration")]
 
     [Tooltip("Which method to use for service connection.")]
-    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ;
+    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTPS;
     [Tooltip("Which method to use for topic data connection.")]
-    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ;
+    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTPS;
 
     [Tooltip("Automatically connect on start.")]
     public bool autoConnect = true;
@@ -56,13 +56,32 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region unity
 
-    private void Start()
+    private async void Start()
     {
+        masterNodeAddress = "vmklinker15.in.tum.de";
+        Debug.Log("UBII masterNodeAddress=" + masterNodeAddress);
+        Debug.Log("UBII serviceConnectionMode=" + serviceConnectionMode);
+        Debug.Log("UBII topicDataConnectionMode=" + topicDataConnectionMode);
+
+        Debug.Log("SystemInfo.deviceType=" + SystemInfo.deviceType);
+#if UNITY_WSA
+        Debug.Log("UNITY_WSA");
+#endif
+#if NETFX_CORE 
+        Debug.Log("NETFX_CORE");
+#endif
+#if UNITY_WSA_10_0 
+        Debug.Log("UNITY_WSA_10_0");
+#endif
+#if WINDOWS_UWP  
+        Debug.Log("WINDOWS_UWP");
+#endif
+
         if (autoConnect)
         {
             try
             {
-                Initialize();
+                await Initialize();
             }
             catch (Exception e)
             {

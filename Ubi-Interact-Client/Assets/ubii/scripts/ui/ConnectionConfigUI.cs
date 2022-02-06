@@ -35,12 +35,12 @@ public class ConnectionConfigUI : MonoBehaviour
         inputFieldMasterNodeAddress?.SetActive(uiVisible);
     }
 
-    public void OnButtonConnect()
+    public async void OnButtonConnect()
     {
         ubiiNode.masterNodeAddress = inputStringMasterNodeAddress;
         try
         {
-            ubiiNode.Initialize();
+            await ubiiNode.Initialize();
         }
         catch (Exception e)
         {

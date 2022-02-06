@@ -3,7 +3,6 @@ using Ubii.Services;
 using NetMQ.Sockets;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 
 class UbiiServiceClientREST : IUbiiServiceClient
 {
