@@ -137,18 +137,27 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
-        clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-        if (clientNodeSpecification == null)
+        try
         {
-            return false;
+            networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
+            clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
+            /*if (clientNodeSpecification == null)
+            {
+                return false;
+            }
+
+            this.topicData = new TopicDataBuffer();
+            this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
+            networkClient.SetPublishDelay(publishDelay);
+            
+            return true;*/
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
         }
 
-        this.topicData = new TopicDataBuffer();
-        this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
-        networkClient.SetPublishDelay(publishDelay);
-
-        return true;
+        return false;
     }
 
     #endregion

@@ -61,11 +61,17 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private async void Initialize()
     {
-        clientWebsocket = new ClientWebSocket();
-
         Uri url = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
+        
+#if WINDOWS_UWP
+        clientWebsocket = new MessageWebSocket();
+        clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
+        Debug.Log("WINDOWS_UWP UbiiTopicDataClientWS.Initialize() missing implementation");
+#else
+        clientWebsocket = new ClientWebSocket();
         CancellationToken cancelTokenConnect = new CancellationToken();
         await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
+#endif
 
         connected = true;
 
@@ -76,6 +82,38 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
     }
 
+    public async void TearDown()
+    {
+        connected = false;
+        if (clientWebsocket != null)
+        {
+#if WINDOWS_UWP
+            Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.TearDown() missing implementation");
+#else
+            CancellationToken cancellationToken = new CancellationToken();
+            await clientWebsocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
+            clientWebsocket.Dispose();
+#endif
+        }
+    }
+
+#if WINDOWS_UWP
+    private async void ReadSocket()
+    {
+        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket() missing implementation");
+    }
+
+    private async void WriteSocket()
+    {
+        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket() missing implementation");
+    }
+
+    public async Task<CancellationToken> SendBytes(byte[] bytes)
+    {
+        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes() missing implementation");
+        return new CancellationToken();
+    }
+#else
     private async void ReadSocket()
     {
         while (clientWebsocket.State == WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
@@ -158,16 +196,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }
     }
 
-    public async void TearDown()
+    public async Task<CancellationToken> SendBytes(byte[] bytes)
     {
-        connected = false;
-        if (clientWebsocket != null)
-        {
-            CancellationToken cancellationToken = new CancellationToken();
-            await clientWebsocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
-            clientWebsocket.Dispose();
-        }
+        var arraySegment = new ArraySegment<Byte>(bytes);
+        CancellationToken cancellationToken = new CancellationToken();
+        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, cancellationToken);
+        return cancellationToken;
     }
+#endif
 
     public bool IsConnected()
     {
@@ -295,14 +331,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         codedOutputStream.Flush();
         var bytebuffer = memoryStream.ToArray();
         return await this.SendBytes(bytebuffer);
-    }
-
-    public async Task<CancellationToken> SendBytes(byte[] bytes)
-    {
-        var arraySegment = new ArraySegment<Byte>(bytes);
-        CancellationToken cancellationToken = new CancellationToken();
-        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, cancellationToken);
-        return cancellationToken;
     }
 
     private void InvokeTopicCallbacks(TopicDataRecord record)

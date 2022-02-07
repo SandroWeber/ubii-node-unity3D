@@ -39,11 +39,11 @@ public class UbiiNetworkClient
 
     private Client clientSpecification;
 
-    private IUbiiServiceClient serviceClient;
+    private IUbiiServiceClient serviceClient = null;
 
-    private ITopicDataClient topicDataClient;
+    private ITopicDataClient topicDataClient = null;
 
-    private Server serverSpecification;
+    private Server serverSpecification = null;
 
     public UbiiNetworkClient(string host, int portServiceZMQ, int portServiceREST, SERVICE_CONNECTION_MODE serviceConnectionMode, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
     {
@@ -80,6 +80,13 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
         }
+
+        if (serviceClient == null) 
+        {
+            Debug.LogError("UbiiNetworkClient - service connection client could not be created");
+            return null;
+        }
+
         Debug.Log("UBII - connecting to " + hostURL);
 
         await InitServerSpec();
