@@ -63,18 +63,18 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         Debug.Log("UBII serviceConnectionMode=" + serviceConnectionMode);
         Debug.Log("UBII topicDataConnectionMode=" + topicDataConnectionMode);
 
-        Debug.Log("SystemInfo.deviceType=" + SystemInfo.deviceType);
+        Debug.Log("SystemInfo.deviceType=" + SystemInfo.deviceType);  // Hololens = Desktop
 #if UNITY_WSA
-        Debug.Log("UNITY_WSA");
+        Debug.Log("UNITY_WSA");  // Hololens = true
 #endif
 #if NETFX_CORE 
         Debug.Log("NETFX_CORE");
 #endif
 #if UNITY_WSA_10_0 
-        Debug.Log("UNITY_WSA_10_0");
+        Debug.Log("UNITY_WSA_10_0");  // Hololens = true
 #endif
 #if WINDOWS_UWP  
-        Debug.Log("WINDOWS_UWP");
+        Debug.Log("WINDOWS_UWP");  // Hololens = true
 #endif
 
         if (autoConnect)
@@ -85,7 +85,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ToString());
             }
         }
     }
@@ -127,7 +127,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
-            Debug.Log("Node client specs: " + clientNodeSpecification);
+            Debug.Log("UBII - client: " + clientNodeSpecification);
         }
         else
         {
@@ -137,27 +137,15 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async Task<bool> InitNetworkConnection()
     {
-        try
-        {
-            networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
-            clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-            /*if (clientNodeSpecification == null)
-            {
-                return false;
-            }
+        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
+        clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
+        if (clientNodeSpecification == null) return false;
 
-            this.topicData = new TopicDataBuffer();
-            this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
-            networkClient.SetPublishDelay(publishDelay);
-            
-            return true;*/
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.ToString());
-        }
+        this.topicData = new TopicDataBuffer();
+        this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
+        networkClient.SetPublishDelay(publishDelay);
 
-        return false;
+        return true;
     }
 
     #endregion

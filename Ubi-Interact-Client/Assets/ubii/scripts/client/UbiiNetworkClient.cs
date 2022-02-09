@@ -89,23 +89,32 @@ public class UbiiNetworkClient
 
         Debug.Log("UBII - connecting to " + hostURL);
 
-        await InitServerSpec();
-        //Debug.Log("ServerSpecs: " + serverSpecification);
+        bool getServerSpecsSuccess = await InitServerSpec();
+        Debug.LogError("getServerSpecsSuccess: " + getServerSpecsSuccess);
         bool success = await RegisterClient(clientSpecs);
-        InitTopicDataClient();
+        //InitTopicDataClient();
 
         return clientSpecification;
     }
 
-    private async Task InitServerSpec()
+    private async Task<bool> InitServerSpec()
     {
         // Call Service to receive serverSpecifications
         ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
 
         ServiceReply reply = await CallService(serverConfigRequest);
+        if (reply == null)
+        {
+            Debug.LogError("UBII - could not retrieve server configuration, reply is null");
+            return false;
+        }
+        Debug.LogError("InitServerSpec() - reply: " + reply.ToString());
+
         if (reply.Server != null)
         {
+            Debug.LogError("InitServerSpec() - reply: " + reply.Server.ToString());
             serverSpecification = reply.Server;
+            return true;
         }
         else if (reply.Error != null)
         {
@@ -115,6 +124,8 @@ public class UbiiNetworkClient
         {
             Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
         }
+
+        return false;
     }
 
     private async Task<bool> RegisterClient(Ubii.Clients.Client clientSpecs)
@@ -168,6 +179,8 @@ public class UbiiNetworkClient
             int port = int.Parse(serverSpecification.PortTopicDataWs);
             this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
         }
+
+        if (this.topicDataClient == null) throw new Exception("UBii - could not create topic data client");
     }
 
     async public void ShutDown()
@@ -221,6 +234,7 @@ public class UbiiNetworkClient
 
     public async Task<ServiceReply> CallService(ServiceRequest srq)
     {
+        //Debug.LogError("UbiiNetworkClient.CallService() serviceClient: " + serviceClient);
         return await serviceClient.CallService(srq);
     }
 
