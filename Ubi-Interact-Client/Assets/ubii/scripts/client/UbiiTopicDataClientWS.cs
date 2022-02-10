@@ -62,24 +62,25 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async void Initialize()
     {
         Uri url = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
+        Debug.LogError("WS Initialize() url=" + url);
         
 #if WINDOWS_UWP
         clientWebsocket = new MessageWebSocket();
         clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
-        Debug.Log("WINDOWS_UWP UbiiTopicDataClientWS.Initialize() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.Initialize() missing implementation");
 #else
         clientWebsocket = new ClientWebSocket();
         CancellationToken cancelTokenConnect = new CancellationToken();
         await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
 #endif
 
-        connected = true;
+        /*connected = true;
 
         cancelTokenReadSocket = new CancellationToken();
         taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
 
         cancelTokenWriteSocket = new CancellationToken();
-        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
+        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);*/
     }
 
     public async void TearDown()
@@ -88,7 +89,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         if (clientWebsocket != null)
         {
 #if WINDOWS_UWP
-            Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.TearDown() missing implementation");
+            Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.TearDown() missing implementation");
 #else
             CancellationToken cancellationToken = new CancellationToken();
             await clientWebsocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
@@ -100,17 +101,17 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 #if WINDOWS_UWP
     private async void ReadSocket()
     {
-        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket() missing implementation");
     }
 
     private async void WriteSocket()
     {
-        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket() missing implementation");
     }
 
     public async Task<CancellationToken> SendBytes(byte[] bytes)
     {
-        Console.WriteLine("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes() missing implementation");
         return new CancellationToken();
     }
 #else
