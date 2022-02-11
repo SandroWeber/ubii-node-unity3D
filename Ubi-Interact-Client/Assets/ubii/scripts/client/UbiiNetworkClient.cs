@@ -89,32 +89,31 @@ public class UbiiNetworkClient
 
         Debug.Log("UBII - connecting to " + hostURL);
 
-        bool getServerSpecsSuccess = await InitServerSpec();
-        //Debug.LogError("getServerSpecsSuccess: " + getServerSpecsSuccess);
-        //bool success = await RegisterClient(clientSpecs);
-        //InitTopicDataClient();
+        this.serverSpecification = await RetrieveServerConfig();
+        if (this.serverSpecification == null) return null;
+        this.clientSpecification = await RegisterAsClient(clientSpecs);
+        if (this.clientSpecification == null) return null;
+        Debug.LogError("UBII - client specs: " + this.clientSpecification);
+        InitTopicDataClient();
 
         return clientSpecification;
     }
 
-    private async Task<bool> InitServerSpec()
+    private async Task<Ubii.Servers.Server> RetrieveServerConfig()
     {
         // Call Service to receive serverSpecifications
         ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
 
         ServiceReply reply = await CallService(serverConfigRequest);
-        /*if (reply == null)
+        if (reply == null)
         {
             Debug.LogError("UBII - could not retrieve server configuration, reply is null");
-            return false;
+            return null;
         }
-        Debug.LogError("InitServerSpec() - reply: " + reply.ToString());
 
         if (reply.Server != null)
         {
-            Debug.LogError("InitServerSpec() - reply: " + reply.Server.ToString());
-            serverSpecification = reply.Server;
-            return true;
+            return reply.Server;
         }
         else if (reply.Error != null)
         {
@@ -123,12 +122,12 @@ public class UbiiNetworkClient
         else
         {
             Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
-        }*/
+        }
 
-        return false;
+        return null;
     }
 
-    private async Task<bool> RegisterClient(Ubii.Clients.Client clientSpecs)
+    private async Task<Ubii.Clients.Client> RegisterAsClient(Ubii.Clients.Client clientSpecs)
     {
         ServiceRequest clientRegistration = new ServiceRequest
         {
@@ -137,21 +136,24 @@ public class UbiiNetworkClient
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
+        Debug.LogError("RegisterAsClient: " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
-        if (reply == null) throw new Exception("UBII - could not register client, response null");
+        if (reply == null) {
+            Debug.LogError("UBII - could not register client, response null");
+            return null;
+        }
 
         if (reply.Client != null)
         {
-            clientSpecification = reply.Client;
-            return true;
+            return reply.Client;
         }
         else if (reply.Error != null)
         {
             Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
         }
 
-        return false;
+        return null;
     }
 
     private void InitTopicDataClient()
@@ -182,7 +184,10 @@ public class UbiiNetworkClient
             this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
         }
 
-        if (this.topicDataClient == null) throw new Exception("UBii - could not create topic data client");
+        if (this.topicDataClient == null) {
+            Debug.LogError("topic data client connection null");
+            //throw new Exception("UBii - could not create topic data client");
+        }
     }
 
     async public void ShutDown()
@@ -210,7 +215,7 @@ public class UbiiNetworkClient
 
     public void SetPublishDelay(int millisecs)
     {
-        topicDataClient.SetPublishDelay(millisecs);
+        topicDataClient?.SetPublishDelay(millisecs);
     }
 
     public Task WaitForConnection()
@@ -242,12 +247,12 @@ public class UbiiNetworkClient
 
     public void Publish(TopicDataRecord record)
     {
-        topicDataClient.SendTopicDataRecord(record);
+        topicDataClient?.SendTopicDataRecord(record);
     }
 
     public void PublishImmediately(TopicDataRecord record)
     {
-        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData
+        topicDataClient?.SendTopicDataImmediately(new Ubii.TopicData.TopicData
         {
             TopicDataRecord = record
         });
@@ -255,7 +260,7 @@ public class UbiiNetworkClient
 
     public void PublishImmediately(TopicDataRecordList recordList)
     {
-        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData
+        topicDataClient?.SendTopicDataImmediately(new Ubii.TopicData.TopicData
         {
             TopicDataRecordList = recordList
         });
@@ -297,6 +302,7 @@ public class UbiiNetworkClient
     #region Topics
     public async Task<bool> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
+        if (this.topicDataClient == null) return false;
         if (callback == null)
         {
             Debug.LogError("SubscribeTopic() - callback is NULL!");
@@ -342,6 +348,7 @@ public class UbiiNetworkClient
 
     public async Task<bool> UnsubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
+        if (this.topicDataClient == null) return false;
         if (callback == null)
         {
             Debug.LogError("UnsubscribeTopic() - callback is NULL!");

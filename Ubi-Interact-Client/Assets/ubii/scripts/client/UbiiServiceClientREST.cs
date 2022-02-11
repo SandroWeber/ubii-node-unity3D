@@ -9,6 +9,8 @@ using Ubii.Services;
 
 #if WINDOWS_UWP
 using Windows.Web.Http;
+using Windows.Storage.Streams;
+using System.Runtime.InteropServices.WindowsRuntime;
 #else
 using System.Net.Http;
 #endif
@@ -60,62 +62,56 @@ class UbiiServiceClientREST : IUbiiServiceClient
         CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
         request.WriteTo(codedOutputStream);
         codedOutputStream.Flush();
-        var bytebuffer = memoryStream.ToArray();
+        byte[] bytebuffer = memoryStream.ToArray();
+        Debug.Log("CallService() - bytebuffer length = " + bytebuffer.Length);
 
         Uri uri = new Uri(this.serviceURL);
-        string responseJSON = null;
+        ServiceReply reply = null;
         try
         {
 #if WINDOWS_UWP
-
         // JSON
         /*HttpStringContent content = new HttpStringContent(requestJSON, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/json");
-        responseJSON = await httpResponseMessage.Content.ReadAsStringAsync();*/
+        string responseJSON = await httpResponseMessage.Content.ReadAsStringAsync();
+        //NOTE: UWP does not support JSON parsing! Probably the use of reflections is the problem. 
+        reply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseJSON);*/
         // BINARY
-        HttpBufferContent content { bytebuffer };
+        HttpBufferContent content = new HttpBufferContent(bytebuffer.AsBuffer());
+        content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
         Debug.LogError("UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
-        byte[] responseByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync();
-        ServiceReply reply = ServiceReply.Parser.ParseFrom(responseByteArray, 0, responseByteArray.Length);
-        Debug.LogError(reply.ToString());
+        IBuffer buffer = await httpResponseMessage.Content.ReadAsBufferAsync();
+        byte[] responseByteArray = buffer.ToArray();
+        reply = ServiceReply.Parser.ParseFrom(responseByteArray, 0, responseByteArray.Length);
 #else
         // JSON
         /*StringContent content = new StringContent(requestJSON, Encoding.UTF8, "application/json");
         HttpResponseMessage response = await this.httpClient.PostAsync(this.serviceURL, content);
         response.EnsureSuccessStatusCode();
-        responseJSON = await response.Content.ReadAsStringAsync();*/
+        string responseJSON = await response.Content.ReadAsStringAsync();
+        reply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseJSON);*/
         // BINARY
         ByteArrayContent content = new ByteArrayContent(bytebuffer);
+        content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
         Debug.LogError("UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
         byte[] responseByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync();
-        ServiceReply reply = ServiceReply.Parser.ParseFrom(responseByteArray, 0, responseByteArray.Length);
-        Debug.LogError(reply.ToString());
+        reply = ServiceReply.Parser.ParseFrom(responseByteArray, 0, responseByteArray.Length);
 #endif
         }
         catch (Exception e)
         {
             Debug.LogError(e.ToString());
         }
-
-        if (responseJSON == null)
-        {
-            //throw new Exception("UBII - CallService() response is null");
-            //Debug.LogError("UbiiServiceClientREST.CallService() responseJSON: " + responseJSON);
-            return null;
-        }
-
-        //Debug.LogError("UbiiServiceClientREST.CallService() responseJSON: " + responseJSON);
-        //NOTE: UWP does not support JSON parsing! Probably the use of reflections is the problem
-        //ServiceReply serviceReply = Google.Protobuf.JsonParser.Default.Parse<ServiceReply>(responseJSON);
-        //return serviceReply;
-        return null;
+        
+        //Debug.LogError(reply.ToString());
+        return reply;
     }
 
     public void TearDown()

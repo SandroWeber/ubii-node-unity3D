@@ -9,12 +9,6 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text;
 
-#if WINDOWS_UWP
-using Windows.Networking.Sockets;
-#else
-using System.Net.WebSockets;
-#endif
-
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Ubii.TopicData;
@@ -32,9 +26,9 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     
 
 #if WINDOWS_UWP
-    private MessageWebSocket clientWebsocket = null;
+    private Windows.Networking.Sockets.MessageWebSocket clientWebsocket = null;
 #else
-    private ClientWebSocket clientWebsocket = null;
+    private System.Net.WebSockets.ClientWebSocket clientWebsocket = null;
 #endif
 
     private Dictionary<string, List<Action<TopicDataRecord>>> topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
@@ -61,22 +55,30 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private async void Initialize()
     {
-        Uri url = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
-        Debug.LogError("WS Initialize() url=" + url);
+        Uri uri = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
+        Debug.LogError("WS Initialize() url=" + uri);
         
+        try
+        {
 #if WINDOWS_UWP
-        clientWebsocket = new MessageWebSocket();
-        clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.Initialize() missing implementation");
+            clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
+            clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
+            await clientWebsocket.ConnectAsync(uri);
 #else
-        clientWebsocket = new ClientWebSocket();
-        CancellationToken cancelTokenConnect = new CancellationToken();
-        await clientWebsocket.ConnectAsync(url, cancelTokenConnect);
+            clientWebsocket = new System.Net.WebSockets.ClientWebSocket();
+            CancellationToken cancelTokenConnect = new CancellationToken();
+            await clientWebsocket.ConnectAsync(uri, cancelTokenConnect);
 #endif
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.ToString());
+            return;
+        }
+        
+        connected = true;
 
-        /*connected = true;
-
-        cancelTokenReadSocket = new CancellationToken();
+        /*cancelTokenReadSocket = new CancellationToken();
         taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
 
         cancelTokenWriteSocket = new CancellationToken();
@@ -89,10 +91,12 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         if (clientWebsocket != null)
         {
 #if WINDOWS_UWP
-            Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.TearDown() missing implementation");
+            Debug.LogError("UBII UbiiTopicDataClientWS.TearDown()");
+            clientWebsocket.Close(1000, "Client Node stopped");  // constants defined somewhere?
+            clientWebsocket.Dispose();
 #else
             CancellationToken cancellationToken = new CancellationToken();
-            await clientWebsocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
+            await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
             clientWebsocket.Dispose();
 #endif
         }
@@ -101,31 +105,31 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 #if WINDOWS_UWP
     private async void ReadSocket()
     {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket()");
     }
 
     private async void WriteSocket()
     {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket()");
     }
 
     public async Task<CancellationToken> SendBytes(byte[] bytes)
     {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes() missing implementation");
+        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes()");
         return new CancellationToken();
     }
 #else
     private async void ReadSocket()
     {
-        while (clientWebsocket.State == WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
+        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
         {
             byte[] bytebuffer = new byte[RECEIVE_BUFFER_SIZE];
             ArraySegment<byte> arraySegment = new ArraySegment<byte>(bytebuffer);
-            WebSocketReceiveResult receiveResult = null;
+            System.Net.WebSockets.WebSocketReceiveResult receiveResult = null;
 
             try
             {
-                receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, cancelTokenReadSocket);
+                receiveResult = await this.clientWebsocket.ReceiveAsync(arraySegment, cancelTokenReadSocket);
             }
             catch (Exception ex)
             {
@@ -184,7 +188,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async void WriteSocket()
     {
         //TODO: introduce publish frequency settings
-        while (clientWebsocket.State == WebSocketState.Open && !cancelTokenWriteSocket.IsCancellationRequested)
+        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenWriteSocket.IsCancellationRequested)
         {
             try
             {
@@ -201,7 +205,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
         CancellationToken cancellationToken = new CancellationToken();
-        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, cancellationToken);
+        await clientWebsocket.SendAsync(arraySegment, System.Net.WebSockets.WebSocketMessageType.Binary, true, cancellationToken);
         return cancellationToken;
     }
 #endif

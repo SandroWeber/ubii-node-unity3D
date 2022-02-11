@@ -58,7 +58,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void Start()
     {
-        masterNodeAddress = "vmklinker15.in.tum.de";
+        //masterNodeAddress = "vmklinker15.in.tum.de";
         Debug.Log("UBII masterNodeAddress=" + masterNodeAddress);
         Debug.Log("UBII serviceConnectionMode=" + serviceConnectionMode);
         Debug.Log("UBII topicDataConnectionMode=" + topicDataConnectionMode);
@@ -261,7 +261,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public Task<bool> Unsubscribe(SubscriptionToken token)
     {
-        return this.topicDataProxy.Unsubscribe(token);
+        return this.topicDataProxy?.Unsubscribe(token);
     }
 
     public async Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
