@@ -23,7 +23,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private string host;
     private int port;
 
-    
+
 
 #if WINDOWS_UWP
     private Windows.Networking.Sockets.MessageWebSocket clientWebsocket = null;
@@ -57,32 +57,33 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         Uri uri = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
         Debug.LogError("WS Initialize() url=" + uri);
-        
+
         try
         {
 #if WINDOWS_UWP
-            clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
-            clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
+            this.clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
+            this.clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
+            this.clientWebsocket.MessageReceived += OnMessageReceived;
+            this.clientWebsocket.Closed += OnWebsocketClose;
             await clientWebsocket.ConnectAsync(uri);
 #else
             clientWebsocket = new System.Net.WebSockets.ClientWebSocket();
             CancellationToken cancelTokenConnect = new CancellationToken();
             await clientWebsocket.ConnectAsync(uri, cancelTokenConnect);
+
+            cancelTokenReadSocket = new CancellationToken();
+            taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
 #endif
+            cancelTokenWriteSocket = new CancellationToken();
+            taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
         }
         catch (System.Exception e)
         {
             Debug.LogError(e.ToString());
             return;
         }
-        
+
         connected = true;
-
-        cancelTokenReadSocket = new CancellationToken();
-        taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
-
-        cancelTokenWriteSocket = new CancellationToken();
-        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
     }
 
     public async void TearDown()
@@ -110,21 +111,107 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private async void WriteSocket()
     {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.WriteSocket()");
+        //TODO: introduce publish frequency settings
+        while (this.connected && !cancelTokenWriteSocket.IsCancellationRequested)
+        {
+            try
+            {
+                await FlushRecordsToPublish();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("WriteSocket exception: " + ex.ToString());
+            }
+        }
     }
 
-    public async Task<CancellationToken> SendBytes(byte[] bytes)
+    private async Task<CancellationToken> SendBytes(byte[] bytes)
     {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.SendBytes()");
+        using (var dataWriter = new Windows.Storage.Streams.DataWriter(this.clientWebsocket.OutputStream))
+        {
+            dataWriter.WriteBytes(bytes);
+            await dataWriter.StoreAsync();
+            dataWriter.DetachStream();
+        }
+        Debug.LogError("UWP WS SendBytes(): " + bytes.Length);
+
         return new CancellationToken();
+    }
+
+    private async void OnMessageReceived(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
+    {
+        try
+        {
+            using (Windows.Storage.Streams.DataReader dataReader = args.GetDataReader())
+            {
+                dataReader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
+                uint messageLength = dataReader.UnconsumedBufferLength;
+                //Debug.LogError("UWP WS OnMessageReceived() - messageLength: " + messageLength);
+                // PING message
+                if (messageLength == 4)
+                {
+                    string msgString = dataReader.ReadString(messageLength);
+                    if (msgString == "PING")
+                    {
+                        await this.SendBytes(Encoding.UTF8.GetBytes("PONG"));
+                    }
+                }
+                // topic data
+                else
+                {
+                    TopicData topicdata = null;
+                    try
+                    {
+                        byte[] receiveBuffer = new byte[messageLength];
+                        dataReader.ReadBytes(receiveBuffer);
+                        topicdata = TopicData.Parser.ParseFrom(receiveBuffer, 0, (int)messageLength);
+
+                        if (topicdata.TopicDataRecord != null)
+                        {
+                            this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
+                        }
+
+                        if (topicdata.TopicDataRecordList != null)
+                        {
+                            foreach (TopicDataRecord record in topicdata.TopicDataRecordList.Elements)
+                            {
+                                this.InvokeTopicCallbacks(record);
+                            }
+                        }
+
+                        if (topicdata.Error != null)
+                        {
+                            Debug.LogError(topicdata.Error.ToString());
+                        }
+
+                        msReadBuffer.Position = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError(ex.ToString());
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Windows.Web.WebErrorStatus webErrorStatus = Windows.Networking.Sockets.WebSocketError.GetStatus(ex.GetBaseException().HResult);
+            Debug.LogError(ex.ToString());
+        }
+    }
+
+    private void OnWebsocketClose(Windows.Networking.Sockets.IWebSocket sender, Windows.Networking.Sockets.WebSocketClosedEventArgs args)
+    {
+        Debug.LogError("OnWebsocketClose; Code: " + args.Code + ", Reason: \"" + args.Reason + "\"");
+        this.connected = false;
     }
 #else
     private async void ReadSocket()
     {
+        byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
         while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
         {
-            byte[] bytebuffer = new byte[RECEIVE_BUFFER_SIZE];
-            ArraySegment<byte> arraySegment = new ArraySegment<byte>(bytebuffer);
+            ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer);
             System.Net.WebSockets.WebSocketReceiveResult receiveResult = null;
 
             try
@@ -201,7 +288,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }
     }
 
-    public async Task<CancellationToken> SendBytes(byte[] bytes)
+    private async Task<CancellationToken> SendBytes(byte[] bytes)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
         CancellationToken cancellationToken = new CancellationToken();
@@ -297,6 +384,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     public void SendTopicDataRecord(TopicDataRecord record)
     {
+        Debug.LogError("SendTopicDataRecord() - record: " + record.ToString());
         recordsToPublish.Add(record);
     }
 
