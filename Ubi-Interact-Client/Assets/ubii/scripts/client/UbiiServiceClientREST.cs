@@ -31,7 +31,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
     private Google.Protobuf.JsonFormatter.Settings jsonFormatSettings;
     private Google.Protobuf.JsonFormatter jsonFormatter;
 
-    public UbiiServiceClientREST(string host = "https://localhost", int port = 8102, string serviceRoute = "/services")
+    public UbiiServiceClientREST(string host = "https://localhost", int port = 8102, string serviceRoute = "/services/binary")
     {
         this.host = host;
         this.port = port;
@@ -43,7 +43,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
         this.httpClient = new System.Net.Http.HttpClient();
 #endif
 
-        this.serviceURL += this.host + ":" + this.port + this.serviceRoute;
+        this.serviceURL += this.host + ":" + (this.port != 0 ? this.port.ToString() : "") + (this.serviceRoute != null ? this.serviceRoute : "");
         jsonFormatSettings = new Google.Protobuf.JsonFormatter.Settings(true).WithFormatEnumsAsIntegers(true);
         jsonFormatter = new Google.Protobuf.JsonFormatter(jsonFormatSettings);
     }

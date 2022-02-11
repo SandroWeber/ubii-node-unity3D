@@ -41,6 +41,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public int portServiceZMQ = 8101;
     [Tooltip("Port for the client connection to the server. Default is 8101.")]
     public int portServiceREST = 8102;
+    public string routeServiceRest = "/services/binary";
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -137,7 +138,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
+        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, routeServiceRest, this.serviceConnectionMode, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null) return false;
 

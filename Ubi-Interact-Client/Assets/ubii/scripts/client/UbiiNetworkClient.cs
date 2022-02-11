@@ -36,6 +36,7 @@ public class UbiiNetworkClient
     private string host;
     private int portServiceZMQ;
     private int portServiceREST;
+    private string routeServiceRest;
 
     private Client clientSpecification;
 
@@ -45,11 +46,12 @@ public class UbiiNetworkClient
 
     private Server serverSpecification = null;
 
-    public UbiiNetworkClient(string host, int portServiceZMQ, int portServiceREST, SERVICE_CONNECTION_MODE serviceConnectionMode, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
+    public UbiiNetworkClient(string host, int portServiceZMQ, int portServiceREST, string routeServiceRest, SERVICE_CONNECTION_MODE serviceConnectionMode, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
     {
         this.host = host;
         this.portServiceZMQ = portServiceZMQ;
         this.portServiceREST = portServiceREST;
+        this.routeServiceRest = routeServiceRest;
         this.serviceConnectionMode = serviceConnectionMode;
         this.topicDataConnectionMode = topicDataConnectionMode;
     }
@@ -81,7 +83,7 @@ public class UbiiNetworkClient
             serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
         }
 
-        if (serviceClient == null) 
+        if (serviceClient == null)
         {
             Debug.LogError("UbiiNetworkClient - service connection client could not be created");
             return null;
@@ -139,7 +141,8 @@ public class UbiiNetworkClient
         Debug.LogError("RegisterAsClient: " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
-        if (reply == null) {
+        if (reply == null)
+        {
             Debug.LogError("UBII - could not register client, response null");
             return null;
         }
@@ -184,7 +187,8 @@ public class UbiiNetworkClient
             this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
         }
 
-        if (this.topicDataClient == null) {
+        if (this.topicDataClient == null)
+        {
             Debug.LogError("topic data client connection null");
             //throw new Exception("UBii - could not create topic data client");
         }

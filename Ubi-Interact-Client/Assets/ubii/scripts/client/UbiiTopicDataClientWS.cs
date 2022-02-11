@@ -78,11 +78,11 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         
         connected = true;
 
-        /*cancelTokenReadSocket = new CancellationToken();
+        cancelTokenReadSocket = new CancellationToken();
         taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
 
         cancelTokenWriteSocket = new CancellationToken();
-        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);*/
+        taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
     }
 
     public async void TearDown()
