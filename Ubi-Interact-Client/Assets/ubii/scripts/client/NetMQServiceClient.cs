@@ -31,11 +31,10 @@ class NetMQServiceClient : IUbiiServiceClient
         try
         {
             socket.Connect("tcp://" + host + ":" + port);
-            //Debug.Log("Create Socket successful. Host: " + host + ":" + port);
         }
         catch (Exception ex)
         {
-            Debug.LogError("NetMQServiceClient, StartSocket(), Exception occured: " + ex.ToString());
+            Debug.LogError("UBII NetMQServiceClient.StartSocket(): " + ex.ToString());
         }
     }
 
@@ -58,7 +57,7 @@ class NetMQServiceClient : IUbiiServiceClient
             }
             catch (Exception exception)
             {
-                Debug.LogError(exception.ToString());
+                Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
                 Task.Delay(100).Wait();
             }
         }

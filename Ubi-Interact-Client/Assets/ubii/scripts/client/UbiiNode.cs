@@ -86,7 +86,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                Debug.LogError("UBII UbiiNode.Initialize(): " + e.ToString());
             }
         }
     }
@@ -132,7 +132,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
         else
         {
-            Debug.LogError("UbiiNode.Initialize() - failed to establish network connection to master node");
+            Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node");
         }
     }
 
@@ -350,7 +350,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStartSession(): " + e.ToString());
             }
         }
         else
@@ -403,7 +403,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStopSession(): " + e.ToString());
             }
         }
         else

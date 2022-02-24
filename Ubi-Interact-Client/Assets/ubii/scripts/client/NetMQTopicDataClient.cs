@@ -66,7 +66,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         }
         catch (Exception ex)
         {
-            Debug.LogError("NetMQTopicDataClient, StartSocket(), Exception occured: " + ex.ToString());
+            Debug.LogError("UBII NetMQTopicDataClient.StartSocket(): " + ex.ToString());
         }
     }
 
@@ -291,7 +291,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         // catch possible error
         if (topicData.Error != null)
         {
-            Debug.LogError("TopicData Error: " + topicData.Error.ToString());
+            Debug.LogError("UBII NetMQTopicDataClient.OnMessage(): " + topicData.Error.ToString());
             return;
         }
     }

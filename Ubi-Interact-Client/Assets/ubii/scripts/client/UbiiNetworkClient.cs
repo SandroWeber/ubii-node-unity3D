@@ -85,7 +85,7 @@ public class UbiiNetworkClient
 
         if (serviceClient == null)
         {
-            Debug.LogError("UbiiNetworkClient - service connection client could not be created");
+            Debug.LogError("UBII - service connection client could not be created");
             return null;
         }
 
@@ -95,7 +95,7 @@ public class UbiiNetworkClient
         if (this.serverSpecification == null) return null;
         this.clientSpecification = await RegisterAsClient(clientSpecs);
         if (this.clientSpecification == null) return null;
-        Debug.LogError("UBII - client specs: " + this.clientSpecification);
+        Debug.Log("UBII - client specs: " + this.clientSpecification);
         InitTopicDataClient();
 
         return clientSpecification;
@@ -123,7 +123,7 @@ public class UbiiNetworkClient
         }
         else
         {
-            Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
+            Debug.LogError("UBII UbiiNetworkClient - unkown server response during server specification retrieval");
         }
 
         return null;
@@ -138,12 +138,12 @@ public class UbiiNetworkClient
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
-        Debug.LogError("RegisterAsClient: " + clientRegistration);
+        Debug.Log("UBII UbiiNetworkClient.RegisterAsClient(): " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
         if (reply == null)
         {
-            Debug.LogError("UBII - could not register client, response null");
+            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - could not register client, response null");
             return null;
         }
 
@@ -153,7 +153,7 @@ public class UbiiNetworkClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
+            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - server error:" + reply);
         }
 
         return null;
@@ -245,7 +245,6 @@ public class UbiiNetworkClient
 
     public async Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        //Debug.LogError("UbiiNetworkClient.CallService() serviceClient: " + serviceClient);
         return await serviceClient.CallService(srq);
     }
 

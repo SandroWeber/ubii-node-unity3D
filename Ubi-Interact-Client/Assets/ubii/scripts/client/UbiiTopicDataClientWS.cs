@@ -26,6 +26,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
 
 #if WINDOWS_UWP
+    //TODO: alternative would be StreamWebSocket, see if necessary for larger messages (images, etc.)
     private Windows.Networking.Sockets.MessageWebSocket clientWebsocket = null;
 #else
     private System.Net.WebSockets.ClientWebSocket clientWebsocket = null;
@@ -56,7 +57,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async void Initialize()
     {
         Uri uri = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
-        Debug.LogError("WS Initialize() url=" + uri);
 
         try
         {
@@ -79,7 +79,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }
         catch (System.Exception e)
         {
-            Debug.LogError(e.ToString());
+            Debug.LogError("UBII UbiiTopicDataClientWS.Initialize(): " + e.ToString());
             return;
         }
 
@@ -92,7 +92,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         if (clientWebsocket != null)
         {
 #if WINDOWS_UWP
-            Debug.LogError("UBII UbiiTopicDataClientWS.TearDown()");
             clientWebsocket.Close(1000, "Client Node stopped");  // constants defined somewhere?
             clientWebsocket.Dispose();
 #else
@@ -104,11 +103,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     }
 
 #if WINDOWS_UWP
-    private async void ReadSocket()
-    {
-        Debug.LogError("WINDOWS_UWP UbiiTopicDataClientWS.ReadSocket()");
-    }
-
     private async void WriteSocket()
     {
         //TODO: introduce publish frequency settings
@@ -120,7 +114,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             }
             catch (Exception ex)
             {
-                Debug.LogError("WriteSocket exception: " + ex.ToString());
+                Debug.LogError("UBII UbiiTopicDataClientWS.WriteSocket: " + ex.ToString());
             }
         }
     }
