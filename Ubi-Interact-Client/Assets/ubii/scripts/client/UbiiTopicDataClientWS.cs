@@ -127,7 +127,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             await dataWriter.StoreAsync();
             dataWriter.DetachStream();
         }
-        Debug.LogError("UWP WS SendBytes(): " + bytes.Length);
 
         return new CancellationToken();
     }
@@ -140,7 +139,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             {
                 dataReader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                 uint messageLength = dataReader.UnconsumedBufferLength;
-                //Debug.LogError("UWP WS OnMessageReceived() - messageLength: " + messageLength);
                 // PING message
                 if (messageLength == 4)
                 {
@@ -378,7 +376,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     public void SendTopicDataRecord(TopicDataRecord record)
     {
-        Debug.LogError("SendTopicDataRecord() - record: " + record.ToString());
         recordsToPublish.Add(record);
     }
 

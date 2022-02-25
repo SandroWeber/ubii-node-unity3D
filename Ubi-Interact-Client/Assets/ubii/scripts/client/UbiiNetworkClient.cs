@@ -189,8 +189,7 @@ public class UbiiNetworkClient
 
         if (this.topicDataClient == null)
         {
-            Debug.LogError("topic data client connection null");
-            //throw new Exception("UBii - could not create topic data client");
+            Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
         }
     }
 
@@ -291,7 +290,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError("Deregister Device Error: " + reply.Error.Message);
+            Debug.LogError("UBII UbiiNetworkClient.DeregisterDevice() - Deregister Device Error: " + reply.Error.Message);
         }
 
         return reply;
@@ -308,7 +307,7 @@ public class UbiiNetworkClient
         if (this.topicDataClient == null) return false;
         if (callback == null)
         {
-            Debug.LogError("SubscribeTopic() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - callback is NULL!");
             return false;
         }
 
@@ -341,7 +340,7 @@ public class UbiiNetworkClient
         //Debug.Log("UbiiNetworkClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - Server Error: " + subReply.Error.ToString());
             topicDataClient.RemoveTopicCallback(topic, callback);
             return false;
         }
@@ -354,7 +353,7 @@ public class UbiiNetworkClient
         if (this.topicDataClient == null) return false;
         if (callback == null)
         {
-            Debug.LogError("UnsubscribeTopic() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeTopic() - callback is NULL!");
             return false;
         }
 
@@ -387,7 +386,7 @@ public class UbiiNetworkClient
         ServiceReply subReply = await CallService(topicUnsubscription);
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeTopic() - Server Error: " + subReply.Error.ToString());
             return false;
         }
 
@@ -405,7 +404,7 @@ public class UbiiNetworkClient
     {
         if (callback == null)
         {
-            Debug.LogError("SubscribeRegex() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeRegex() - callback is NULL!");
             return false;
         }
 
@@ -427,7 +426,7 @@ public class UbiiNetworkClient
 
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeRegex() - Server Error: " + subReply.Error.ToString());
             return false;
         }
 
@@ -441,7 +440,7 @@ public class UbiiNetworkClient
     {
         if (callback == null)
         {
-            Debug.LogError("UnsubscribeRegex() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeRegex() - callback is NULL!");
             return false;
         }
 
@@ -469,7 +468,7 @@ public class UbiiNetworkClient
 
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeRegex() - Server Error: " + subReply.Error.ToString());
             return false;
         }
         // remove regex from topicdataclient

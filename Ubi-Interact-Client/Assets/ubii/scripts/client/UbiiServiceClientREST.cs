@@ -50,13 +50,9 @@ class UbiiServiceClientREST : IUbiiServiceClient
 
     public async Task<ServiceReply> CallService(ServiceRequest request)
     {
-        //Debug.LogError("UbiiServiceClientREST.CallService() this.serviceURL=" + this.serviceURL);
-        //Debug.LogError("UbiiServiceClientREST.CallService() this.httpClient=" + this.httpClient);
-        //Debug.LogError("UbiiServiceClientREST.CallService() request: " + request);
-
         // JSON
         /*string requestJSON = jsonFormatter.Format(request);
-        Debug.LogError("UbiiServiceClientREST.CallService() requestJSON=" + requestJSON);*/
+        Debug.LogError("UBII UbiiServiceClientREST.CallService() requestJSON=" + requestJSON);*/
         // BINARY
         MemoryStream memoryStream = new MemoryStream();
         CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
@@ -79,7 +75,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
         HttpBufferContent content = new HttpBufferContent(bytebuffer.AsBuffer());
         content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
-        Debug.LogError("UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
+        Debug.LogError("UBII UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -97,7 +93,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
         ByteArrayContent content = new ByteArrayContent(bytebuffer);
         content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
-        Debug.LogError("UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
+        Debug.LogError("UBII UbiiServiceClientREST.CallService() - StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -107,10 +103,9 @@ class UbiiServiceClientREST : IUbiiServiceClient
         }
         catch (Exception e)
         {
-            Debug.LogError(e.ToString());
+            Debug.LogError("UBII UbiiServiceClientREST.CallService() - " + e.ToString());
         }
         
-        //Debug.LogError(reply.ToString());
         return reply;
     }
 

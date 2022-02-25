@@ -38,10 +38,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Tooltip("Host ip the client connects to. Default is localhost.")]
     public string masterNodeAddress = "localhost";
     [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int portServiceZMQ = 8101;
+    public int servicePortZMQ = 8101;
     [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int portServiceREST = 8102;
-    public string routeServiceRest = "/services/binary";
+    public int servicePortHTTP = 8102;
+    public string serviceRouteHTTP = "/services/binary";
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -138,7 +138,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, routeServiceRest, this.serviceConnectionMode, this.topicDataConnectionMode);
+        networkClient = new UbiiNetworkClient(masterNodeAddress, servicePortZMQ, servicePortHTTP, serviceRouteHTTP, this.serviceConnectionMode, this.topicDataConnectionMode);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null) return false;
 
@@ -279,7 +279,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
         if (!registeredDevices.Remove(ubiiDevice.Id))
-            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
+            Debug.LogError("UBII UbiiNode.DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
         else
             Debug.Log("Deregistering " + ubiiDevice + " successful!");
         return deviceDeregReply;
@@ -350,7 +350,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.OnStartSession(): " + e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStartSession() - " + e.ToString());
             }
         }
         else
@@ -403,7 +403,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.OnStopSession(): " + e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStopSession() - " + e.ToString());
             }
         }
         else
