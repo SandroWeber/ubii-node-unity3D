@@ -93,7 +93,6 @@ class UbiiServiceClientREST : IUbiiServiceClient
         ByteArrayContent content = new ByteArrayContent(bytebuffer);
         content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
-        Debug.LogError("UBII UbiiServiceClientREST.CallService() - StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
