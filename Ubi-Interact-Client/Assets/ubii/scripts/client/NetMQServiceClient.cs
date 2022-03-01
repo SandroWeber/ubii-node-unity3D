@@ -11,15 +11,14 @@ using System.Threading.Tasks;
 
 class NetMQServiceClient : IUbiiServiceClient
 {
-    private string host;
+    private string masterNodeAddress;
     private int port;
 
     RequestSocket socket;
 
-    public NetMQServiceClient(string host = "localhost", int port = 8101)
+    public NetMQServiceClient(string masterNodeAddress = "localhost:8101")
     {
-        this.host = host;
-        this.port = port;
+        this.masterNodeAddress = masterNodeAddress;
         StartSocket();
     }
 
@@ -30,7 +29,7 @@ class NetMQServiceClient : IUbiiServiceClient
         socket = new RequestSocket();
         try
         {
-            socket.Connect("tcp://" + host + ":" + port);
+            socket.Connect("tcp://" + masterNodeAddress);
         }
         catch (Exception ex)
         {

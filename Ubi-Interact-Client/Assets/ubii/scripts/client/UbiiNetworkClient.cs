@@ -32,11 +32,9 @@ public class UbiiNetworkClient
         HTTPS = 2
     }
     private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
+    private string serviceAddress = "localhost:8101";
+    private string topicDataAddress = "localhost:8103";
 
-    private string host;
-    private int portServiceZMQ;
-    private int portServiceREST;
-    private string routeServiceRest;
 
     private Client clientSpecification;
 
@@ -46,14 +44,12 @@ public class UbiiNetworkClient
 
     private Server serverSpecification = null;
 
-    public UbiiNetworkClient(string host, int portServiceZMQ, int portServiceREST, string routeServiceRest, SERVICE_CONNECTION_MODE serviceConnectionMode, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
+    public UbiiNetworkClient(SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
     {
-        this.host = host;
-        this.portServiceZMQ = portServiceZMQ;
-        this.portServiceREST = portServiceREST;
-        this.routeServiceRest = routeServiceRest;
         this.serviceConnectionMode = serviceConnectionMode;
+        this.serviceAddress = serviceAddress;
         this.topicDataConnectionMode = topicDataConnectionMode;
+        this.topicDataAddress = topicDataAddress;
     }
 
     #region Initialize/Teardown Functions
@@ -61,10 +57,10 @@ public class UbiiNetworkClient
     // Initialize the ubiiClient, serviceClient and topicDataClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
-        string hostURL = host;
+        string hostURL = this.serviceAddress;
         if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new NetMQServiceClient(hostURL, portServiceZMQ);
+            serviceClient = new NetMQServiceClient(this.serviceAddress);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
@@ -72,7 +68,7 @@ public class UbiiNetworkClient
             {
                 hostURL = "http://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
+            serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
@@ -80,7 +76,7 @@ public class UbiiNetworkClient
             {
                 hostURL = "https://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
+            serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
 
         if (serviceClient == null)
@@ -164,27 +160,27 @@ public class UbiiNetworkClient
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
             int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
+            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, topicDataAddress);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {
-            string hostURL = host;
+            string hostURL = topicDataAddress;
             if (!hostURL.StartsWith("ws://"))
             {
                 hostURL = "ws://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
         {
-            string hostURL = host;
+            string hostURL = topicDataAddress;
             if (!hostURL.StartsWith("wss://"))
             {
                 hostURL = "wss://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL);
         }
 
         if (this.topicDataClient == null)

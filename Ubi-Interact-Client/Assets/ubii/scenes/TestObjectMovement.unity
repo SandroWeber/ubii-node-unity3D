@@ -262,10 +262,8 @@ MonoBehaviour:
   autoConnect: 1
   isDedicatedProcessingNode: 0
   publishDelay: 25
-  masterNodeAddress: localhost
-  servicePortZMQ: 8101
-  servicePortHTTP: 8102
-  serviceRouteHTTP: /services/binary
+  serviceAddress: vmklinker15.in.tum.de/ubii/services/binary
+  topicDataAddress: vmklinker15.in.tum.de/ubii/topicdata
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

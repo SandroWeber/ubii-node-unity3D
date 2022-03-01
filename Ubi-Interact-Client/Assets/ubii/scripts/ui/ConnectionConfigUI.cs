@@ -6,21 +6,21 @@ public class ConnectionConfigUI : MonoBehaviour
     private UbiiNode ubiiNode = null;
     private bool uiVisible = false;
     private GameObject buttonConnect;
-    private GameObject inputFieldMasterNodeAddress;
+    private GameObject inputFieldMasterNodeAddressServices;
 
-    private string inputStringMasterNodeAddress = "";
+    private string inputStringMasterNodeAddressServices = "";
 
     // Start is called before the first frame update
     void Start()
     {
         ubiiNode = FindObjectOfType<UbiiNode>();
-        inputStringMasterNodeAddress = ubiiNode?.masterNodeAddress;
+        inputStringMasterNodeAddressServices = ubiiNode?.serviceAddress;
 
         buttonConnect = transform.Find("ButtonConnect").gameObject;
-        inputFieldMasterNodeAddress = transform.Find("InputFieldMasterNodeAddresss").gameObject;
+        inputFieldMasterNodeAddressServices = transform.Find("InputFieldMasterNodeAddresss").gameObject;
         
         buttonConnect?.SetActive(uiVisible);
-        inputFieldMasterNodeAddress?.SetActive(uiVisible);
+        inputFieldMasterNodeAddressServices?.SetActive(uiVisible);
     }
 
     // Update is called once per frame
@@ -32,12 +32,12 @@ public class ConnectionConfigUI : MonoBehaviour
     public void OnButtonUbiiConfig() {
         uiVisible = !uiVisible;
         buttonConnect?.SetActive(uiVisible);
-        inputFieldMasterNodeAddress?.SetActive(uiVisible);
+        inputFieldMasterNodeAddressServices?.SetActive(uiVisible);
     }
 
     public async void OnButtonConnect()
     {
-        ubiiNode.masterNodeAddress = inputStringMasterNodeAddress;
+        ubiiNode.serviceAddress = inputStringMasterNodeAddressServices;
         try
         {
             await ubiiNode.Initialize();
@@ -50,6 +50,6 @@ public class ConnectionConfigUI : MonoBehaviour
 
     public void OnChangeInputMasterNodeAddress(string value) {
         Debug.Log("OnChangeInputMasterNodeAddress = " + value);
-        inputStringMasterNodeAddress = value;
+        inputStringMasterNodeAddressServices = value;
     }
 }

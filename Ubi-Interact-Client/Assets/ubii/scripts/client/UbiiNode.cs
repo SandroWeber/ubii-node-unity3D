@@ -10,6 +10,11 @@ using System.Linq;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
+    const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101";
+    const string DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102";
+    const string DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103";
+    const string DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
 
@@ -35,13 +40,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Range(1, 5000)]
     public int publishDelay = 25;
 
-    [Tooltip("Host ip the client connects to. Default is localhost.")]
-    public string masterNodeAddress = "localhost";
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int servicePortZMQ = 8101;
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int servicePortHTTP = 8102;
-    public string serviceRouteHTTP = "/services/binary";
+    [Tooltip("Address for Master Node service connection.")]
+    public string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP;
+    [Tooltip("Address for Master Node topic data connection.")]
+    public string topicDataAddress = DEFAULT_ADDRESS_TOPICDATA_WS;
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -119,7 +121,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(masterNodeAddress, servicePortZMQ, servicePortHTTP, serviceRouteHTTP, this.serviceConnectionMode, this.topicDataConnectionMode);
+        networkClient = new UbiiNetworkClient(this.serviceConnectionMode, this.serviceAddress, this.topicDataConnectionMode, this.topicDataAddress);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
         if (clientNodeSpecification == null) return false;
 

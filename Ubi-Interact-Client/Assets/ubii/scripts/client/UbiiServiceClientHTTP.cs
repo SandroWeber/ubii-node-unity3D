@@ -15,12 +15,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Net.Http;
 #endif
 
-class UbiiServiceClientREST : IUbiiServiceClient
+class UbiiServiceClientHTTP : IUbiiServiceClient
 {
-    private string host;
-    private int port;
-    private string serviceRoute;
-
 #if WINDOWS_UWP
     private Windows.Web.Http.HttpClient httpClient;
 #else
@@ -31,19 +27,15 @@ class UbiiServiceClientREST : IUbiiServiceClient
     private Google.Protobuf.JsonFormatter.Settings jsonFormatSettings;
     private Google.Protobuf.JsonFormatter jsonFormatter;
 
-    public UbiiServiceClientREST(string host = "https://localhost", int port = 8102, string serviceRoute = "/services/binary")
+    public UbiiServiceClientHTTP(string serviceURL = "https://localhost:8102/services/binary")
     {
-        this.host = host;
-        this.port = port;
-        this.serviceRoute = serviceRoute;
-
 #if WINDOWS_UWP
         this.httpClient = new Windows.Web.Http.HttpClient();
 #else
         this.httpClient = new System.Net.Http.HttpClient();
 #endif
 
-        this.serviceURL += this.host + ":" + (this.port != 0 ? this.port.ToString() : "") + (this.serviceRoute != null ? this.serviceRoute : "");
+        this.serviceURL = serviceURL;
         jsonFormatSettings = new Google.Protobuf.JsonFormatter.Settings(true).WithFormatEnumsAsIntegers(true);
         jsonFormatter = new Google.Protobuf.JsonFormatter(jsonFormatSettings);
     }
@@ -52,7 +44,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
     {
         // JSON
         /*string requestJSON = jsonFormatter.Format(request);
-        Debug.LogError("UBII UbiiServiceClientREST.CallService() requestJSON=" + requestJSON);*/
+        Debug.LogError("UBII hostURL.CallService() requestJSON=" + requestJSON);*/
         // BINARY
         MemoryStream memoryStream = new MemoryStream();
         CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
@@ -74,7 +66,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
         HttpBufferContent content = new HttpBufferContent(bytebuffer.AsBuffer());
         content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
-        Debug.LogError("UBII UbiiServiceClientREST.CallService() StatusCode: " + httpResponseMessage.StatusCode);
+        Debug.LogError("UBII UbiiServiceClientHTTP.CallService() StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -101,7 +93,7 @@ class UbiiServiceClientREST : IUbiiServiceClient
         }
         catch (Exception e)
         {
-            Debug.LogError("UBII UbiiServiceClientREST.CallService() - " + e.ToString());
+            Debug.LogError("UBII UbiiServiceClientHTTP.CallService() - " + e.ToString());
         }
         
         return reply;

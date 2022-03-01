@@ -20,8 +20,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private static int RECEIVE_BUFFER_SIZE = 5120;
 
     private string clientId;
-    private string host;
-    private int port;
+    private string address;
 
 
 
@@ -45,18 +44,17 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private int publishInterval = 25; // milliseconds
 
-    public UbiiTopicDataClientWS(string clientId = null, string host = "https://localhost", int port = 8104)
+    public UbiiTopicDataClientWS(string clientId = null, string address = "https://localhost:8104")
     {
         this.clientId = clientId;
-        this.host = host;
-        this.port = port;
+        this.address = address;
 
         Initialize();
     }
 
     private async void Initialize()
     {
-        Uri uri = new Uri(this.host + ":" + this.port + "?clientID=" + this.clientId);
+        Uri uri = new Uri(this.address + "?clientID=" + this.clientId);
 
         try
         {
