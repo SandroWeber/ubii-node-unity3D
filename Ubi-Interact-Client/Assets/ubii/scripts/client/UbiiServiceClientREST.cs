@@ -59,7 +59,6 @@ class UbiiServiceClientREST : IUbiiServiceClient
         request.WriteTo(codedOutputStream);
         codedOutputStream.Flush();
         byte[] bytebuffer = memoryStream.ToArray();
-        Debug.Log("CallService() - bytebuffer length = " + bytebuffer.Length);
 
         Uri uri = new Uri(this.serviceURL);
         ServiceReply reply = null;

@@ -59,25 +59,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void Start()
     {
-        //masterNodeAddress = "vmklinker15.in.tum.de";
-        Debug.Log("UBII masterNodeAddress=" + masterNodeAddress);
-        Debug.Log("UBII serviceConnectionMode=" + serviceConnectionMode);
-        Debug.Log("UBII topicDataConnectionMode=" + topicDataConnectionMode);
-
-        Debug.Log("SystemInfo.deviceType=" + SystemInfo.deviceType);  // Hololens = Desktop
-#if UNITY_WSA
-        Debug.Log("UNITY_WSA");  // Hololens = true
-#endif
-#if NETFX_CORE 
-        Debug.Log("NETFX_CORE");
-#endif
-#if UNITY_WSA_10_0 
-        Debug.Log("UNITY_WSA_10_0");  // Hololens = true
-#endif
-#if WINDOWS_UWP  
-        Debug.Log("WINDOWS_UWP");  // Hololens = true
-#endif
-
         if (autoConnect)
         {
             try
@@ -98,7 +79,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             networkClient.ShutDown();
         }
-        Debug.Log("Shutting down UbiiClient");
+        Debug.Log("UBII - Shutting down UbiiClient");
     }
 
     #endregion
@@ -281,7 +262,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         if (!registeredDevices.Remove(ubiiDevice.Id))
             Debug.LogError("UBII UbiiNode.DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
         else
-            Debug.Log("Deregistering " + ubiiDevice + " successful!");
+            Debug.Log("UBII - Deregistering " + ubiiDevice + " successful!");
         return deviceDeregReply;
     }
 
