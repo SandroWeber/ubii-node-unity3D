@@ -257,13 +257,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientName: Unity3D Client Node - Test Object Movement
-  serviceConnectionMode: 2
-  topicDataConnectionMode: 2
+  serviceConnectionMode: 1
+  topicDataConnectionMode: 1
   autoConnect: 1
   isDedicatedProcessingNode: 0
   publishDelay: 25
-  serviceAddress: vmklinker15.in.tum.de/ubii/services/binary
-  topicDataAddress: vmklinker15.in.tum.de/ubii/topicdata
+  serviceAddress: localhost:8102/services/binary
+  topicDataAddress: localhost:8104
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
