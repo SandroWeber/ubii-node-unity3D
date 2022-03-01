@@ -10,6 +10,11 @@ using System.Linq;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
+    const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101";
+    const string DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102";
+    const string DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103";
+    const string DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
 
@@ -22,9 +27,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Header("Network configuration")]
 
     [Tooltip("Which method to use for service connection.")]
-    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ;
+    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTPS;
     [Tooltip("Which method to use for topic data connection.")]
-    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ;
+    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTPS;
 
     [Tooltip("Automatically connect on start.")]
     public bool autoConnect = true;
@@ -35,12 +40,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Range(1, 5000)]
     public int publishDelay = 25;
 
-    [Tooltip("Host ip the client connects to. Default is localhost.")]
-    public string masterNodeAddress = "localhost";
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int portServiceZMQ = 8101;
-    [Tooltip("Port for the client connection to the server. Default is 8101.")]
-    public int portServiceREST = 8102;
+    [Tooltip("Address for Master Node service connection.")]
+    public string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP;
+    [Tooltip("Address for Master Node topic data connection.")]
+    public string topicDataAddress = DEFAULT_ADDRESS_TOPICDATA_WS;
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -56,17 +59,17 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region unity
 
-    private void Start()
+    private async void Start()
     {
         if (autoConnect)
         {
             try
             {
-                Initialize();
+                await Initialize();
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError("UBII UbiiNode.Initialize(): " + e.ToString());
             }
         }
     }
@@ -78,7 +81,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             networkClient.ShutDown();
         }
-        Debug.Log("Shutting down UbiiClient");
+        Debug.Log("UBII - Shutting down UbiiClient");
     }
 
     #endregion
@@ -108,22 +111,19 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
             await SubscribeSessionInfo();
             OnInitialized?.Invoke();
-            Debug.Log("Node client specs: " + clientNodeSpecification);
+            Debug.Log("UBII - client: " + clientNodeSpecification);
         }
         else
         {
-            Debug.LogError("UbiiNode.Initialize() - failed to establish network connection to master node");
+            Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node");
         }
     }
 
     private async Task<bool> InitNetworkConnection()
     {
-        networkClient = new UbiiNetworkClient(masterNodeAddress, portServiceZMQ, portServiceREST, this.serviceConnectionMode, this.topicDataConnectionMode);
+        networkClient = new UbiiNetworkClient(this.serviceConnectionMode, this.serviceAddress, this.topicDataConnectionMode, this.topicDataAddress);
         clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-        if (clientNodeSpecification == null)
-        {
-            return false;
-        }
+        if (clientNodeSpecification == null) return false;
 
         this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
@@ -245,7 +245,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public Task<bool> Unsubscribe(SubscriptionToken token)
     {
-        return this.topicDataProxy.Unsubscribe(token);
+        return this.topicDataProxy?.Unsubscribe(token);
     }
 
     public async Task<ServiceReply> RegisterDevice(Ubii.Devices.Device ubiiDevice)
@@ -262,9 +262,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
         if (!registeredDevices.Remove(ubiiDevice.Id))
-            Debug.LogError("Device " + ubiiDevice.Name + " could not be removed from local list.");
+            Debug.LogError("UBII UbiiNode.DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
         else
-            Debug.Log("Deregistering " + ubiiDevice + " successful!");
+            Debug.Log("UBII - Deregistering " + ubiiDevice + " successful!");
         return deviceDeregReply;
     }
 
@@ -333,7 +333,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStartSession() - " + e.ToString());
             }
         }
         else
@@ -386,7 +386,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ToString());
+                Debug.LogError("UBII UbiiNode.OnStopSession() - " + e.ToString());
             }
         }
         else

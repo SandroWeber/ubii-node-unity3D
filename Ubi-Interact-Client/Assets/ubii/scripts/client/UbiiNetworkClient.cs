@@ -32,26 +32,24 @@ public class UbiiNetworkClient
         HTTPS = 2
     }
     private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
+    private string serviceAddress = "localhost:8101";
+    private string topicDataAddress = "localhost:8103";
 
-    private string host;
-    private int portServiceZMQ;
-    private int portServiceREST;
 
     private Client clientSpecification;
 
-    private IUbiiServiceClient serviceClient;
+    private IUbiiServiceClient serviceClient = null;
 
-    private ITopicDataClient topicDataClient;
+    private ITopicDataClient topicDataClient = null;
 
-    private Server serverSpecification;
+    private Server serverSpecification = null;
 
-    public UbiiNetworkClient(string host, int portServiceZMQ, int portServiceREST, SERVICE_CONNECTION_MODE serviceConnectionMode, TOPICDATA_CONNECTION_MODE topicDataConnectionMode)
+    public UbiiNetworkClient(SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
     {
-        this.host = host;
-        this.portServiceZMQ = portServiceZMQ;
-        this.portServiceREST = portServiceREST;
         this.serviceConnectionMode = serviceConnectionMode;
+        this.serviceAddress = serviceAddress;
         this.topicDataConnectionMode = topicDataConnectionMode;
+        this.topicDataAddress = topicDataAddress;
     }
 
     #region Initialize/Teardown Functions
@@ -59,46 +57,61 @@ public class UbiiNetworkClient
     // Initialize the ubiiClient, serviceClient and topicDataClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
+        string hostURL = this.serviceAddress;
         if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new NetMQServiceClient(host, portServiceZMQ);
+            serviceClient = new NetMQServiceClient(this.serviceAddress);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
-            string hostURL = host;
             if (!hostURL.StartsWith("http://"))
             {
                 hostURL = "http://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
+            serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
-            string hostURL = host;
             if (!hostURL.StartsWith("https://"))
             {
                 hostURL = "https://" + hostURL;
             }
-            serviceClient = new UbiiServiceClientREST(hostURL, portServiceREST);
+            serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
 
-        await InitServerSpec();
-        //Debug.Log("ServerSpecs: " + serverSpecification);
-        bool success = await InitClientRegistration(clientSpecs);
+        if (serviceClient == null)
+        {
+            Debug.LogError("UBII - service connection client could not be created");
+            return null;
+        }
+
+        Debug.Log("UBII - connecting to " + hostURL);
+
+        this.serverSpecification = await RetrieveServerConfig();
+        if (this.serverSpecification == null) return null;
+        this.clientSpecification = await RegisterAsClient(clientSpecs);
+        if (this.clientSpecification == null) return null;
+        Debug.Log("UBII - client specs: " + this.clientSpecification);
         InitTopicDataClient();
 
         return clientSpecification;
     }
 
-    private async Task InitServerSpec()
+    private async Task<Ubii.Servers.Server> RetrieveServerConfig()
     {
         // Call Service to receive serverSpecifications
         ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
 
         ServiceReply reply = await CallService(serverConfigRequest);
+        if (reply == null)
+        {
+            Debug.LogError("UBII - could not retrieve server configuration, reply is null");
+            return null;
+        }
+
         if (reply.Server != null)
         {
-            serverSpecification = reply.Server;
+            return reply.Server;
         }
         else if (reply.Error != null)
         {
@@ -106,11 +119,13 @@ public class UbiiNetworkClient
         }
         else
         {
-            Debug.LogError("UbiiNetworkClient - unkown server response during server specification retrieval");
+            Debug.LogError("UBII UbiiNetworkClient - unkown server response during server specification retrieval");
         }
+
+        return null;
     }
 
-    private async Task<bool> InitClientRegistration(Ubii.Clients.Client clientSpecs)
+    private async Task<Ubii.Clients.Client> RegisterAsClient(Ubii.Clients.Client clientSpecs)
     {
         ServiceRequest clientRegistration = new ServiceRequest
         {
@@ -119,19 +134,25 @@ public class UbiiNetworkClient
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
+        Debug.Log("UBII UbiiNetworkClient.RegisterAsClient(): " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
+        if (reply == null)
+        {
+            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - could not register client, response null");
+            return null;
+        }
+
         if (reply.Client != null)
         {
-            clientSpecification = reply.Client;
-            return true;
+            return reply.Client;
         }
         else if (reply.Error != null)
         {
-            Debug.LogError("UbiiNetworkClient.InitClientRegistration() - " + reply);
+            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - server error:" + reply);
         }
 
-        return false;
+        return null;
     }
 
     private void InitTopicDataClient()
@@ -139,27 +160,32 @@ public class UbiiNetworkClient
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
             int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, host, port);
+            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, topicDataAddress);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {
-            string hostURL = host;
+            string hostURL = topicDataAddress;
             if (!hostURL.StartsWith("ws://"))
             {
                 hostURL = "ws://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
         {
-            string hostURL = host;
+            string hostURL = topicDataAddress;
             if (!hostURL.StartsWith("wss://"))
             {
                 hostURL = "wss://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, port);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL);
+        }
+
+        if (this.topicDataClient == null)
+        {
+            Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
         }
     }
 
@@ -188,7 +214,7 @@ public class UbiiNetworkClient
 
     public void SetPublishDelay(int millisecs)
     {
-        topicDataClient.SetPublishDelay(millisecs);
+        topicDataClient?.SetPublishDelay(millisecs);
     }
 
     public Task WaitForConnection()
@@ -219,12 +245,12 @@ public class UbiiNetworkClient
 
     public void Publish(TopicDataRecord record)
     {
-        topicDataClient.SendTopicDataRecord(record);
+        topicDataClient?.SendTopicDataRecord(record);
     }
 
     public void PublishImmediately(TopicDataRecord record)
     {
-        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData
+        topicDataClient?.SendTopicDataImmediately(new Ubii.TopicData.TopicData
         {
             TopicDataRecord = record
         });
@@ -232,7 +258,7 @@ public class UbiiNetworkClient
 
     public void PublishImmediately(TopicDataRecordList recordList)
     {
-        topicDataClient.SendTopicDataImmediately(new Ubii.TopicData.TopicData
+        topicDataClient?.SendTopicDataImmediately(new Ubii.TopicData.TopicData
         {
             TopicDataRecordList = recordList
         });
@@ -260,7 +286,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError("Deregister Device Error: " + reply.Error.Message);
+            Debug.LogError("UBII UbiiNetworkClient.DeregisterDevice() - Deregister Device Error: " + reply.Error.Message);
         }
 
         return reply;
@@ -274,9 +300,10 @@ public class UbiiNetworkClient
     #region Topics
     public async Task<bool> SubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
+        if (this.topicDataClient == null) return false;
         if (callback == null)
         {
-            Debug.LogError("SubscribeTopic() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - callback is NULL!");
             return false;
         }
 
@@ -309,7 +336,7 @@ public class UbiiNetworkClient
         //Debug.Log("UbiiNetworkClient.SubscribeTopic() - " + topic + " - reply: " + subReply);
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - Server Error: " + subReply.Error.ToString());
             topicDataClient.RemoveTopicCallback(topic, callback);
             return false;
         }
@@ -319,9 +346,10 @@ public class UbiiNetworkClient
 
     public async Task<bool> UnsubscribeTopic(string topic, Action<TopicDataRecord> callback)
     {
+        if (this.topicDataClient == null) return false;
         if (callback == null)
         {
-            Debug.LogError("UnsubscribeTopic() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeTopic() - callback is NULL!");
             return false;
         }
 
@@ -354,7 +382,7 @@ public class UbiiNetworkClient
         ServiceReply subReply = await CallService(topicUnsubscription);
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeTopic() - Server Error: " + subReply.Error.ToString());
             return false;
         }
 
@@ -372,7 +400,7 @@ public class UbiiNetworkClient
     {
         if (callback == null)
         {
-            Debug.LogError("SubscribeRegex() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeRegex() - callback is NULL!");
             return false;
         }
 
@@ -394,7 +422,7 @@ public class UbiiNetworkClient
 
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.SubscribeRegex() - Server Error: " + subReply.Error.ToString());
             return false;
         }
 
@@ -408,7 +436,7 @@ public class UbiiNetworkClient
     {
         if (callback == null)
         {
-            Debug.LogError("UnsubscribeRegex() - callback is NULL!");
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeRegex() - callback is NULL!");
             return false;
         }
 
@@ -436,7 +464,7 @@ public class UbiiNetworkClient
 
         if (subReply.Error != null)
         {
-            Debug.LogError("subReply Error! Error msg: " + subReply.Error.ToString());
+            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeRegex() - Server Error: " + subReply.Error.ToString());
             return false;
         }
         // remove regex from topicdataclient

@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ubii/scenes/TestObjectMovement.unity
+    guid: 1a402138b9de14f4489ae3788e2333d6
   m_configObjects: {}

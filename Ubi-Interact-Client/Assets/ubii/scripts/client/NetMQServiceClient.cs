@@ -11,15 +11,14 @@ using System.Threading.Tasks;
 
 class NetMQServiceClient : IUbiiServiceClient
 {
-    private string host;
+    private string masterNodeAddress;
     private int port;
 
     RequestSocket socket;
 
-    public NetMQServiceClient(string host = "localhost", int port = 8101)
+    public NetMQServiceClient(string masterNodeAddress = "localhost:8101")
     {
-        this.host = host;
-        this.port = port;
+        this.masterNodeAddress = masterNodeAddress;
         StartSocket();
     }
 
@@ -30,12 +29,11 @@ class NetMQServiceClient : IUbiiServiceClient
         socket = new RequestSocket();
         try
         {
-            socket.Connect("tcp://" + host + ":" + port);
-            //Debug.Log("Create Socket successful. Host: " + host + ":" + port);
+            socket.Connect("tcp://" + masterNodeAddress);
         }
         catch (Exception ex)
         {
-            Debug.LogError("NetMQServiceClient, StartSocket(), Exception occured: " + ex.ToString());
+            Debug.LogError("UBII NetMQServiceClient.StartSocket(): " + ex.ToString());
         }
     }
 
@@ -58,7 +56,7 @@ class NetMQServiceClient : IUbiiServiceClient
             }
             catch (Exception exception)
             {
-                Debug.LogError(exception.ToString());
+                Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
                 Task.Delay(100).Wait();
             }
         }

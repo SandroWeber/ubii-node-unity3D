@@ -19,8 +19,7 @@ using Ubii.TopicData;
 // socket functionality separate
 public class NetMQTopicDataClient : ITopicDataClient
 {
-    private string host;
-    private int port;
+    private string address;
     private string clientID;
 
     private DealerSocket socket;
@@ -44,10 +43,9 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     private int publishInterval = 25; // milliseconds
 
-    public NetMQTopicDataClient(string clientID, string host = "localhost", int port = 8103)
+    public NetMQTopicDataClient(string clientID, string address = "localhost:8103")
     {
-        this.host = host;
-        this.port = port;
+        this.address = address;
         this.clientID = clientID; //global variable not neccesarily needed; only for socker.Options.Identity
 
         topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
@@ -60,13 +58,13 @@ public class NetMQTopicDataClient : ITopicDataClient
     {
         try
         {
-            socket.Connect("tcp://" + host + ":" + port);
+            socket.Connect("tcp://" + this.address);
             //Debug.Log("Create Socket successful. Host: " + host + ":" + port);
             connected = true;
         }
         catch (Exception ex)
         {
-            Debug.LogError("NetMQTopicDataClient, StartSocket(), Exception occured: " + ex.ToString());
+            Debug.LogError("UBII NetMQTopicDataClient.StartSocket(): " + ex.ToString());
         }
     }
 
@@ -291,7 +289,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         // catch possible error
         if (topicData.Error != null)
         {
-            Debug.LogError("TopicData Error: " + topicData.Error.ToString());
+            Debug.LogError("UBII NetMQTopicDataClient.OnMessage(): " + topicData.Error.ToString());
             return;
         }
     }
