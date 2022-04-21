@@ -17,7 +17,7 @@ using Ubii.TopicData;
 // socket functionality separate
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
-    private static int RECEIVE_BUFFER_SIZE = 5120;
+    private static int RECEIVE_BUFFER_SIZE = 8192;
 
     private string clientId;
     private string address;
@@ -199,14 +199,16 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async void ReadSocket()
     {
         byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
+        int receiveBufferCount = 0;
         while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
         {
-            ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer);
+            ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer, receiveBufferCount, receiveBuffer.Length - receiveBufferCount);
             System.Net.WebSockets.WebSocketReceiveResult receiveResult = null;
 
             try
             {
                 receiveResult = await this.clientWebsocket.ReceiveAsync(arraySegment, cancelTokenReadSocket);
+                receiveBufferCount += receiveResult.Count;
             }
             catch (Exception ex)
             {
@@ -227,7 +229,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 // topic data
                 else
                 {
-                    await msReadBuffer.WriteAsync(arraySegment.Array, arraySegment.Offset, receiveResult.Count, cancelTokenReadSocket);
+                    await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
                     TopicData topicdata = null;
                     try
                     {
@@ -258,6 +260,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         Debug.LogError(ex.ToString());
                     }
                 }
+                receiveBufferCount = 0;
             }
         }
     }

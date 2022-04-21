@@ -24,16 +24,21 @@ namespace Ubii.Servers {
     static ServerReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Chpwcm90by9zZXJ2ZXJzL3NlcnZlci5wcm90bxIMdWJpaS5zZXJ2ZXJzIs4B",
+            "Chpwcm90by9zZXJ2ZXJzL3NlcnZlci5wcm90bxIMdWJpaS5zZXJ2ZXJzIp8D",
             "CgZTZXJ2ZXISCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRITCgtpcF9ldGhl",
             "cm5ldBgDIAEoCRIPCgdpcF93bGFuGAQgASgJEhgKEHBvcnRfc2VydmljZV96",
             "bXEYBSABKAkSGQoRcG9ydF9zZXJ2aWNlX3Jlc3QYBiABKAkSGwoTcG9ydF90",
             "b3BpY19kYXRhX3ptcRgHIAEoCRIaChJwb3J0X3RvcGljX2RhdGFfd3MYCCAB",
-            "KAkSFgoOY29uc3RhbnRzX2pzb24YCSABKAliBnByb3RvMw=="));
+            "KAkSFgoOY29uc3RhbnRzX2pzb24YCSABKAkSJAocZXh0ZXJuYWxfYWRkcmVz",
+            "c19zZXJ2aWNlX3ptcRgKIAEoCRIqCiJleHRlcm5hbF9hZGRyZXNzX3NlcnZp",
+            "Y2VfaHR0cF9qc29uGAsgASgJEiwKJGV4dGVybmFsX2FkZHJlc3Nfc2Vydmlj",
+            "ZV9odHRwX2JpbmFyeRgMIAEoCRInCh9leHRlcm5hbF9hZGRyZXNzX3RvcGlj",
+            "X2RhdGFfem1xGA0gASgJEiYKHmV4dGVybmFsX2FkZHJlc3NfdG9waWNfZGF0",
+            "YV93cxgOIAEoCWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs", "ConstantsJson" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Servers.Server), global::Ubii.Servers.Server.Parser, new[]{ "Id", "Name", "IpEthernet", "IpWlan", "PortServiceZmq", "PortServiceRest", "PortTopicDataZmq", "PortTopicDataWs", "ConstantsJson", "ExternalAddressServiceZmq", "ExternalAddressServiceHttpJson", "ExternalAddressServiceHttpBinary", "ExternalAddressTopicDataZmq", "ExternalAddressTopicDataWs" }, null, null, null)
           }));
     }
     #endregion
@@ -74,6 +79,11 @@ namespace Ubii.Servers {
       portTopicDataZmq_ = other.portTopicDataZmq_;
       portTopicDataWs_ = other.portTopicDataWs_;
       constantsJson_ = other.constantsJson_;
+      externalAddressServiceZmq_ = other.externalAddressServiceZmq_;
+      externalAddressServiceHttpJson_ = other.externalAddressServiceHttpJson_;
+      externalAddressServiceHttpBinary_ = other.externalAddressServiceHttpBinary_;
+      externalAddressTopicDataZmq_ = other.externalAddressTopicDataZmq_;
+      externalAddressTopicDataWs_ = other.externalAddressTopicDataWs_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -181,6 +191,61 @@ namespace Ubii.Servers {
       }
     }
 
+    /// <summary>Field number for the "external_address_service_zmq" field.</summary>
+    public const int ExternalAddressServiceZmqFieldNumber = 10;
+    private string externalAddressServiceZmq_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExternalAddressServiceZmq {
+      get { return externalAddressServiceZmq_; }
+      set {
+        externalAddressServiceZmq_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "external_address_service_http_json" field.</summary>
+    public const int ExternalAddressServiceHttpJsonFieldNumber = 11;
+    private string externalAddressServiceHttpJson_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExternalAddressServiceHttpJson {
+      get { return externalAddressServiceHttpJson_; }
+      set {
+        externalAddressServiceHttpJson_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "external_address_service_http_binary" field.</summary>
+    public const int ExternalAddressServiceHttpBinaryFieldNumber = 12;
+    private string externalAddressServiceHttpBinary_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExternalAddressServiceHttpBinary {
+      get { return externalAddressServiceHttpBinary_; }
+      set {
+        externalAddressServiceHttpBinary_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "external_address_topic_data_zmq" field.</summary>
+    public const int ExternalAddressTopicDataZmqFieldNumber = 13;
+    private string externalAddressTopicDataZmq_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExternalAddressTopicDataZmq {
+      get { return externalAddressTopicDataZmq_; }
+      set {
+        externalAddressTopicDataZmq_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "external_address_topic_data_ws" field.</summary>
+    public const int ExternalAddressTopicDataWsFieldNumber = 14;
+    private string externalAddressTopicDataWs_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExternalAddressTopicDataWs {
+      get { return externalAddressTopicDataWs_; }
+      set {
+        externalAddressTopicDataWs_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Server);
@@ -203,6 +268,11 @@ namespace Ubii.Servers {
       if (PortTopicDataZmq != other.PortTopicDataZmq) return false;
       if (PortTopicDataWs != other.PortTopicDataWs) return false;
       if (ConstantsJson != other.ConstantsJson) return false;
+      if (ExternalAddressServiceZmq != other.ExternalAddressServiceZmq) return false;
+      if (ExternalAddressServiceHttpJson != other.ExternalAddressServiceHttpJson) return false;
+      if (ExternalAddressServiceHttpBinary != other.ExternalAddressServiceHttpBinary) return false;
+      if (ExternalAddressTopicDataZmq != other.ExternalAddressTopicDataZmq) return false;
+      if (ExternalAddressTopicDataWs != other.ExternalAddressTopicDataWs) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -218,6 +288,11 @@ namespace Ubii.Servers {
       if (PortTopicDataZmq.Length != 0) hash ^= PortTopicDataZmq.GetHashCode();
       if (PortTopicDataWs.Length != 0) hash ^= PortTopicDataWs.GetHashCode();
       if (ConstantsJson.Length != 0) hash ^= ConstantsJson.GetHashCode();
+      if (ExternalAddressServiceZmq.Length != 0) hash ^= ExternalAddressServiceZmq.GetHashCode();
+      if (ExternalAddressServiceHttpJson.Length != 0) hash ^= ExternalAddressServiceHttpJson.GetHashCode();
+      if (ExternalAddressServiceHttpBinary.Length != 0) hash ^= ExternalAddressServiceHttpBinary.GetHashCode();
+      if (ExternalAddressTopicDataZmq.Length != 0) hash ^= ExternalAddressTopicDataZmq.GetHashCode();
+      if (ExternalAddressTopicDataWs.Length != 0) hash ^= ExternalAddressTopicDataWs.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -267,6 +342,26 @@ namespace Ubii.Servers {
         output.WriteRawTag(74);
         output.WriteString(ConstantsJson);
       }
+      if (ExternalAddressServiceZmq.Length != 0) {
+        output.WriteRawTag(82);
+        output.WriteString(ExternalAddressServiceZmq);
+      }
+      if (ExternalAddressServiceHttpJson.Length != 0) {
+        output.WriteRawTag(90);
+        output.WriteString(ExternalAddressServiceHttpJson);
+      }
+      if (ExternalAddressServiceHttpBinary.Length != 0) {
+        output.WriteRawTag(98);
+        output.WriteString(ExternalAddressServiceHttpBinary);
+      }
+      if (ExternalAddressTopicDataZmq.Length != 0) {
+        output.WriteRawTag(106);
+        output.WriteString(ExternalAddressTopicDataZmq);
+      }
+      if (ExternalAddressTopicDataWs.Length != 0) {
+        output.WriteRawTag(114);
+        output.WriteString(ExternalAddressTopicDataWs);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -301,6 +396,21 @@ namespace Ubii.Servers {
       }
       if (ConstantsJson.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ConstantsJson);
+      }
+      if (ExternalAddressServiceZmq.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalAddressServiceZmq);
+      }
+      if (ExternalAddressServiceHttpJson.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalAddressServiceHttpJson);
+      }
+      if (ExternalAddressServiceHttpBinary.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalAddressServiceHttpBinary);
+      }
+      if (ExternalAddressTopicDataZmq.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalAddressTopicDataZmq);
+      }
+      if (ExternalAddressTopicDataWs.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalAddressTopicDataWs);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -339,6 +449,21 @@ namespace Ubii.Servers {
       }
       if (other.ConstantsJson.Length != 0) {
         ConstantsJson = other.ConstantsJson;
+      }
+      if (other.ExternalAddressServiceZmq.Length != 0) {
+        ExternalAddressServiceZmq = other.ExternalAddressServiceZmq;
+      }
+      if (other.ExternalAddressServiceHttpJson.Length != 0) {
+        ExternalAddressServiceHttpJson = other.ExternalAddressServiceHttpJson;
+      }
+      if (other.ExternalAddressServiceHttpBinary.Length != 0) {
+        ExternalAddressServiceHttpBinary = other.ExternalAddressServiceHttpBinary;
+      }
+      if (other.ExternalAddressTopicDataZmq.Length != 0) {
+        ExternalAddressTopicDataZmq = other.ExternalAddressTopicDataZmq;
+      }
+      if (other.ExternalAddressTopicDataWs.Length != 0) {
+        ExternalAddressTopicDataWs = other.ExternalAddressTopicDataWs;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -385,6 +510,26 @@ namespace Ubii.Servers {
           }
           case 74: {
             ConstantsJson = input.ReadString();
+            break;
+          }
+          case 82: {
+            ExternalAddressServiceZmq = input.ReadString();
+            break;
+          }
+          case 90: {
+            ExternalAddressServiceHttpJson = input.ReadString();
+            break;
+          }
+          case 98: {
+            ExternalAddressServiceHttpBinary = input.ReadString();
+            break;
+          }
+          case 106: {
+            ExternalAddressTopicDataZmq = input.ReadString();
+            break;
+          }
+          case 114: {
+            ExternalAddressTopicDataWs = input.ReadString();
             break;
           }
         }

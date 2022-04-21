@@ -25,14 +25,13 @@ namespace Ubii.Processing {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cilwcm90by9wcm9jZXNzaW5nL2xvY2tzdGVwUHJvY2Vzc2luZy5wcm90bxIP",
-            "dWJpaS5wcm9jZXNzaW5nGjVwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVj",
-            "b3JkL3RvcGljRGF0YVJlY29yZC5wcm90byKDAQoZTG9ja3N0ZXBQcm9jZXNz",
-            "aW5nUmVxdWVzdBIdChVwcm9jZXNzaW5nX21vZHVsZV9pZHMYASADKAkSMAoH",
-            "cmVjb3JkcxgCIAMoCzIfLnViaWkudG9waWNEYXRhLlRvcGljRGF0YVJlY29y",
-            "ZBIVCg1kZWx0YV90aW1lX21zGAMgASgFImoKF0xvY2tzdGVwUHJvY2Vzc2lu",
-            "Z1JlcGx5Eh0KFXByb2Nlc3NpbmdfbW9kdWxlX2lkcxgBIAMoCRIwCgdyZWNv",
-            "cmRzGAIgAygLMh8udWJpaS50b3BpY0RhdGEuVG9waWNEYXRhUmVjb3JkYgZw",
-            "cm90bzM="));
+            "dWJpaS5wcm9jZXNzaW5nGiVwcm90by90b3BpY0RhdGEvdG9waWNEYXRhUmVj",
+            "b3JkLnByb3RvIoMBChlMb2Nrc3RlcFByb2Nlc3NpbmdSZXF1ZXN0Eh0KFXBy",
+            "b2Nlc3NpbmdfbW9kdWxlX2lkcxgBIAMoCRIwCgdyZWNvcmRzGAIgAygLMh8u",
+            "dWJpaS50b3BpY0RhdGEuVG9waWNEYXRhUmVjb3JkEhUKDWRlbHRhX3RpbWVf",
+            "bXMYAyABKAUiagoXTG9ja3N0ZXBQcm9jZXNzaW5nUmVwbHkSHQoVcHJvY2Vz",
+            "c2luZ19tb2R1bGVfaWRzGAEgAygJEjAKB3JlY29yZHMYAiADKAsyHy51Ymlp",
+            "LnRvcGljRGF0YS5Ub3BpY0RhdGFSZWNvcmRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Ubii.TopicData.TopicDataRecordReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
