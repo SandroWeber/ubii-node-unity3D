@@ -15,3 +15,6 @@ Open the scene "Test" in the unity project under /Ubi-Interact-Client/Assets/Sce
 - copy them to /Ubi-Interact-Client/Assets/ubii/protobuf/
 
 # How to use
+
+- Add an object with the [UbiiNode.cs](https://github.com/SandroWeber/ubii-node-unity3D/blob/develop/Ubi-Interact-Client/Assets/ubii/scripts/client/UbiiNode.cs) script attached
+- change Service and TopicData URLs according to master node config. IMPORTANT: service communication over HTTP(S) only works with the ".../binary" endpoint for now
