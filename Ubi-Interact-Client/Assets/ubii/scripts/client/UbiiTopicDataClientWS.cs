@@ -229,10 +229,12 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 // topic data
                 else
                 {
-                    await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
-                    TopicData topicdata = null;
+                    TopicData topicdata;
                     try
                     {
+                        await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
+                        receiveBufferCount = 0;
+
                         topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
 
                         if (topicdata.TopicDataRecord != null)
@@ -252,14 +254,15 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         {
                             Debug.LogError(topicdata.Error.ToString());
                         }
-
-                        msReadBuffer.Position = 0;
                     }
                     catch (Exception ex)
                     {
                         Debug.LogError(ex.ToString());
                     }
                 }
+            }
+            else {
+                await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
                 receiveBufferCount = 0;
             }
         }
