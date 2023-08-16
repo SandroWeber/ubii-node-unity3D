@@ -27,39 +27,44 @@ namespace Ubii.Services {
             "CiFwcm90by9zZXJ2aWNlcy9zZXJ2aWNlUmVwbHkucHJvdG8SDXViaWkuc2Vy",
             "dmljZXMaG3Byb3RvL2dlbmVyYWwvc3VjY2Vzcy5wcm90bxoZcHJvdG8vZ2Vu",
             "ZXJhbC9lcnJvci5wcm90bxofcHJvdG8vZGF0YVN0cnVjdHVyZS9saXN0cy5w",
-            "cm90bxoacHJvdG8vY2xpZW50cy9jbGllbnQucHJvdG8aGnByb3RvL2Rldmlj",
-            "ZXMvZGV2aWNlLnByb3RvGhxwcm90by9kZXZpY2VzL3RvcGljTXV4LnByb3Rv",
-            "Gh5wcm90by9kZXZpY2VzL3RvcGljRGVtdXgucHJvdG8aGnByb3RvL3NlcnZl",
-            "cnMvc2VydmVyLnByb3RvGhxwcm90by9zZXNzaW9ucy9zZXNzaW9uLnByb3Rv",
-            "Ghxwcm90by9zZXJ2aWNlcy9zZXJ2aWNlLnByb3RvGidwcm90by9wcm9jZXNz",
-            "aW5nL3Byb2Nlc3NpbmdNb2R1bGUucHJvdG8aKXByb3RvL3Byb2Nlc3Npbmcv",
-            "bG9ja3N0ZXBQcm9jZXNzaW5nLnByb3RvItsHCgxTZXJ2aWNlUmVwbHkSKAoH",
-            "c3VjY2VzcxgBIAEoCzIVLnViaWkuZ2VuZXJhbC5TdWNjZXNzSAASJAoFZXJy",
-            "b3IYAiABKAsyEy51YmlpLmdlbmVyYWwuRXJyb3JIABImCgZjbGllbnQYAyAB",
-            "KAsyFC51YmlpLmNsaWVudHMuQ2xpZW50SAASJgoGZGV2aWNlGAQgASgLMhQu",
-            "dWJpaS5kZXZpY2VzLkRldmljZUgAEiYKBnNlcnZlchgFIAEoCzIULnViaWku",
-            "c2VydmVycy5TZXJ2ZXJIABIpCgdzZXNzaW9uGAYgASgLMhYudWJpaS5zZXNz",
-            "aW9ucy5TZXNzaW9uSAASMgoMc2Vzc2lvbl9saXN0GAcgASgLMhoudWJpaS5z",
-            "ZXNzaW9ucy5TZXNzaW9uTGlzdEgAEj4KEXByb2Nlc3NpbmdfbW9kdWxlGAgg",
-            "ASgLMiEudWJpaS5wcm9jZXNzaW5nLlByb2Nlc3NpbmdNb2R1bGVIABJHChZw",
-            "cm9jZXNzaW5nX21vZHVsZV9saXN0GAkgASgLMiUudWJpaS5wcm9jZXNzaW5n",
-            "LlByb2Nlc3NpbmdNb2R1bGVMaXN0SAASNQoLc3RyaW5nX2xpc3QYCiABKAsy",
-            "Hi51YmlpLmRhdGFTdHJ1Y3R1cmUuU3RyaW5nTGlzdEgAEisKCXRvcGljX211",
-            "eBgLIAEoCzIWLnViaWkuZGV2aWNlcy5Ub3BpY011eEgAEjQKDnRvcGljX211",
-            "eF9saXN0GAwgASgLMhoudWJpaS5kZXZpY2VzLlRvcGljTXV4TGlzdEgAEi8K",
-            "C3RvcGljX2RlbXV4GA0gASgLMhgudWJpaS5kZXZpY2VzLlRvcGljRGVtdXhI",
-            "ABI4ChB0b3BpY19kZW11eF9saXN0GA4gASgLMhwudWJpaS5kZXZpY2VzLlRv",
-            "cGljRGVtdXhMaXN0SAASLwoLY2xpZW50X2xpc3QYDyABKAsyGC51YmlpLmNs",
-            "aWVudHMuQ2xpZW50TGlzdEgAEi8KC2RldmljZV9saXN0GBAgASgLMhgudWJp",
-            "aS5kZXZpY2VzLkRldmljZUxpc3RIABIpCgdzZXJ2aWNlGBEgASgLMhYudWJp",
-            "aS5zZXJ2aWNlcy5TZXJ2aWNlSAASMgoMc2VydmljZV9saXN0GBIgASgLMhou",
-            "dWJpaS5zZXJ2aWNlcy5TZXJ2aWNlTGlzdEgAEk0KGWxvY2tzdGVwX3Byb2Nl",
-            "c3NpbmdfcmVwbHkYEyABKAsyKC51YmlpLnByb2Nlc3NpbmcuTG9ja3N0ZXBQ",
-            "cm9jZXNzaW5nUmVwbHlIAEIGCgR0eXBlYgZwcm90bzM="));
+            "cm90bxoacHJvdG8vY2xpZW50cy9jbGllbnQucHJvdG8aJnByb3RvL2NvbmRp",
+            "dGlvbnMvbm90aWZ5Q29uZGl0aW9uLnByb3RvGh1wcm90by9kZXZpY2VzL2Nv",
+            "bXBvbmVudC5wcm90bxoacHJvdG8vZGV2aWNlcy9kZXZpY2UucHJvdG8aHHBy",
+            "b3RvL2RldmljZXMvdG9waWNNdXgucHJvdG8aHnByb3RvL2RldmljZXMvdG9w",
+            "aWNEZW11eC5wcm90bxoacHJvdG8vc2VydmVycy9zZXJ2ZXIucHJvdG8aHHBy",
+            "b3RvL3Nlc3Npb25zL3Nlc3Npb24ucHJvdG8aHHByb3RvL3NlcnZpY2VzL3Nl",
+            "cnZpY2UucHJvdG8aJ3Byb3RvL3Byb2Nlc3NpbmcvcHJvY2Vzc2luZ01vZHVs",
+            "ZS5wcm90bxopcHJvdG8vcHJvY2Vzc2luZy9sb2Nrc3RlcFByb2Nlc3Npbmcu",
+            "cHJvdG8i/ggKDFNlcnZpY2VSZXBseRIoCgdzdWNjZXNzGAEgASgLMhUudWJp",
+            "aS5nZW5lcmFsLlN1Y2Nlc3NIABIkCgVlcnJvchgCIAEoCzITLnViaWkuZ2Vu",
+            "ZXJhbC5FcnJvckgAEiYKBmNsaWVudBgDIAEoCzIULnViaWkuY2xpZW50cy5D",
+            "bGllbnRIABImCgZkZXZpY2UYBCABKAsyFC51YmlpLmRldmljZXMuRGV2aWNl",
+            "SAASJgoGc2VydmVyGAUgASgLMhQudWJpaS5zZXJ2ZXJzLlNlcnZlckgAEikK",
+            "B3Nlc3Npb24YBiABKAsyFi51YmlpLnNlc3Npb25zLlNlc3Npb25IABIyCgxz",
+            "ZXNzaW9uX2xpc3QYByABKAsyGi51YmlpLnNlc3Npb25zLlNlc3Npb25MaXN0",
+            "SAASPgoRcHJvY2Vzc2luZ19tb2R1bGUYCCABKAsyIS51YmlpLnByb2Nlc3Np",
+            "bmcuUHJvY2Vzc2luZ01vZHVsZUgAEkcKFnByb2Nlc3NpbmdfbW9kdWxlX2xp",
+            "c3QYCSABKAsyJS51YmlpLnByb2Nlc3NpbmcuUHJvY2Vzc2luZ01vZHVsZUxp",
+            "c3RIABI1CgtzdHJpbmdfbGlzdBgKIAEoCzIeLnViaWkuZGF0YVN0cnVjdHVy",
+            "ZS5TdHJpbmdMaXN0SAASKwoJdG9waWNfbXV4GAsgASgLMhYudWJpaS5kZXZp",
+            "Y2VzLlRvcGljTXV4SAASNAoOdG9waWNfbXV4X2xpc3QYDCABKAsyGi51Ymlp",
+            "LmRldmljZXMuVG9waWNNdXhMaXN0SAASLwoLdG9waWNfZGVtdXgYDSABKAsy",
+            "GC51YmlpLmRldmljZXMuVG9waWNEZW11eEgAEjgKEHRvcGljX2RlbXV4X2xp",
+            "c3QYDiABKAsyHC51YmlpLmRldmljZXMuVG9waWNEZW11eExpc3RIABIvCgtj",
+            "bGllbnRfbGlzdBgPIAEoCzIYLnViaWkuY2xpZW50cy5DbGllbnRMaXN0SAAS",
+            "LwoLZGV2aWNlX2xpc3QYECABKAsyGC51YmlpLmRldmljZXMuRGV2aWNlTGlz",
+            "dEgAEikKB3NlcnZpY2UYESABKAsyFi51YmlpLnNlcnZpY2VzLlNlcnZpY2VI",
+            "ABIyCgxzZXJ2aWNlX2xpc3QYEiABKAsyGi51YmlpLnNlcnZpY2VzLlNlcnZp",
+            "Y2VMaXN0SAASTQoZbG9ja3N0ZXBfcHJvY2Vzc2luZ19yZXBseRgTIAEoCzIo",
+            "LnViaWkucHJvY2Vzc2luZy5Mb2Nrc3RlcFByb2Nlc3NpbmdSZXBseUgAEiwK",
+            "CWNvbXBvbmVudBgUIAEoCzIXLnViaWkuZGV2aWNlcy5Db21wb25lbnRIABI1",
+            "Cg5jb21wb25lbnRfbGlzdBgVIAEoCzIbLnViaWkuZGV2aWNlcy5Db21wb25l",
+            "bnRMaXN0SAASPAoQbm90aWZ5X2NvbmRpdGlvbhgWIAEoCzIgLnViaWkuY29u",
+            "ZGl0aW9ucy5Ob3RpZnlDb25kaXRpb25IAEIGCgR0eXBlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.General.SuccessReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Servers.ServerReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Services.ServiceReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, global::Ubii.Processing.LockstepProcessingReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.General.SuccessReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.Clients.ClientReflection.Descriptor, global::Ubii.Conditions.NotifyConditionReflection.Descriptor, global::Ubii.Devices.ComponentReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.TopicMuxReflection.Descriptor, global::Ubii.Devices.TopicDemuxReflection.Descriptor, global::Ubii.Servers.ServerReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Services.ServiceReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, global::Ubii.Processing.LockstepProcessingReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "ProcessingModule", "ProcessingModuleList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList", "LockstepProcessingReply" }, new[]{ "Type" }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Services.ServiceReply), global::Ubii.Services.ServiceReply.Parser, new[]{ "Success", "Error", "Client", "Device", "Server", "Session", "SessionList", "ProcessingModule", "ProcessingModuleList", "StringList", "TopicMux", "TopicMuxList", "TopicDemux", "TopicDemuxList", "ClientList", "DeviceList", "Service", "ServiceList", "LockstepProcessingReply", "Component", "ComponentList", "NotifyCondition" }, new[]{ "Type" }, null, null)
           }));
     }
     #endregion
@@ -148,6 +153,15 @@ namespace Ubii.Services {
           break;
         case TypeOneofCase.LockstepProcessingReply:
           LockstepProcessingReply = other.LockstepProcessingReply.Clone();
+          break;
+        case TypeOneofCase.Component:
+          Component = other.Component.Clone();
+          break;
+        case TypeOneofCase.ComponentList:
+          ComponentList = other.ComponentList.Clone();
+          break;
+        case TypeOneofCase.NotifyCondition:
+          NotifyCondition = other.NotifyCondition.Clone();
           break;
       }
 
@@ -368,6 +382,39 @@ namespace Ubii.Services {
       }
     }
 
+    /// <summary>Field number for the "component" field.</summary>
+    public const int ComponentFieldNumber = 20;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.Component Component {
+      get { return typeCase_ == TypeOneofCase.Component ? (global::Ubii.Devices.Component) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Component;
+      }
+    }
+
+    /// <summary>Field number for the "component_list" field.</summary>
+    public const int ComponentListFieldNumber = 21;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.ComponentList ComponentList {
+      get { return typeCase_ == TypeOneofCase.ComponentList ? (global::Ubii.Devices.ComponentList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.ComponentList;
+      }
+    }
+
+    /// <summary>Field number for the "notify_condition" field.</summary>
+    public const int NotifyConditionFieldNumber = 22;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Conditions.NotifyCondition NotifyCondition {
+      get { return typeCase_ == TypeOneofCase.NotifyCondition ? (global::Ubii.Conditions.NotifyCondition) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.NotifyCondition;
+      }
+    }
+
     private object type_;
     /// <summary>Enum of possible cases for the "type" oneof.</summary>
     public enum TypeOneofCase {
@@ -391,6 +438,9 @@ namespace Ubii.Services {
       Service = 17,
       ServiceList = 18,
       LockstepProcessingReply = 19,
+      Component = 20,
+      ComponentList = 21,
+      NotifyCondition = 22,
     }
     private TypeOneofCase typeCase_ = TypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -436,6 +486,9 @@ namespace Ubii.Services {
       if (!object.Equals(Service, other.Service)) return false;
       if (!object.Equals(ServiceList, other.ServiceList)) return false;
       if (!object.Equals(LockstepProcessingReply, other.LockstepProcessingReply)) return false;
+      if (!object.Equals(Component, other.Component)) return false;
+      if (!object.Equals(ComponentList, other.ComponentList)) return false;
+      if (!object.Equals(NotifyCondition, other.NotifyCondition)) return false;
       if (TypeCase != other.TypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -462,6 +515,9 @@ namespace Ubii.Services {
       if (typeCase_ == TypeOneofCase.Service) hash ^= Service.GetHashCode();
       if (typeCase_ == TypeOneofCase.ServiceList) hash ^= ServiceList.GetHashCode();
       if (typeCase_ == TypeOneofCase.LockstepProcessingReply) hash ^= LockstepProcessingReply.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Component) hash ^= Component.GetHashCode();
+      if (typeCase_ == TypeOneofCase.ComponentList) hash ^= ComponentList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.NotifyCondition) hash ^= NotifyCondition.GetHashCode();
       hash ^= (int) typeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -552,6 +608,18 @@ namespace Ubii.Services {
         output.WriteRawTag(154, 1);
         output.WriteMessage(LockstepProcessingReply);
       }
+      if (typeCase_ == TypeOneofCase.Component) {
+        output.WriteRawTag(162, 1);
+        output.WriteMessage(Component);
+      }
+      if (typeCase_ == TypeOneofCase.ComponentList) {
+        output.WriteRawTag(170, 1);
+        output.WriteMessage(ComponentList);
+      }
+      if (typeCase_ == TypeOneofCase.NotifyCondition) {
+        output.WriteRawTag(178, 1);
+        output.WriteMessage(NotifyCondition);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -616,6 +684,15 @@ namespace Ubii.Services {
       }
       if (typeCase_ == TypeOneofCase.LockstepProcessingReply) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(LockstepProcessingReply);
+      }
+      if (typeCase_ == TypeOneofCase.Component) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Component);
+      }
+      if (typeCase_ == TypeOneofCase.ComponentList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(ComponentList);
+      }
+      if (typeCase_ == TypeOneofCase.NotifyCondition) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyCondition);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -742,6 +819,24 @@ namespace Ubii.Services {
             LockstepProcessingReply = new global::Ubii.Processing.LockstepProcessingReply();
           }
           LockstepProcessingReply.MergeFrom(other.LockstepProcessingReply);
+          break;
+        case TypeOneofCase.Component:
+          if (Component == null) {
+            Component = new global::Ubii.Devices.Component();
+          }
+          Component.MergeFrom(other.Component);
+          break;
+        case TypeOneofCase.ComponentList:
+          if (ComponentList == null) {
+            ComponentList = new global::Ubii.Devices.ComponentList();
+          }
+          ComponentList.MergeFrom(other.ComponentList);
+          break;
+        case TypeOneofCase.NotifyCondition:
+          if (NotifyCondition == null) {
+            NotifyCondition = new global::Ubii.Conditions.NotifyCondition();
+          }
+          NotifyCondition.MergeFrom(other.NotifyCondition);
           break;
       }
 
@@ -925,6 +1020,33 @@ namespace Ubii.Services {
             }
             input.ReadMessage(subBuilder);
             LockstepProcessingReply = subBuilder;
+            break;
+          }
+          case 162: {
+            global::Ubii.Devices.Component subBuilder = new global::Ubii.Devices.Component();
+            if (typeCase_ == TypeOneofCase.Component) {
+              subBuilder.MergeFrom(Component);
+            }
+            input.ReadMessage(subBuilder);
+            Component = subBuilder;
+            break;
+          }
+          case 170: {
+            global::Ubii.Devices.ComponentList subBuilder = new global::Ubii.Devices.ComponentList();
+            if (typeCase_ == TypeOneofCase.ComponentList) {
+              subBuilder.MergeFrom(ComponentList);
+            }
+            input.ReadMessage(subBuilder);
+            ComponentList = subBuilder;
+            break;
+          }
+          case 178: {
+            global::Ubii.Conditions.NotifyCondition subBuilder = new global::Ubii.Conditions.NotifyCondition();
+            if (typeCase_ == TypeOneofCase.NotifyCondition) {
+              subBuilder.MergeFrom(NotifyCondition);
+            }
+            input.ReadMessage(subBuilder);
+            NotifyCondition = subBuilder;
             break;
           }
         }

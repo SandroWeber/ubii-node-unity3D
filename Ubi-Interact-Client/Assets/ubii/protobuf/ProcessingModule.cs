@@ -25,40 +25,43 @@ namespace Ubii.Processing {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cidwcm90by9wcm9jZXNzaW5nL3Byb2Nlc3NpbmdNb2R1bGUucHJvdG8SD3Vi",
-            "aWkucHJvY2Vzc2luZyL0AgoOUHJvY2Vzc2luZ01vZGUSPgoJZnJlcXVlbmN5",
+            "aWkucHJvY2Vzc2luZyKyAwoOUHJvY2Vzc2luZ01vZGUSPgoJZnJlcXVlbmN5",
             "GAEgASgLMikudWJpaS5wcm9jZXNzaW5nLlByb2Nlc3NpbmdNb2RlLkZyZXF1",
             "ZW5jeUgAEjwKCGxvY2tzdGVwGAIgASgLMigudWJpaS5wcm9jZXNzaW5nLlBy",
             "b2Nlc3NpbmdNb2RlLkxvY2tzdGVwSAASSgoQdHJpZ2dlcl9vbl9pbnB1dBgD",
             "IAEoCzIuLnViaWkucHJvY2Vzc2luZy5Qcm9jZXNzaW5nTW9kZS5UcmlnZ2Vy",
-            "T25JbnB1dEgAGhoKCUZyZXF1ZW5jeRINCgVoZXJ0ehgBIAEoBRosCghMb2Nr",
-            "c3RlcBIgChhwcm9jZXNzX3JlcXVlc3RfZW5kcG9pbnQYASABKAkaRgoOVHJp",
-            "Z2dlck9uSW5wdXQSFAoMbWluX2RlbGF5X21zGAEgASgFEh4KFmFsbF9pbnB1",
-            "dHNfbmVlZF91cGRhdGUYAiABKAhCBgoEbW9kZSI5CghNb2R1bGVJTxIVCg1p",
-            "bnRlcm5hbF9uYW1lGAEgASgJEhYKDm1lc3NhZ2VfZm9ybWF0GAIgASgJIpwF",
-            "ChBQcm9jZXNzaW5nTW9kdWxlEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkS",
-            "DwoHYXV0aG9ycxgDIAMoCRIMCgR0YWdzGAQgAygJEhMKC2Rlc2NyaXB0aW9u",
-            "GAUgASgJEg8KB25vZGVfaWQYBiABKAkSEgoKc2Vzc2lvbl9pZBgHIAEoCRI4",
-            "CgZzdGF0dXMYCCABKA4yKC51YmlpLnByb2Nlc3NpbmcuUHJvY2Vzc2luZ01v",
-            "ZHVsZS5TdGF0dXMSOAoPcHJvY2Vzc2luZ19tb2RlGAkgASgLMh8udWJpaS5w",
-            "cm9jZXNzaW5nLlByb2Nlc3NpbmdNb2RlEikKBmlucHV0cxgKIAMoCzIZLnVi",
-            "aWkucHJvY2Vzc2luZy5Nb2R1bGVJTxIqCgdvdXRwdXRzGAsgAygLMhkudWJp",
-            "aS5wcm9jZXNzaW5nLk1vZHVsZUlPEjwKCGxhbmd1YWdlGAwgASgOMioudWJp",
-            "aS5wcm9jZXNzaW5nLlByb2Nlc3NpbmdNb2R1bGUuTGFuZ3VhZ2USIQoZb25f",
-            "cHJvY2Vzc2luZ19zdHJpbmdpZmllZBgNIAEoCRIeChZvbl9jcmVhdGVkX3N0",
-            "cmluZ2lmaWVkGA4gASgJEh0KFW9uX2hhbHRlZF9zdHJpbmdpZmllZBgPIAEo",
-            "CRIgChhvbl9kZXN0cm95ZWRfc3RyaW5naWZpZWQYECABKAkiUQoGU3RhdHVz",
-            "Eg8KC0lOSVRJQUxJWkVEEAASCwoHQ1JFQVRFRBABEg4KClBST0NFU1NJTkcQ",
-            "AhIKCgZIQUxURUQQAxINCglERVNUUk9ZRUQQBCI1CghMYW5ndWFnZRIHCgND",
-            "UFAQABIGCgJQWRABEgYKAkpTEAISBgoCQ1MQAxIICgRKQVZBEAQiSwoUUHJv",
-            "Y2Vzc2luZ01vZHVsZUxpc3QSMwoIZWxlbWVudHMYASADKAsyIS51YmlpLnBy",
-            "b2Nlc3NpbmcuUHJvY2Vzc2luZ01vZHVsZWIGcHJvdG8z"));
+            "T25JbnB1dEgAEjQKBGZyZWUYBCABKAsyJC51YmlpLnByb2Nlc3NpbmcuUHJv",
+            "Y2Vzc2luZ01vZGUuRnJlZUgAGhoKCUZyZXF1ZW5jeRINCgVoZXJ0ehgBIAEo",
+            "BRosCghMb2Nrc3RlcBIgChhwcm9jZXNzX3JlcXVlc3RfZW5kcG9pbnQYASAB",
+            "KAkaRgoOVHJpZ2dlck9uSW5wdXQSFAoMbWluX2RlbGF5X21zGAEgASgFEh4K",
+            "FmFsbF9pbnB1dHNfbmVlZF91cGRhdGUYAiABKAgaBgoERnJlZUIGCgRtb2Rl",
+            "IlEKCE1vZHVsZUlPEhUKDWludGVybmFsX25hbWUYASABKAkSFgoObWVzc2Fn",
+            "ZV9mb3JtYXQYAiABKAkSFgoOaXNfcmVjb3JkX2xpc3QYAyABKAginAUKEFBy",
+            "b2Nlc3NpbmdNb2R1bGUSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIPCgdh",
+            "dXRob3JzGAMgAygJEgwKBHRhZ3MYBCADKAkSEwoLZGVzY3JpcHRpb24YBSAB",
+            "KAkSDwoHbm9kZV9pZBgGIAEoCRISCgpzZXNzaW9uX2lkGAcgASgJEjgKBnN0",
+            "YXR1cxgIIAEoDjIoLnViaWkucHJvY2Vzc2luZy5Qcm9jZXNzaW5nTW9kdWxl",
+            "LlN0YXR1cxI4Cg9wcm9jZXNzaW5nX21vZGUYCSABKAsyHy51YmlpLnByb2Nl",
+            "c3NpbmcuUHJvY2Vzc2luZ01vZGUSKQoGaW5wdXRzGAogAygLMhkudWJpaS5w",
+            "cm9jZXNzaW5nLk1vZHVsZUlPEioKB291dHB1dHMYCyADKAsyGS51YmlpLnBy",
+            "b2Nlc3NpbmcuTW9kdWxlSU8SPAoIbGFuZ3VhZ2UYDCABKA4yKi51YmlpLnBy",
+            "b2Nlc3NpbmcuUHJvY2Vzc2luZ01vZHVsZS5MYW5ndWFnZRIhChlvbl9wcm9j",
+            "ZXNzaW5nX3N0cmluZ2lmaWVkGA0gASgJEh4KFm9uX2NyZWF0ZWRfc3RyaW5n",
+            "aWZpZWQYDiABKAkSHQoVb25faGFsdGVkX3N0cmluZ2lmaWVkGA8gASgJEiAK",
+            "GG9uX2Rlc3Ryb3llZF9zdHJpbmdpZmllZBgQIAEoCSJRCgZTdGF0dXMSDwoL",
+            "SU5JVElBTElaRUQQABILCgdDUkVBVEVEEAESDgoKUFJPQ0VTU0lORxACEgoK",
+            "BkhBTFRFRBADEg0KCURFU1RST1lFRBAEIjUKCExhbmd1YWdlEgcKA0NQUBAA",
+            "EgYKAlBZEAESBgoCSlMQAhIGCgJDUxADEggKBEpBVkEQBCJLChRQcm9jZXNz",
+            "aW5nTW9kdWxlTGlzdBIzCghlbGVtZW50cxgBIAMoCzIhLnViaWkucHJvY2Vz",
+            "c2luZy5Qcm9jZXNzaW5nTW9kdWxlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode), global::Ubii.Processing.ProcessingMode.Parser, new[]{ "Frequency", "Lockstep", "TriggerOnInput" }, new[]{ "Mode" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Frequency), global::Ubii.Processing.ProcessingMode.Types.Frequency.Parser, new[]{ "Hertz" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode), global::Ubii.Processing.ProcessingMode.Parser, new[]{ "Frequency", "Lockstep", "TriggerOnInput", "Free" }, new[]{ "Mode" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Frequency), global::Ubii.Processing.ProcessingMode.Types.Frequency.Parser, new[]{ "Hertz" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Lockstep), global::Ubii.Processing.ProcessingMode.Types.Lockstep.Parser, new[]{ "ProcessRequestEndpoint" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput), global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput.Parser, new[]{ "MinDelayMs", "AllInputsNeedUpdate" }, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "InternalName", "MessageFormat" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput), global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput.Parser, new[]{ "MinDelayMs", "AllInputsNeedUpdate" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingMode.Types.Free), global::Ubii.Processing.ProcessingMode.Types.Free.Parser, null, null, null, null)}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ModuleIO), global::Ubii.Processing.ModuleIO.Parser, new[]{ "InternalName", "MessageFormat", "IsRecordList" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModule), global::Ubii.Processing.ProcessingModule.Parser, new[]{ "Id", "Name", "Authors", "Tags", "Description", "NodeId", "SessionId", "Status", "ProcessingMode", "Inputs", "Outputs", "Language", "OnProcessingStringified", "OnCreatedStringified", "OnHaltedStringified", "OnDestroyedStringified" }, null, new[]{ typeof(global::Ubii.Processing.ProcessingModule.Types.Status), typeof(global::Ubii.Processing.ProcessingModule.Types.Language) }, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Processing.ProcessingModuleList), global::Ubii.Processing.ProcessingModuleList.Parser, new[]{ "Elements" }, null, null, null)
           }));
@@ -101,6 +104,9 @@ namespace Ubii.Processing {
           break;
         case ModeOneofCase.TriggerOnInput:
           TriggerOnInput = other.TriggerOnInput.Clone();
+          break;
+        case ModeOneofCase.Free:
+          Free = other.Free.Clone();
           break;
       }
 
@@ -145,6 +151,17 @@ namespace Ubii.Processing {
       }
     }
 
+    /// <summary>Field number for the "free" field.</summary>
+    public const int FreeFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Processing.ProcessingMode.Types.Free Free {
+      get { return modeCase_ == ModeOneofCase.Free ? (global::Ubii.Processing.ProcessingMode.Types.Free) mode_ : null; }
+      set {
+        mode_ = value;
+        modeCase_ = value == null ? ModeOneofCase.None : ModeOneofCase.Free;
+      }
+    }
+
     private object mode_;
     /// <summary>Enum of possible cases for the "mode" oneof.</summary>
     public enum ModeOneofCase {
@@ -152,6 +169,7 @@ namespace Ubii.Processing {
       Frequency = 1,
       Lockstep = 2,
       TriggerOnInput = 3,
+      Free = 4,
     }
     private ModeOneofCase modeCase_ = ModeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -181,6 +199,7 @@ namespace Ubii.Processing {
       if (!object.Equals(Frequency, other.Frequency)) return false;
       if (!object.Equals(Lockstep, other.Lockstep)) return false;
       if (!object.Equals(TriggerOnInput, other.TriggerOnInput)) return false;
+      if (!object.Equals(Free, other.Free)) return false;
       if (ModeCase != other.ModeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -191,6 +210,7 @@ namespace Ubii.Processing {
       if (modeCase_ == ModeOneofCase.Frequency) hash ^= Frequency.GetHashCode();
       if (modeCase_ == ModeOneofCase.Lockstep) hash ^= Lockstep.GetHashCode();
       if (modeCase_ == ModeOneofCase.TriggerOnInput) hash ^= TriggerOnInput.GetHashCode();
+      if (modeCase_ == ModeOneofCase.Free) hash ^= Free.GetHashCode();
       hash ^= (int) modeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -217,6 +237,10 @@ namespace Ubii.Processing {
         output.WriteRawTag(26);
         output.WriteMessage(TriggerOnInput);
       }
+      if (modeCase_ == ModeOneofCase.Free) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Free);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -233,6 +257,9 @@ namespace Ubii.Processing {
       }
       if (modeCase_ == ModeOneofCase.TriggerOnInput) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(TriggerOnInput);
+      }
+      if (modeCase_ == ModeOneofCase.Free) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Free);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -263,6 +290,12 @@ namespace Ubii.Processing {
             TriggerOnInput = new global::Ubii.Processing.ProcessingMode.Types.TriggerOnInput();
           }
           TriggerOnInput.MergeFrom(other.TriggerOnInput);
+          break;
+        case ModeOneofCase.Free:
+          if (Free == null) {
+            Free = new global::Ubii.Processing.ProcessingMode.Types.Free();
+          }
+          Free.MergeFrom(other.Free);
           break;
       }
 
@@ -302,6 +335,15 @@ namespace Ubii.Processing {
             }
             input.ReadMessage(subBuilder);
             TriggerOnInput = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Ubii.Processing.ProcessingMode.Types.Free subBuilder = new global::Ubii.Processing.ProcessingMode.Types.Free();
+            if (modeCase_ == ModeOneofCase.Free) {
+              subBuilder.MergeFrom(Free);
+            }
+            input.ReadMessage(subBuilder);
+            Free = subBuilder;
             break;
           }
         }
@@ -727,6 +769,107 @@ namespace Ubii.Processing {
 
       }
 
+      public sealed partial class Free : pb::IMessage<Free> {
+        private static readonly pb::MessageParser<Free> _parser = new pb::MessageParser<Free>(() => new Free());
+        private pb::UnknownFieldSet _unknownFields;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public static pb::MessageParser<Free> Parser { get { return _parser; } }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::Ubii.Processing.ProcessingMode.Descriptor.NestedTypes[3]; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public Free() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public Free(Free other) : this() {
+          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public Free Clone() {
+          return new Free(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override bool Equals(object other) {
+          return Equals(other as Free);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public bool Equals(Free other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          return Equals(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override int GetHashCode() {
+          int hash = 1;
+          if (_unknownFields != null) {
+            hash ^= _unknownFields.GetHashCode();
+          }
+          return hash;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void WriteTo(pb::CodedOutputStream output) {
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(output);
+          }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public int CalculateSize() {
+          int size = 0;
+          if (_unknownFields != null) {
+            size += _unknownFields.CalculateSize();
+          }
+          return size;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void MergeFrom(Free other) {
+          if (other == null) {
+            return;
+          }
+          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void MergeFrom(pb::CodedInputStream input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+                break;
+            }
+          }
+        }
+
+      }
+
     }
     #endregion
 
@@ -759,6 +902,7 @@ namespace Ubii.Processing {
     public ModuleIO(ModuleIO other) : this() {
       internalName_ = other.internalName_;
       messageFormat_ = other.messageFormat_;
+      isRecordList_ = other.isRecordList_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -789,6 +933,17 @@ namespace Ubii.Processing {
       }
     }
 
+    /// <summary>Field number for the "is_record_list" field.</summary>
+    public const int IsRecordListFieldNumber = 3;
+    private bool isRecordList_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IsRecordList {
+      get { return isRecordList_; }
+      set {
+        isRecordList_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ModuleIO);
@@ -804,6 +959,7 @@ namespace Ubii.Processing {
       }
       if (InternalName != other.InternalName) return false;
       if (MessageFormat != other.MessageFormat) return false;
+      if (IsRecordList != other.IsRecordList) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -812,6 +968,7 @@ namespace Ubii.Processing {
       int hash = 1;
       if (InternalName.Length != 0) hash ^= InternalName.GetHashCode();
       if (MessageFormat.Length != 0) hash ^= MessageFormat.GetHashCode();
+      if (IsRecordList != false) hash ^= IsRecordList.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -833,6 +990,10 @@ namespace Ubii.Processing {
         output.WriteRawTag(18);
         output.WriteString(MessageFormat);
       }
+      if (IsRecordList != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(IsRecordList);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -846,6 +1007,9 @@ namespace Ubii.Processing {
       }
       if (MessageFormat.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MessageFormat);
+      }
+      if (IsRecordList != false) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -864,6 +1028,9 @@ namespace Ubii.Processing {
       if (other.MessageFormat.Length != 0) {
         MessageFormat = other.MessageFormat;
       }
+      if (other.IsRecordList != false) {
+        IsRecordList = other.IsRecordList;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -881,6 +1048,10 @@ namespace Ubii.Processing {
           }
           case 18: {
             MessageFormat = input.ReadString();
+            break;
+          }
+          case 24: {
+            IsRecordList = input.ReadBool();
             break;
           }
         }

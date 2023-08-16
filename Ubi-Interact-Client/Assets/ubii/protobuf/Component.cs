@@ -25,17 +25,18 @@ namespace Ubii.Devices {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch1wcm90by9kZXZpY2VzL2NvbXBvbmVudC5wcm90bxIMdWJpaS5kZXZpY2Vz",
-            "ItwBCglDb21wb25lbnQSDQoFdG9waWMYASABKAkSFgoObWVzc2FnZV9mb3Jt",
+            "IvoBCglDb21wb25lbnQSDQoFdG9waWMYASABKAkSFgoObWVzc2FnZV9mb3Jt",
             "YXQYAiABKAkSLwoHaW9fdHlwZRgDIAEoDjIeLnViaWkuZGV2aWNlcy5Db21w",
             "b25lbnQuSU9UeXBlEhEKCWRldmljZV9pZBgEIAEoCRIMCgR0YWdzGAUgAygJ",
             "EhMKC2Rlc2NyaXB0aW9uGAYgASgJEgoKAmlkGAcgASgJEgwKBG5hbWUYCCAB",
-            "KAkiJwoGSU9UeXBlEg0KCVBVQkxJU0hFUhAAEg4KClNVQlNDUklCRVIQASI6",
-            "Cg1Db21wb25lbnRMaXN0EikKCGVsZW1lbnRzGAEgAygLMhcudWJpaS5kZXZp",
-            "Y2VzLkNvbXBvbmVudGIGcHJvdG8z"));
+            "KAkSHAoUbm90aWZ5X2NvbmRpdGlvbl9pZHMYCSADKAkiJwoGSU9UeXBlEg0K",
+            "CVBVQkxJU0hFUhAAEg4KClNVQlNDUklCRVIQASI6Cg1Db21wb25lbnRMaXN0",
+            "EikKCGVsZW1lbnRzGAEgAygLMhcudWJpaS5kZXZpY2VzLkNvbXBvbmVudGIG",
+            "cHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType", "DeviceId", "Tags", "Description", "Id", "Name" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.Component), global::Ubii.Devices.Component.Parser, new[]{ "Topic", "MessageFormat", "IoType", "DeviceId", "Tags", "Description", "Id", "Name", "NotifyConditionIds" }, null, new[]{ typeof(global::Ubii.Devices.Component.Types.IOType) }, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.Devices.ComponentList), global::Ubii.Devices.ComponentList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -76,6 +77,7 @@ namespace Ubii.Devices {
       description_ = other.description_;
       id_ = other.id_;
       name_ = other.name_;
+      notifyConditionIds_ = other.notifyConditionIds_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -171,6 +173,16 @@ namespace Ubii.Devices {
       }
     }
 
+    /// <summary>Field number for the "notify_condition_ids" field.</summary>
+    public const int NotifyConditionIdsFieldNumber = 9;
+    private static readonly pb::FieldCodec<string> _repeated_notifyConditionIds_codec
+        = pb::FieldCodec.ForString(74);
+    private readonly pbc::RepeatedField<string> notifyConditionIds_ = new pbc::RepeatedField<string>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> NotifyConditionIds {
+      get { return notifyConditionIds_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Component);
@@ -192,6 +204,7 @@ namespace Ubii.Devices {
       if (Description != other.Description) return false;
       if (Id != other.Id) return false;
       if (Name != other.Name) return false;
+      if(!notifyConditionIds_.Equals(other.notifyConditionIds_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -206,6 +219,7 @@ namespace Ubii.Devices {
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
+      hash ^= notifyConditionIds_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -248,6 +262,7 @@ namespace Ubii.Devices {
         output.WriteRawTag(66);
         output.WriteString(Name);
       }
+      notifyConditionIds_.WriteTo(output, _repeated_notifyConditionIds_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -278,6 +293,7 @@ namespace Ubii.Devices {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
+      size += notifyConditionIds_.CalculateSize(_repeated_notifyConditionIds_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -311,6 +327,7 @@ namespace Ubii.Devices {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
+      notifyConditionIds_.Add(other.notifyConditionIds_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -352,6 +369,10 @@ namespace Ubii.Devices {
           }
           case 66: {
             Name = input.ReadString();
+            break;
+          }
+          case 74: {
+            notifyConditionIds_.AddEntriesFrom(input, _repeated_notifyConditionIds_codec);
             break;
           }
         }

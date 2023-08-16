@@ -61,8 +61,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 #if WINDOWS_UWP
             this.clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
             this.clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
-            this.clientWebsocket.MessageReceived += OnMessageReceived;
-            this.clientWebsocket.Closed += OnWebsocketClose;
+            this.clientWebsocket.MessageReceived += OnMessageReceivedUWP;
+            this.clientWebsocket.Closed += OnWebsocketCloseUWP;
             await clientWebsocket.ConnectAsync(uri);
 #else
             clientWebsocket = new System.Net.WebSockets.ClientWebSocket();
@@ -129,8 +129,9 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         return new CancellationToken();
     }
 
-    private async void OnMessageReceived(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
+    private async void OnMessageReceivedUWP(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
     {
+        Debug.Log("OnMessageReceivedUWP");
         try
         {
             using (Windows.Storage.Streams.DataReader dataReader = args.GetDataReader())
@@ -190,9 +191,9 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }
     }
 
-    private void OnWebsocketClose(Windows.Networking.Sockets.IWebSocket sender, Windows.Networking.Sockets.WebSocketClosedEventArgs args)
+    private void OnWebsocketCloseUWP(Windows.Networking.Sockets.IWebSocket sender, Windows.Networking.Sockets.WebSocketClosedEventArgs args)
     {
-        Debug.LogError("OnWebsocketClose; Code: " + args.Code + ", Reason: \"" + args.Reason + "\"");
+        Debug.LogError("OnWebsocketCloseUWP; Code: " + args.Code + ", Reason: \"" + args.Reason + "\"");
         this.connected = false;
     }
 #else
@@ -200,6 +201,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
         int receiveBufferCount = 0;
+        
         while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
         {
             ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer, receiveBufferCount, receiveBuffer.Length - receiveBufferCount);
@@ -229,13 +231,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 // topic data
                 else
                 {
-                    TopicData topicdata;
+                    /*await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
+                    TopicData topicdata = null;*/
                     try
                     {
                         await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
-                        receiveBufferCount = 0;
-
-                        topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
+                        TopicData topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
+                        /*TopicData topicdata = new TopicData { };
+                        topicData.MergeFrom(receiveBuffer, 0, receiveBufferCount);*/
 
                         if (topicdata.TopicDataRecord != null)
                         {
@@ -250,6 +253,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                             }
                         }
 
+                        //msReadBuffer.Seek(0, SeekOrigin.Begin);
+
                         if (topicdata.Error != null)
                         {
                             Debug.LogError(topicdata.Error.ToString());
@@ -260,6 +265,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         Debug.LogError(ex.ToString());
                     }
                 }
+                    
+                receiveBufferCount = 0;
             }
             else {
                 await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
