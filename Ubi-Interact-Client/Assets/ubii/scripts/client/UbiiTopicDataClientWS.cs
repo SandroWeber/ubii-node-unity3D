@@ -131,7 +131,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
     private async void OnMessageReceivedUWP(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
     {
-        Debug.Log("OnMessageReceivedUWP");
         try
         {
             using (Windows.Storage.Streams.DataReader dataReader = args.GetDataReader())
@@ -231,14 +230,10 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 // topic data
                 else
                 {
-                    /*await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
-                    TopicData topicdata = null;*/
                     try
                     {
                         await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
                         TopicData topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
-                        /*TopicData topicdata = new TopicData { };
-                        topicData.MergeFrom(receiveBuffer, 0, receiveBufferCount);*/
 
                         if (topicdata.TopicDataRecord != null)
                         {
@@ -252,8 +247,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                                 this.InvokeTopicCallbacks(record);
                             }
                         }
-
-                        //msReadBuffer.Seek(0, SeekOrigin.Begin);
 
                         if (topicdata.Error != null)
                         {
