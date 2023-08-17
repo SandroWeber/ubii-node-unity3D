@@ -11,7 +11,7 @@ using System.Linq;
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
     const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101";
-    const string DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102";
+    const string DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary";
     const string DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103";
     const string DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
 

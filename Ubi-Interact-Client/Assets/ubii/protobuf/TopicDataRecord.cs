@@ -40,53 +40,61 @@ namespace Ubii.TopicData {
             "dG8aInByb3RvL2RhdGFTdHJ1Y3R1cmUvb2JqZWN0MmQucHJvdG8aInByb3Rv",
             "L2RhdGFTdHJ1Y3R1cmUvb2JqZWN0M2QucHJvdG8aH3Byb3RvL2RhdGFTdHJ1",
             "Y3R1cmUvaW1hZ2UucHJvdG8aHHByb3RvL3Nlc3Npb25zL3Nlc3Npb24ucHJv",
-            "dG8aJ3Byb3RvL3Byb2Nlc3NpbmcvcHJvY2Vzc2luZ01vZHVsZS5wcm90byLo",
-            "DQoPVG9waWNEYXRhUmVjb3JkEg0KBXRvcGljGAEgASgJEiwKCXRpbWVzdGFt",
-            "cBgCIAEoCzIZLnViaWkudG9waWNEYXRhLlRpbWVzdGFtcBIRCgljbGllbnRf",
-            "aWQYISABKAkSEAoGZG91YmxlGAMgASgBSAASDgoEYm9vbBgEIAEoCEgAEhAK",
-            "BnN0cmluZxgFIAEoCUgAEg8KBWludDMyGBcgASgFSAASDwoFZmxvYXQYGCAB",
-            "KAJIABIuCgd2ZWN0b3IyGAYgASgLMhsudWJpaS5kYXRhU3RydWN0dXJlLlZl",
-            "Y3RvcjJIABI3Cgx2ZWN0b3IyX2xpc3QYIyABKAsyHy51YmlpLmRhdGFTdHJ1",
-            "Y3R1cmUuVmVjdG9yMkxpc3RIABIuCgd2ZWN0b3IzGAcgASgLMhsudWJpaS5k",
-            "YXRhU3RydWN0dXJlLlZlY3RvcjNIABI3Cgx2ZWN0b3IzX2xpc3QYJCABKAsy",
-            "Hy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yM0xpc3RIABIuCgd2ZWN0b3I0",
-            "GAggASgLMhsudWJpaS5kYXRhU3RydWN0dXJlLlZlY3RvcjRIABI3Cgx2ZWN0",
-            "b3I0X2xpc3QYJSABKAsyHy51YmlpLmRhdGFTdHJ1Y3R1cmUuVmVjdG9yNExp",
-            "c3RIABI0CgpxdWF0ZXJuaW9uGAkgASgLMh4udWJpaS5kYXRhU3RydWN0dXJl",
-            "LlF1YXRlcm5pb25IABI5Cg9xdWF0ZXJuaW9uX2xpc3QYJiABKAsyHi51Ymlp",
-            "LmRhdGFTdHJ1Y3R1cmUuUXVhdGVybmlvbkgAEjIKCW1hdHJpeDN4MhgKIAEo",
-            "CzIdLnViaWkuZGF0YVN0cnVjdHVyZS5NYXRyaXgzeDJIABIyCgltYXRyaXg0",
-            "eDQYCyABKAsyHS51YmlpLmRhdGFTdHJ1Y3R1cmUuTWF0cml4NHg0SAASKgoF",
-            "Y29sb3IYDCABKAsyGS51YmlpLmRhdGFTdHJ1Y3R1cmUuQ29sb3JIABI1Cgt0",
-            "b3VjaF9ldmVudBgNIAEoCzIeLnViaWkuZGF0YVN0cnVjdHVyZS5Ub3VjaEV2",
-            "ZW50SAASPgoQdG91Y2hfZXZlbnRfbGlzdBgiIAEoCzIiLnViaWkuZGF0YVN0",
-            "cnVjdHVyZS5Ub3VjaEV2ZW50TGlzdEgAEjEKCWtleV9ldmVudBgOIAEoCzIc",
-            "LnViaWkuZGF0YVN0cnVjdHVyZS5LZXlFdmVudEgAEjUKC21vdXNlX2V2ZW50",
-            "GA8gASgLMh4udWJpaS5kYXRhU3RydWN0dXJlLk1vdXNlRXZlbnRIABIxCglt",
-            "eW9fZXZlbnQYECABKAsyHC51YmlpLmRhdGFTdHJ1Y3R1cmUuTXlvRXZlbnRI",
-            "ABIsCgZwb3NlMkQYESABKAsyGi51YmlpLmRhdGFTdHJ1Y3R1cmUuUG9zZTJE",
-            "SAASLAoGcG9zZTNEGBIgASgLMhoudWJpaS5kYXRhU3RydWN0dXJlLlBvc2Uz",
-            "REgAEjAKCG9iamVjdDJEGBMgASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk9i",
-            "amVjdDJESAASMAoIb2JqZWN0M0QYFCABKAsyHC51YmlpLmRhdGFTdHJ1Y3R1",
-            "cmUuT2JqZWN0M0RIABI5Cg1vYmplY3QyRF9saXN0GBUgASgLMiAudWJpaS5k",
-            "YXRhU3RydWN0dXJlLk9iamVjdDJETGlzdEgAEjkKDW9iamVjdDNEX2xpc3QY",
-            "FiABKAsyIC51YmlpLmRhdGFTdHJ1Y3R1cmUuT2JqZWN0M0RMaXN0SAASMwoK",
-            "aW50MzJfbGlzdBgZIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5JbnQzMkxp",
-            "c3RIABIzCgpmbG9hdF9saXN0GBogASgLMh0udWJpaS5kYXRhU3RydWN0dXJl",
-            "LkZsb2F0TGlzdEgAEjUKC2RvdWJsZV9saXN0GBsgASgLMh4udWJpaS5kYXRh",
-            "U3RydWN0dXJlLkRvdWJsZUxpc3RIABI1CgtzdHJpbmdfbGlzdBgcIAEoCzIe",
-            "LnViaWkuZGF0YVN0cnVjdHVyZS5TdHJpbmdMaXN0SAASMQoJYm9vbF9saXN0",
-            "GB0gASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLkJvb2xMaXN0SAASLgoHaW1h",
-            "Z2UyRBgeIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVyZS5JbWFnZTJESAASNwoM",
-            "aW1hZ2UyRF9saXN0GB8gASgLMh8udWJpaS5kYXRhU3RydWN0dXJlLkltYWdl",
-            "MkRMaXN0SAASKQoHc2Vzc2lvbhggIAEoCzIWLnViaWkuc2Vzc2lvbnMuU2Vz",
-            "c2lvbkgAQgYKBHR5cGUiSAoTVG9waWNEYXRhUmVjb3JkTGlzdBIxCghlbGVt",
-            "ZW50cxgBIAMoCzIfLnViaWkudG9waWNEYXRhLlRvcGljRGF0YVJlY29yZGIG",
-            "cHJvdG8z"));
+            "dG8aGnByb3RvL2RldmljZXMvZGV2aWNlLnByb3RvGh1wcm90by9kZXZpY2Vz",
+            "L2NvbXBvbmVudC5wcm90bxoncHJvdG8vcHJvY2Vzc2luZy9wcm9jZXNzaW5n",
+            "TW9kdWxlLnByb3RvGhlwcm90by9nZW5lcmFsL2Vycm9yLnByb3RvIoAQCg9U",
+            "b3BpY0RhdGFSZWNvcmQSDQoFdG9waWMYASABKAkSLAoJdGltZXN0YW1wGAIg",
+            "ASgLMhkudWJpaS50b3BpY0RhdGEuVGltZXN0YW1wEhEKCWNsaWVudF9pZBgh",
+            "IAEoCRIkCgVlcnJvchgnIAEoCzITLnViaWkuZ2VuZXJhbC5FcnJvckgAEhAK",
+            "BmRvdWJsZRgDIAEoAUgAEg4KBGJvb2wYBCABKAhIABIQCgZzdHJpbmcYBSAB",
+            "KAlIABIPCgVpbnQzMhgXIAEoBUgAEg8KBWZsb2F0GBggASgCSAASLgoHdmVj",
+            "dG9yMhgGIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVyZS5WZWN0b3IySAASNwoM",
+            "dmVjdG9yMl9saXN0GCMgASgLMh8udWJpaS5kYXRhU3RydWN0dXJlLlZlY3Rv",
+            "cjJMaXN0SAASLgoHdmVjdG9yMxgHIAEoCzIbLnViaWkuZGF0YVN0cnVjdHVy",
+            "ZS5WZWN0b3IzSAASNwoMdmVjdG9yM19saXN0GCQgASgLMh8udWJpaS5kYXRh",
+            "U3RydWN0dXJlLlZlY3RvcjNMaXN0SAASLgoHdmVjdG9yNBgIIAEoCzIbLnVi",
+            "aWkuZGF0YVN0cnVjdHVyZS5WZWN0b3I0SAASNwoMdmVjdG9yNF9saXN0GCUg",
+            "ASgLMh8udWJpaS5kYXRhU3RydWN0dXJlLlZlY3RvcjRMaXN0SAASNAoKcXVh",
+            "dGVybmlvbhgJIAEoCzIeLnViaWkuZGF0YVN0cnVjdHVyZS5RdWF0ZXJuaW9u",
+            "SAASOQoPcXVhdGVybmlvbl9saXN0GCYgASgLMh4udWJpaS5kYXRhU3RydWN0",
+            "dXJlLlF1YXRlcm5pb25IABIyCgltYXRyaXgzeDIYCiABKAsyHS51YmlpLmRh",
+            "dGFTdHJ1Y3R1cmUuTWF0cml4M3gySAASMgoJbWF0cml4NHg0GAsgASgLMh0u",
+            "dWJpaS5kYXRhU3RydWN0dXJlLk1hdHJpeDR4NEgAEioKBWNvbG9yGAwgASgL",
+            "MhkudWJpaS5kYXRhU3RydWN0dXJlLkNvbG9ySAASNQoLdG91Y2hfZXZlbnQY",
+            "DSABKAsyHi51YmlpLmRhdGFTdHJ1Y3R1cmUuVG91Y2hFdmVudEgAEj4KEHRv",
+            "dWNoX2V2ZW50X2xpc3QYIiABKAsyIi51YmlpLmRhdGFTdHJ1Y3R1cmUuVG91",
+            "Y2hFdmVudExpc3RIABIxCglrZXlfZXZlbnQYDiABKAsyHC51YmlpLmRhdGFT",
+            "dHJ1Y3R1cmUuS2V5RXZlbnRIABI1Cgttb3VzZV9ldmVudBgPIAEoCzIeLnVi",
+            "aWkuZGF0YVN0cnVjdHVyZS5Nb3VzZUV2ZW50SAASMQoJbXlvX2V2ZW50GBAg",
+            "ASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk15b0V2ZW50SAASLAoGcG9zZTJE",
+            "GBEgASgLMhoudWJpaS5kYXRhU3RydWN0dXJlLlBvc2UyREgAEiwKBnBvc2Uz",
+            "RBgSIAEoCzIaLnViaWkuZGF0YVN0cnVjdHVyZS5Qb3NlM0RIABIwCghvYmpl",
+            "Y3QyRBgTIAEoCzIcLnViaWkuZGF0YVN0cnVjdHVyZS5PYmplY3QyREgAEjAK",
+            "CG9iamVjdDNEGBQgASgLMhwudWJpaS5kYXRhU3RydWN0dXJlLk9iamVjdDNE",
+            "SAASOQoNb2JqZWN0MkRfbGlzdBgVIAEoCzIgLnViaWkuZGF0YVN0cnVjdHVy",
+            "ZS5PYmplY3QyRExpc3RIABI5Cg1vYmplY3QzRF9saXN0GBYgASgLMiAudWJp",
+            "aS5kYXRhU3RydWN0dXJlLk9iamVjdDNETGlzdEgAEjMKCmludDMyX2xpc3QY",
+            "GSABKAsyHS51YmlpLmRhdGFTdHJ1Y3R1cmUuSW50MzJMaXN0SAASMwoKZmxv",
+            "YXRfbGlzdBgaIAEoCzIdLnViaWkuZGF0YVN0cnVjdHVyZS5GbG9hdExpc3RI",
+            "ABI1Cgtkb3VibGVfbGlzdBgbIAEoCzIeLnViaWkuZGF0YVN0cnVjdHVyZS5E",
+            "b3VibGVMaXN0SAASNQoLc3RyaW5nX2xpc3QYHCABKAsyHi51YmlpLmRhdGFT",
+            "dHJ1Y3R1cmUuU3RyaW5nTGlzdEgAEjEKCWJvb2xfbGlzdBgdIAEoCzIcLnVi",
+            "aWkuZGF0YVN0cnVjdHVyZS5Cb29sTGlzdEgAEi4KB2ltYWdlMkQYHiABKAsy",
+            "Gy51YmlpLmRhdGFTdHJ1Y3R1cmUuSW1hZ2UyREgAEjcKDGltYWdlMkRfbGlz",
+            "dBgfIAEoCzIfLnViaWkuZGF0YVN0cnVjdHVyZS5JbWFnZTJETGlzdEgAEikK",
+            "B3Nlc3Npb24YICABKAsyFi51YmlpLnNlc3Npb25zLlNlc3Npb25IABIyCgxz",
+            "ZXNzaW9uX2xpc3QYLCABKAsyGi51YmlpLnNlc3Npb25zLlNlc3Npb25MaXN0",
+            "SAASJgoGZGV2aWNlGCggASgLMhQudWJpaS5kZXZpY2VzLkRldmljZUgAEi8K",
+            "C2RldmljZV9saXN0GCkgASgLMhgudWJpaS5kZXZpY2VzLkRldmljZUxpc3RI",
+            "ABIsCgljb21wb25lbnQYKiABKAsyFy51YmlpLmRldmljZXMuQ29tcG9uZW50",
+            "SAASNQoOY29tcG9uZW50X2xpc3QYKyABKAsyGy51YmlpLmRldmljZXMuQ29t",
+            "cG9uZW50TGlzdEgAQgYKBHR5cGUiSAoTVG9waWNEYXRhUmVjb3JkTGlzdBIx",
+            "CghlbGVtZW50cxgBIAMoCzIfLnViaWkudG9waWNEYXRhLlRvcGljRGF0YVJl",
+            "Y29yZGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, global::Ubii.DataStructure.ImageReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Ubii.TopicData.TimestampReflection.Descriptor, global::Ubii.DataStructure.ListsReflection.Descriptor, global::Ubii.DataStructure.Vector2Reflection.Descriptor, global::Ubii.DataStructure.Vector3Reflection.Descriptor, global::Ubii.DataStructure.Vector4Reflection.Descriptor, global::Ubii.DataStructure.QuaternionReflection.Descriptor, global::Ubii.DataStructure.Matrix3X2Reflection.Descriptor, global::Ubii.DataStructure.Matrix4X4Reflection.Descriptor, global::Ubii.DataStructure.ColorReflection.Descriptor, global::Ubii.DataStructure.TouchEventReflection.Descriptor, global::Ubii.DataStructure.KeyEventReflection.Descriptor, global::Ubii.DataStructure.MouseEventReflection.Descriptor, global::Ubii.DataStructure.MyoEventReflection.Descriptor, global::Ubii.DataStructure.Pose2DReflection.Descriptor, global::Ubii.DataStructure.Pose3DReflection.Descriptor, global::Ubii.DataStructure.Object2DReflection.Descriptor, global::Ubii.DataStructure.Object3DReflection.Descriptor, global::Ubii.DataStructure.ImageReflection.Descriptor, global::Ubii.Sessions.SessionReflection.Descriptor, global::Ubii.Devices.DeviceReflection.Descriptor, global::Ubii.Devices.ComponentReflection.Descriptor, global::Ubii.Processing.ProcessingModuleReflection.Descriptor, global::Ubii.General.ErrorReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "ClientId", "Double", "Bool", "String", "Int32", "Float", "Vector2", "Vector2List", "Vector3", "Vector3List", "Vector4", "Vector4List", "Quaternion", "QuaternionList", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "TouchEventList", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList", "Int32List", "FloatList", "DoubleList", "StringList", "BoolList", "Image2D", "Image2DList", "Session" }, new[]{ "Type" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecord), global::Ubii.TopicData.TopicDataRecord.Parser, new[]{ "Topic", "Timestamp", "ClientId", "Error", "Double", "Bool", "String", "Int32", "Float", "Vector2", "Vector2List", "Vector3", "Vector3List", "Vector4", "Vector4List", "Quaternion", "QuaternionList", "Matrix3X2", "Matrix4X4", "Color", "TouchEvent", "TouchEventList", "KeyEvent", "MouseEvent", "MyoEvent", "Pose2D", "Pose3D", "Object2D", "Object3D", "Object2DList", "Object3DList", "Int32List", "FloatList", "DoubleList", "StringList", "BoolList", "Image2D", "Image2DList", "Session", "SessionList", "Device", "DeviceList", "Component", "ComponentList" }, new[]{ "Type" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Ubii.TopicData.TopicDataRecordList), global::Ubii.TopicData.TopicDataRecordList.Parser, new[]{ "Elements" }, null, null, null)
           }));
     }
@@ -95,7 +103,7 @@ namespace Ubii.TopicData {
   }
   #region Messages
   /// <summary>
-  /// continuous index: 38
+  /// continuous index: 44
   /// </summary>
   public sealed partial class TopicDataRecord : pb::IMessage<TopicDataRecord> {
     private static readonly pb::MessageParser<TopicDataRecord> _parser = new pb::MessageParser<TopicDataRecord>(() => new TopicDataRecord());
@@ -126,6 +134,9 @@ namespace Ubii.TopicData {
       timestamp_ = other.timestamp_ != null ? other.timestamp_.Clone() : null;
       clientId_ = other.clientId_;
       switch (other.TypeCase) {
+        case TypeOneofCase.Error:
+          Error = other.Error.Clone();
+          break;
         case TypeOneofCase.Double:
           Double = other.Double;
           break;
@@ -231,6 +242,21 @@ namespace Ubii.TopicData {
         case TypeOneofCase.Session:
           Session = other.Session.Clone();
           break;
+        case TypeOneofCase.SessionList:
+          SessionList = other.SessionList.Clone();
+          break;
+        case TypeOneofCase.Device:
+          Device = other.Device.Clone();
+          break;
+        case TypeOneofCase.DeviceList:
+          DeviceList = other.DeviceList.Clone();
+          break;
+        case TypeOneofCase.Component:
+          Component = other.Component.Clone();
+          break;
+        case TypeOneofCase.ComponentList:
+          ComponentList = other.ComponentList.Clone();
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -271,6 +297,17 @@ namespace Ubii.TopicData {
       get { return clientId_; }
       set {
         clientId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "error" field.</summary>
+    public const int ErrorFieldNumber = 39;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.General.Error Error {
+      get { return typeCase_ == TypeOneofCase.Error ? (global::Ubii.General.Error) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Error;
       }
     }
 
@@ -659,10 +696,66 @@ namespace Ubii.TopicData {
       }
     }
 
+    /// <summary>Field number for the "session_list" field.</summary>
+    public const int SessionListFieldNumber = 44;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Sessions.SessionList SessionList {
+      get { return typeCase_ == TypeOneofCase.SessionList ? (global::Ubii.Sessions.SessionList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.SessionList;
+      }
+    }
+
+    /// <summary>Field number for the "device" field.</summary>
+    public const int DeviceFieldNumber = 40;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.Device Device {
+      get { return typeCase_ == TypeOneofCase.Device ? (global::Ubii.Devices.Device) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Device;
+      }
+    }
+
+    /// <summary>Field number for the "device_list" field.</summary>
+    public const int DeviceListFieldNumber = 41;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.DeviceList DeviceList {
+      get { return typeCase_ == TypeOneofCase.DeviceList ? (global::Ubii.Devices.DeviceList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.DeviceList;
+      }
+    }
+
+    /// <summary>Field number for the "component" field.</summary>
+    public const int ComponentFieldNumber = 42;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.Component Component {
+      get { return typeCase_ == TypeOneofCase.Component ? (global::Ubii.Devices.Component) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Component;
+      }
+    }
+
+    /// <summary>Field number for the "component_list" field.</summary>
+    public const int ComponentListFieldNumber = 43;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Ubii.Devices.ComponentList ComponentList {
+      get { return typeCase_ == TypeOneofCase.ComponentList ? (global::Ubii.Devices.ComponentList) type_ : null; }
+      set {
+        type_ = value;
+        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.ComponentList;
+      }
+    }
+
     private object type_;
     /// <summary>Enum of possible cases for the "type" oneof.</summary>
     public enum TypeOneofCase {
       None = 0,
+      Error = 39,
       Double = 3,
       Bool = 4,
       String = 5,
@@ -698,6 +791,11 @@ namespace Ubii.TopicData {
       Image2D = 30,
       Image2DList = 31,
       Session = 32,
+      SessionList = 44,
+      Device = 40,
+      DeviceList = 41,
+      Component = 42,
+      ComponentList = 43,
     }
     private TypeOneofCase typeCase_ = TypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -727,6 +825,7 @@ namespace Ubii.TopicData {
       if (Topic != other.Topic) return false;
       if (!object.Equals(Timestamp, other.Timestamp)) return false;
       if (ClientId != other.ClientId) return false;
+      if (!object.Equals(Error, other.Error)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Double, other.Double)) return false;
       if (Bool != other.Bool) return false;
       if (String != other.String) return false;
@@ -762,6 +861,11 @@ namespace Ubii.TopicData {
       if (!object.Equals(Image2D, other.Image2D)) return false;
       if (!object.Equals(Image2DList, other.Image2DList)) return false;
       if (!object.Equals(Session, other.Session)) return false;
+      if (!object.Equals(SessionList, other.SessionList)) return false;
+      if (!object.Equals(Device, other.Device)) return false;
+      if (!object.Equals(DeviceList, other.DeviceList)) return false;
+      if (!object.Equals(Component, other.Component)) return false;
+      if (!object.Equals(ComponentList, other.ComponentList)) return false;
       if (TypeCase != other.TypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -772,6 +876,7 @@ namespace Ubii.TopicData {
       if (Topic.Length != 0) hash ^= Topic.GetHashCode();
       if (timestamp_ != null) hash ^= Timestamp.GetHashCode();
       if (ClientId.Length != 0) hash ^= ClientId.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Error) hash ^= Error.GetHashCode();
       if (typeCase_ == TypeOneofCase.Double) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Double);
       if (typeCase_ == TypeOneofCase.Bool) hash ^= Bool.GetHashCode();
       if (typeCase_ == TypeOneofCase.String) hash ^= String.GetHashCode();
@@ -807,6 +912,11 @@ namespace Ubii.TopicData {
       if (typeCase_ == TypeOneofCase.Image2D) hash ^= Image2D.GetHashCode();
       if (typeCase_ == TypeOneofCase.Image2DList) hash ^= Image2DList.GetHashCode();
       if (typeCase_ == TypeOneofCase.Session) hash ^= Session.GetHashCode();
+      if (typeCase_ == TypeOneofCase.SessionList) hash ^= SessionList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Device) hash ^= Device.GetHashCode();
+      if (typeCase_ == TypeOneofCase.DeviceList) hash ^= DeviceList.GetHashCode();
+      if (typeCase_ == TypeOneofCase.Component) hash ^= Component.GetHashCode();
+      if (typeCase_ == TypeOneofCase.ComponentList) hash ^= ComponentList.GetHashCode();
       hash ^= (int) typeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -973,6 +1083,30 @@ namespace Ubii.TopicData {
         output.WriteRawTag(178, 2);
         output.WriteMessage(QuaternionList);
       }
+      if (typeCase_ == TypeOneofCase.Error) {
+        output.WriteRawTag(186, 2);
+        output.WriteMessage(Error);
+      }
+      if (typeCase_ == TypeOneofCase.Device) {
+        output.WriteRawTag(194, 2);
+        output.WriteMessage(Device);
+      }
+      if (typeCase_ == TypeOneofCase.DeviceList) {
+        output.WriteRawTag(202, 2);
+        output.WriteMessage(DeviceList);
+      }
+      if (typeCase_ == TypeOneofCase.Component) {
+        output.WriteRawTag(210, 2);
+        output.WriteMessage(Component);
+      }
+      if (typeCase_ == TypeOneofCase.ComponentList) {
+        output.WriteRawTag(218, 2);
+        output.WriteMessage(ComponentList);
+      }
+      if (typeCase_ == TypeOneofCase.SessionList) {
+        output.WriteRawTag(226, 2);
+        output.WriteMessage(SessionList);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -989,6 +1123,9 @@ namespace Ubii.TopicData {
       }
       if (ClientId.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(ClientId);
+      }
+      if (typeCase_ == TypeOneofCase.Error) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Error);
       }
       if (typeCase_ == TypeOneofCase.Double) {
         size += 1 + 8;
@@ -1095,6 +1232,21 @@ namespace Ubii.TopicData {
       if (typeCase_ == TypeOneofCase.Session) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Session);
       }
+      if (typeCase_ == TypeOneofCase.SessionList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(SessionList);
+      }
+      if (typeCase_ == TypeOneofCase.Device) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Device);
+      }
+      if (typeCase_ == TypeOneofCase.DeviceList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(DeviceList);
+      }
+      if (typeCase_ == TypeOneofCase.Component) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Component);
+      }
+      if (typeCase_ == TypeOneofCase.ComponentList) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(ComponentList);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -1119,6 +1271,12 @@ namespace Ubii.TopicData {
         ClientId = other.ClientId;
       }
       switch (other.TypeCase) {
+        case TypeOneofCase.Error:
+          if (Error == null) {
+            Error = new global::Ubii.General.Error();
+          }
+          Error.MergeFrom(other.Error);
+          break;
         case TypeOneofCase.Double:
           Double = other.Double;
           break;
@@ -1313,6 +1471,36 @@ namespace Ubii.TopicData {
             Session = new global::Ubii.Sessions.Session();
           }
           Session.MergeFrom(other.Session);
+          break;
+        case TypeOneofCase.SessionList:
+          if (SessionList == null) {
+            SessionList = new global::Ubii.Sessions.SessionList();
+          }
+          SessionList.MergeFrom(other.SessionList);
+          break;
+        case TypeOneofCase.Device:
+          if (Device == null) {
+            Device = new global::Ubii.Devices.Device();
+          }
+          Device.MergeFrom(other.Device);
+          break;
+        case TypeOneofCase.DeviceList:
+          if (DeviceList == null) {
+            DeviceList = new global::Ubii.Devices.DeviceList();
+          }
+          DeviceList.MergeFrom(other.DeviceList);
+          break;
+        case TypeOneofCase.Component:
+          if (Component == null) {
+            Component = new global::Ubii.Devices.Component();
+          }
+          Component.MergeFrom(other.Component);
+          break;
+        case TypeOneofCase.ComponentList:
+          if (ComponentList == null) {
+            ComponentList = new global::Ubii.Devices.ComponentList();
+          }
+          ComponentList.MergeFrom(other.ComponentList);
           break;
       }
 
@@ -1630,6 +1818,60 @@ namespace Ubii.TopicData {
             }
             input.ReadMessage(subBuilder);
             QuaternionList = subBuilder;
+            break;
+          }
+          case 314: {
+            global::Ubii.General.Error subBuilder = new global::Ubii.General.Error();
+            if (typeCase_ == TypeOneofCase.Error) {
+              subBuilder.MergeFrom(Error);
+            }
+            input.ReadMessage(subBuilder);
+            Error = subBuilder;
+            break;
+          }
+          case 322: {
+            global::Ubii.Devices.Device subBuilder = new global::Ubii.Devices.Device();
+            if (typeCase_ == TypeOneofCase.Device) {
+              subBuilder.MergeFrom(Device);
+            }
+            input.ReadMessage(subBuilder);
+            Device = subBuilder;
+            break;
+          }
+          case 330: {
+            global::Ubii.Devices.DeviceList subBuilder = new global::Ubii.Devices.DeviceList();
+            if (typeCase_ == TypeOneofCase.DeviceList) {
+              subBuilder.MergeFrom(DeviceList);
+            }
+            input.ReadMessage(subBuilder);
+            DeviceList = subBuilder;
+            break;
+          }
+          case 338: {
+            global::Ubii.Devices.Component subBuilder = new global::Ubii.Devices.Component();
+            if (typeCase_ == TypeOneofCase.Component) {
+              subBuilder.MergeFrom(Component);
+            }
+            input.ReadMessage(subBuilder);
+            Component = subBuilder;
+            break;
+          }
+          case 346: {
+            global::Ubii.Devices.ComponentList subBuilder = new global::Ubii.Devices.ComponentList();
+            if (typeCase_ == TypeOneofCase.ComponentList) {
+              subBuilder.MergeFrom(ComponentList);
+            }
+            input.ReadMessage(subBuilder);
+            ComponentList = subBuilder;
+            break;
+          }
+          case 354: {
+            global::Ubii.Sessions.SessionList subBuilder = new global::Ubii.Sessions.SessionList();
+            if (typeCase_ == TypeOneofCase.SessionList) {
+              subBuilder.MergeFrom(SessionList);
+            }
+            input.ReadMessage(subBuilder);
+            SessionList = subBuilder;
             break;
           }
         }
