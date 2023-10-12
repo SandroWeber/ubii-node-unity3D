@@ -41,8 +41,11 @@ class NetMQServiceClient : IUbiiServiceClient
     {
         TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
         bool success = false;
-        while (!success)
+        // TODO: This loops will stay endless 
+        int tries = 3;
+        while (!success && tries > 0)
         {
+            tries--;
             try
             {
                 // Convert serviceRequest into byte array which is then sent to server as frame
@@ -51,8 +54,12 @@ class NetMQServiceClient : IUbiiServiceClient
 
                 // Receive, return Task
                 promise = new TaskCompletionSource<ServiceReply>();
-                promise.TrySetResult(ServiceReply.Parser.ParseFrom(socket.ReceiveFrameBytes()));
+                CancellationToken ctoken = new CancellationTokenSource(TimeSpan.FromSeconds(3).Milliseconds).Token;
+                // Receive, return Task
+                promise = new TaskCompletionSource<ServiceReply>();
+                Task.Run(() => promise.TrySetResult(ServiceReply.Parser.ParseFrom(socket.ReceiveFrameBytes())), ctoken);
                 success = true;
+
             }
             catch (Exception exception)
             {
