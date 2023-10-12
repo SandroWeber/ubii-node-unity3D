@@ -146,7 +146,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public bool IsConnected()
     {
-        return networkClient.IsConnected();
+        return networkClient != null && networkClient.IsConnected();
     }
 
     public Task WaitForConnection()
