@@ -191,11 +191,14 @@ public class UbiiNetworkClient
 
     async public void ShutDown()
     {
-        await CallService(new Ubii.Services.ServiceRequest
+        if (IsConnected())
         {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
-            Client = clientSpecification
-        });
+            await CallService(new Ubii.Services.ServiceRequest
+            {
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
+                Client = clientSpecification
+            });
+        }
         serviceClient.TearDown();
         topicDataClient.TearDown();
     }
