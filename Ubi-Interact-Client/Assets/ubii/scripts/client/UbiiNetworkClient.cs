@@ -91,7 +91,7 @@ public class UbiiNetworkClient
         if (this.serverSpecification == null) return null;
         this.clientSpecification = await RegisterAsClient(clientSpecs);
         if (this.clientSpecification == null) return null;
-        Debug.Log("UBII - client specs: " + this.clientSpecification);
+        
         InitTopicDataClient();
 
         return clientSpecification;
@@ -134,7 +134,6 @@ public class UbiiNetworkClient
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
-        Debug.Log("UBII UbiiNetworkClient.RegisterAsClient(): " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
         if (reply == null)
@@ -212,7 +211,7 @@ public class UbiiNetworkClient
 
     public bool IsConnected()
     {
-        return (clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected());
+        return clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected();
     }
 
     public void SetPublishDelay(int millisecs)

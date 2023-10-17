@@ -103,19 +103,30 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             clientNodeSpecification.ProcessingModules.Add(pm);
         }
 
-        bool success = await InitNetworkConnection();
-        if (success)
+        int connectionTry = 0;
+        int retryDelaySeconds = 3;
+        bool connected = false;
+        while (!connected)
         {
-            OnConnected?.Invoke();
+            connectionTry++;
+            Debug.Log("UBII - connectionTry: " + connectionTry);
+            connected = await InitNetworkConnection();
+            if (connected)
+            {
+                OnConnected?.Invoke();
 
-            processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
-            await SubscribeSessionInfo();
-            OnInitialized?.Invoke();
-            Debug.Log("UBII - client: " + clientNodeSpecification);
-        }
-        else
-        {
-            Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node");
+                processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
+                await SubscribeSessionInfo();
+                OnInitialized?.Invoke();
+                Debug.Log("UBII - client: " + clientNodeSpecification);
+            }
+            else
+            {
+                int delay = Math.Min(60, retryDelaySeconds);
+                Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node, retrying in " + delay + "s");
+                Task.Delay(delay * 1000).Wait();
+                retryDelaySeconds *= 2;
+            }
         }
     }
 
