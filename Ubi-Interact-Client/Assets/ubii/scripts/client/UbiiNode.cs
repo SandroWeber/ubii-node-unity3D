@@ -97,19 +97,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public async Task Initialize()
     {
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
-
-        clientNodeSpecification = new Ubii.Clients.Client
-        {
-            Name = clientName,
-            IsDedicatedProcessingNode = isDedicatedProcessingNode
-        };
-
-        List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllSpecifications();
-        //Debug.Log("Node init PM list: " + pmDatabaseList.Count);
-        foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
-        {
-            clientNodeSpecification.ProcessingModules.Add(pm);
-        }
+        this.InitClientSpecification();
 
         this.ctsInitConnection = new CancellationTokenSource();
         bool connected = false;
@@ -149,11 +137,34 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
+    private void InitClientSpecification()
+    {
+        clientNodeSpecification = new Ubii.Clients.Client
+        {
+            Name = clientName,
+            IsDedicatedProcessingNode = isDedicatedProcessingNode
+        };
+
+        List<Ubii.Processing.ProcessingModule> pmDatabaseList = processingModuleDatabase.GetAllSpecifications();
+        //Debug.Log("Node init PM list: " + pmDatabaseList.Count);
+        foreach (Ubii.Processing.ProcessingModule pm in pmDatabaseList)
+        {
+            clientNodeSpecification.ProcessingModules.Add(pm);
+        }
+    }
+
     private async Task<bool> InitNetworkConnection()
     {
         networkClient = new UbiiNetworkClient(this.serviceConnectionMode, this.serviceAddress, this.topicDataConnectionMode, this.topicDataAddress);
-        clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-        if (clientNodeSpecification == null) return false;
+        Ubii.Clients.Client serverClientSpecs = await networkClient.Initialize(clientNodeSpecification);
+        if (serverClientSpecs == null)
+        {
+            return false;
+        }
+        else
+        {
+            clientNodeSpecification = serverClientSpecs;
+        }
 
         this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);

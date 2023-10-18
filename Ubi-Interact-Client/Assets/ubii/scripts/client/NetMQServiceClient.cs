@@ -26,6 +26,7 @@ class NetMQServiceClient : IUbiiServiceClient
     // creates tcp connection to given host and port
     private void StartSocket()
     {
+        Debug.Log("NetMQServiceClient.StartSocket()");
         AsyncIO.ForceDotNet.Force();
         socket = new RequestSocket();
         try
@@ -82,7 +83,6 @@ class NetMQServiceClient : IUbiiServiceClient
             int tries = MAX_RETRIES_CALL_SERVICE;
             while (!success && tries > 0)
             {
-                Debug.LogError("UBII NetMQServiceClient.CallService(): tries remaining " + tries);
                 tries--;
                 try
                 {
@@ -100,6 +100,7 @@ class NetMQServiceClient : IUbiiServiceClient
                 catch (Exception exception)
                 {
                     Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
+                    this.StartSocket();
                     Task.Delay(100).Wait();
                 }
             }
