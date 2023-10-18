@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ubii.Services;
 using NetMQ;
 using NetMQ.Sockets;
@@ -13,7 +10,7 @@ using System.Threading;
 class NetMQServiceClient : IUbiiServiceClient
 {
     static int MAX_RETRIES_CALL_SERVICE = 3;
-    static int TIMEOUT_SECONDS_CALL_SERVICE_RECEIVE = 1;
+    static int TIMEOUT_SECONDS_CALL_SERVICE = 1;
 
     private string masterNodeAddress;
     private int port;
@@ -89,10 +86,14 @@ class NetMQServiceClient : IUbiiServiceClient
                 tries--;
                 try
                 {
+                    Debug.Log(request);
                     byte[] buffer = request.ToByteArray();
-                    socket.SendFrame(buffer);
+                    socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), buffer);
                     byte[] responseByteArray;
-                    bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE_RECEIVE), out responseByteArray);
+                    bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), out responseByteArray);
+                    if (!received) {
+                        continue;
+                    }
                     response = ServiceReply.Parser.ParseFrom(responseByteArray);
                     success = true;
                 }

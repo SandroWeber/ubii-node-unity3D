@@ -198,8 +198,8 @@ public class UbiiNetworkClient
                 Client = clientSpecification
             });
         }
-        serviceClient.TearDown();
-        topicDataClient.TearDown();
+        serviceClient?.TearDown();
+        topicDataClient?.TearDown();
     }
 
     #endregion
