@@ -15,6 +15,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     const string DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103";
     const string DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
 
+    const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
+    const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
+
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
 
@@ -56,6 +59,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     private TopicDataBuffer topicData = new TopicDataBuffer();
 
     private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
+    private CancellationTokenSource ctsInitConnection = null;
 
     #region unity
 
@@ -76,6 +80,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void OnDisable()
     {
+        this.ctsInitConnection?.Cancel();
+
         await DeregisterAllDevices();
         if (networkClient != null)
         {
@@ -90,6 +96,48 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task Initialize()
     {
+        UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
+        this.InitClientSpecification();
+
+        this.ctsInitConnection = new CancellationTokenSource();
+        bool connected = false;
+        try
+        {
+            connected = await Task.Run(async () =>
+            {
+                int connectionTry = 0;
+                bool success = false;
+                while (!success && !this.ctsInitConnection.IsCancellationRequested)
+                {
+                    connectionTry++;
+                    success = await InitNetworkConnection();
+                    if (!success)
+                    {
+                        int delay = Math.Min(CONNECTION_RETRY_MAX_DELAY_SECONDS, connectionTry * CONNECTION_RETRY_INCREMENT_SECONDS);
+                        Debug.LogError("UBII - failed to establish network connection to master node, retrying in " + delay + "s");
+                        Task.Delay(delay * 1000).Wait(this.ctsInitConnection.Token);
+                    }
+                }
+
+                return true;
+            }, this.ctsInitConnection.Token);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("UBII - connection task exception: " + ex.ToString());
+        }
+
+        if (connected)
+        {
+            processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
+            await SubscribeSessionInfo();
+            OnConnected?.Invoke();
+            OnInitialized?.Invoke();
+        }
+    }
+
+    private void InitClientSpecification()
+    {
         clientNodeSpecification = new Ubii.Clients.Client
         {
             Name = clientName,
@@ -102,33 +150,26 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             clientNodeSpecification.ProcessingModules.Add(pm);
         }
-
-        bool success = await InitNetworkConnection();
-        if (success)
-        {
-            OnConnected?.Invoke();
-
-            processingModuleManager = new ProcessingModuleManager(this.Id, null, this.processingModuleDatabase, this.topicDataProxy);
-            await SubscribeSessionInfo();
-            OnInitialized?.Invoke();
-            Debug.Log("UBII - client: " + clientNodeSpecification);
-        }
-        else
-        {
-            Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node");
-        }
     }
 
     private async Task<bool> InitNetworkConnection()
     {
         networkClient = new UbiiNetworkClient(this.serviceConnectionMode, this.serviceAddress, this.topicDataConnectionMode, this.topicDataAddress);
-        clientNodeSpecification = await networkClient.Initialize(clientNodeSpecification);
-        if (clientNodeSpecification == null) return false;
+        Ubii.Clients.Client serverClientSpecs = await networkClient.Initialize(clientNodeSpecification);
+        if (serverClientSpecs == null)
+        {
+            return false;
+        }
+        else
+        {
+            clientNodeSpecification = serverClientSpecs;
+        }
 
         this.topicData = new TopicDataBuffer();
         this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
         networkClient.SetPublishDelay(publishDelay);
 
+        Debug.Log("UBII - client connected: " + clientNodeSpecification);
         return true;
     }
 
@@ -146,7 +187,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public bool IsConnected()
     {
-        return networkClient.IsConnected();
+        return networkClient != null && networkClient.IsConnected();
     }
 
     public Task WaitForConnection()

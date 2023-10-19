@@ -57,12 +57,27 @@ public class UbiiNetworkClient
     // Initialize the ubiiClient, serviceClient and topicDataClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
-        string hostURL = this.serviceAddress;
-        if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
+        InitServiceClient();
+        if (serviceClient == null) return null;
+
+        serverSpecification = await RetrieveServerConfig();
+        if (serverSpecification == null) return null;
+        clientSpecification = await RegisterAsClient(clientSpecs);
+        if (clientSpecification == null) return null;
+
+        InitTopicDataClient();
+
+        return clientSpecification;
+    }
+
+    private IUbiiServiceClient InitServiceClient()
+    {
+        string hostURL = serviceAddress;
+        if (serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new NetMQServiceClient(this.serviceAddress);
+            serviceClient = new NetMQServiceClient(serviceAddress);
         }
-        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
+        else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
             if (!hostURL.StartsWith("http://"))
             {
@@ -70,7 +85,7 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
-        else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
+        else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
             if (!hostURL.StartsWith("https://"))
             {
@@ -78,23 +93,14 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
+        Debug.Log("UBII - service connection to " + hostURL);
 
         if (serviceClient == null)
         {
             Debug.LogError("UBII - service connection client could not be created");
-            return null;
         }
 
-        Debug.Log("UBII - connecting to " + hostURL);
-
-        this.serverSpecification = await RetrieveServerConfig();
-        if (this.serverSpecification == null) return null;
-        this.clientSpecification = await RegisterAsClient(clientSpecs);
-        if (this.clientSpecification == null) return null;
-        Debug.Log("UBII - client specs: " + this.clientSpecification);
-        InitTopicDataClient();
-
-        return clientSpecification;
+        return serviceClient;
     }
 
     private async Task<Ubii.Servers.Server> RetrieveServerConfig()
@@ -134,7 +140,6 @@ public class UbiiNetworkClient
         };
         //if(isDedicatedProcessingNode)
         //  TODO:  clientRegistration.Client.ProcessingModules = ...
-        Debug.Log("UBII UbiiNetworkClient.RegisterAsClient(): " + clientRegistration);
 
         ServiceReply reply = await CallService(clientRegistration);
         if (reply == null)
@@ -155,7 +160,7 @@ public class UbiiNetworkClient
         return null;
     }
 
-    private void InitTopicDataClient()
+    private ITopicDataClient InitTopicDataClient()
     {
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
@@ -187,17 +192,22 @@ public class UbiiNetworkClient
         {
             Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
         }
+
+        return this.topicDataClient;
     }
 
     async public void ShutDown()
     {
-        await CallService(new Ubii.Services.ServiceRequest
+        if (IsConnected() && clientSpecification != null)
         {
-            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
-            Client = clientSpecification
-        });
-        serviceClient.TearDown();
-        topicDataClient.TearDown();
+            await CallService(new Ubii.Services.ServiceRequest
+            {
+                Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
+                Client = clientSpecification
+            });
+        }
+        serviceClient?.TearDown();
+        topicDataClient?.TearDown();
     }
 
     #endregion
@@ -209,7 +219,7 @@ public class UbiiNetworkClient
 
     public bool IsConnected()
     {
-        return (clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected());
+        return clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected();
     }
 
     public void SetPublishDelay(int millisecs)
