@@ -26,11 +26,10 @@ class NetMQServiceClient : IUbiiServiceClient
     // creates tcp connection to given host and port
     private void StartSocket()
     {
-        Debug.Log("NetMQServiceClient.StartSocket()");
-        AsyncIO.ForceDotNet.Force();
-        socket = new RequestSocket();
         try
         {
+            AsyncIO.ForceDotNet.Force();
+            socket = new RequestSocket();
             socket.Connect("tcp://" + masterNodeAddress);
         }
         catch (Exception ex)
@@ -38,40 +37,6 @@ class NetMQServiceClient : IUbiiServiceClient
             Debug.LogError("UBII NetMQServiceClient.StartSocket(): " + ex.ToString());
         }
     }
-
-    /*public Task<ServiceReply> CallService(ServiceRequest request)
-    {
-        TaskCompletionSource<ServiceReply> promise = new TaskCompletionSource<ServiceReply>();
-        bool success = false;
-        // TODO: This loops will stay endless 
-        int tries = MAX_RETRIES_CALL_SERVICE;
-        while (!success && tries > 0)
-        {
-            tries--;
-            try
-            {
-                // Convert serviceRequest into byte array which is then sent to server as frame
-                byte[] buffer = request.ToByteArray();
-                socket.SendFrame(buffer);
-
-                // Receive, return Task
-                promise = new TaskCompletionSource<ServiceReply>();
-                CancellationToken ctoken = new CancellationTokenSource(TimeSpan.FromSeconds(3).Milliseconds).Token;
-                // Receive, return Task
-                promise = new TaskCompletionSource<ServiceReply>();
-                Task.Run(() => promise.TrySetResult(ServiceReply.Parser.ParseFrom(socket.ReceiveFrameBytes())), ctoken);
-                success = true;
-
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
-                Task.Delay(100).Wait();
-            }
-        }
-
-        return promise.Task;
-    }*/
 
     public Task<ServiceReply> CallService(ServiceRequest request)
     {
@@ -86,12 +51,12 @@ class NetMQServiceClient : IUbiiServiceClient
                 tries--;
                 try
                 {
-                    Debug.Log(request);
                     byte[] buffer = request.ToByteArray();
                     socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), buffer);
                     byte[] responseByteArray;
                     bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), out responseByteArray);
-                    if (!received) {
+                    if (!received)
+                    {
                         continue;
                     }
                     response = ServiceReply.Parser.ParseFrom(responseByteArray);

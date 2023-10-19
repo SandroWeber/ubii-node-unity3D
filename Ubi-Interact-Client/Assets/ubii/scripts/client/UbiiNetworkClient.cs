@@ -58,11 +58,9 @@ public class UbiiNetworkClient
     public async Task<Client> Initialize(Ubii.Clients.Client clientSpecs)
     {
         string hostURL = this.serviceAddress;
-        Debug.Log("UBII - UbiiNetworkClient.Initialize() connecting to " + hostURL);
         if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
             serviceClient = new NetMQServiceClient(this.serviceAddress);
-            Debug.Log("UBII - UbiiNetworkClient.Initialize() new NetMQServiceClient");
         }
         else if (this.serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
@@ -80,6 +78,7 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
+        Debug.Log("UBII - service connection to " + hostURL);
 
         if (serviceClient == null)
         {

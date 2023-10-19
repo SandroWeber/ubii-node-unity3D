@@ -110,12 +110,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 while (!success && !this.ctsInitConnection.IsCancellationRequested)
                 {
                     connectionTry++;
-                    Debug.Log("UBII UbiiNode.Initialize() - connection try: " + connectionTry);
                     success = await InitNetworkConnection();
                     if (!success)
                     {
                         int delay = Math.Min(CONNECTION_RETRY_MAX_DELAY_SECONDS, connectionTry * CONNECTION_RETRY_INCREMENT_SECONDS);
-                        Debug.LogError("UBII UbiiNode.Initialize() - failed to establish network connection to master node, retrying in " + delay + "s");
+                        Debug.LogError("UBII - failed to establish network connection to master node, retrying in " + delay + "s");
                         Task.Delay(delay * 1000).Wait(this.ctsInitConnection.Token);
                     }
                 }
@@ -125,7 +124,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII UbiiNode.Initialize() - connection task exception: " + ex.ToString());
+            Debug.LogError("UBII - connection task exception: " + ex.ToString());
         }
 
         if (connected)
