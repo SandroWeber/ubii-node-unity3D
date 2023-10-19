@@ -10,10 +10,12 @@ using System.Threading;
 class NetMQServiceClient : IUbiiServiceClient
 {
     static int MAX_RETRIES_CALL_SERVICE = 3;
-    static int TIMEOUT_SECONDS_CALL_SERVICE = 1;
+    static int TIMEOUT_SECONDS_CALLSERVICE = 5;
+    static int TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE = 2;
 
     private string masterNodeAddress;
     private int port;
+    private CancellationTokenSource ctsCallService = null;
 
     RequestSocket socket;
 
@@ -40,7 +42,7 @@ class NetMQServiceClient : IUbiiServiceClient
 
     public Task<ServiceReply> CallService(ServiceRequest request)
     {
-        CancellationToken ctoken = new CancellationTokenSource(TimeSpan.FromSeconds(3)).Token;
+        ctsCallService = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE));
         return Task.Run(() =>
         {
             ServiceReply response = null;
@@ -52,13 +54,10 @@ class NetMQServiceClient : IUbiiServiceClient
                 try
                 {
                     byte[] buffer = request.ToByteArray();
-                    socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), buffer);
+                    socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE), buffer);
                     byte[] responseByteArray;
-                    bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALL_SERVICE), out responseByteArray);
-                    if (!received)
-                    {
-                        continue;
-                    }
+                    bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE), out responseByteArray);
+                    if (!received) continue;
                     response = ServiceReply.Parser.ParseFrom(responseByteArray);
                     success = true;
                 }
@@ -66,16 +65,17 @@ class NetMQServiceClient : IUbiiServiceClient
                 {
                     Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
                     this.StartSocket();
-                    Task.Delay(100).Wait();
+                    Task.Delay(100).Wait(ctsCallService.Token);
                 }
             }
 
             return response;
-        }, ctoken);
+        }, ctsCallService.Token);
     }
 
     public void TearDown()
     {
+        ctsCallService?.Cancel();
         socket.Close();
         NetMQConfig.Cleanup(false);
     }
