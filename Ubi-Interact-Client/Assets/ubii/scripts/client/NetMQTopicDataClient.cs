@@ -19,6 +19,8 @@ using Ubii.TopicData;
 // socket functionality separate
 public class NetMQTopicDataClient : ITopicDataClient
 {
+    static int TIMEOUT_SECONDS_SEND = 3;
+
     private string address;
     private string clientID;
 
@@ -242,8 +244,18 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     public Task<CancellationToken> SendTopicDataImmediately(TopicData topicData)
     {
-        byte[] buffer = topicData.ToByteArray();
-        socket.SendFrame(buffer);
+        try
+        {
+            byte[] buffer = topicData.ToByteArray();
+            bool success = socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_SEND), buffer);
+            if (!success) {
+                Debug.LogError("UBII - TopicData could not be sent: " + topicData.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
 
         return Task.FromResult(new CancellationToken(false));
     }
