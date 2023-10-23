@@ -63,7 +63,7 @@ class NetMQServiceClient : IUbiiServiceClient
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogError("UBII NetMQServiceClient.CallService(): " + exception.ToString());
+                    Debug.LogWarning("UBII NetMQServiceClient.CallService(): " + exception.ToString());
                     this.StartSocket();
                     Task.Delay(100).Wait(ctsCallService.Token);
                 }
