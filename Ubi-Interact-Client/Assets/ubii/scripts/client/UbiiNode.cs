@@ -41,7 +41,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     [Tooltip("Sets the delay for publishing records")]
     [Range(1, 5000)]
-    public int publishDelay = 25;
+    public int msPublishInterval = 25;
 
     [Tooltip("Address for Master Node service connection.")]
     public string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP;
@@ -165,9 +165,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             clientNodeSpecification = serverClientSpecs;
         }
 
-        this.topicData = new TopicDataBuffer();
-        this.topicDataProxy = new TopicDataProxy(topicData, networkClient);
-        networkClient.SetPublishDelay(publishDelay);
+        topicData = new TopicDataBuffer();
+        topicDataProxy = new TopicDataProxy(topicData, networkClient);
+        topicDataProxy.SetPublishDelay(msPublishInterval);
 
         Debug.Log("UBII - client connected: " + clientNodeSpecification);
         return true;
@@ -269,9 +269,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy.PublishImmediately(recordList);
     }
 
-    public void SetPublishDelay(int millisecs)
+    public void SetPublishInterval(int millisecs)
     {
-        networkClient.SetPublishDelay(millisecs);
+        topicDataProxy.SetPublishDelay(millisecs);
     }
 
     public Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback)

@@ -257,14 +257,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientName: Unity3D Client Node - Test Publish/Subscribe
-  serviceConnectionMode: 1
-  topicDataConnectionMode: 1
+  serviceConnectionMode: 0
+  topicDataConnectionMode: 0
   autoConnect: 1
   isDedicatedProcessingNode: 0
-  publishDelay: 25
-  masterNodeAddress: localhost
-  portServiceZMQ: 8101
-  portServiceREST: 8102
+  msPublishInterval: 25
+  serviceAddress: localhost:8101
+  topicDataAddress: localhost:8103
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
