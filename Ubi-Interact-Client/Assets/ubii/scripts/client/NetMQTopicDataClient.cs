@@ -18,7 +18,6 @@ public class NetMQTopicDataClient : ITopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private bool running = false;
     private Task processIncomingMessages = null;
     NetMQPoller poller;
 
@@ -50,12 +49,11 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     private void Initialize()
     {
-        if (CbHandleMessage == null) {
+        if (CbHandleMessage == null)
+        {
             Debug.LogError("UBII - NetMQTopicDataClient has no callback for handling TopicData");
             return;
         }
-
-        running = true;
 
         processIncomingMessages = Task.Factory.StartNew(() =>
         {
@@ -74,23 +72,21 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     public void TearDown()
     {
-        Debug.Log("TearDown NetMQ TopicDataClient");
         ctsProcessIncomingMsgs.Cancel();
-        running = false;
         connected = false;
-
-        NetMQConfig.Cleanup(false);
 
         try
         {
             if (poller.IsRunning)
             {
-                poller.StopAsync();
                 poller.Stop();
+                NetMQConfig.Cleanup(false);
             }
         }
-        catch (Exception)
+        catch (TerminatingException) { }
+        catch (Exception ex)
         {
+            Debug.LogError(ex.ToString());
         }
     }
 
@@ -122,35 +118,35 @@ public class NetMQTopicDataClient : ITopicDataClient
     // Called when data received
     void OnMessage(object sender, NetMQSocketEventArgs e)
     {
-        e.Socket.ReceiveFrameBytes(out bool hasmore);
-        TopicData topicData = new TopicData { };
-        if (hasmore)
+        try
         {
-            byte[] bytes = e.Socket.ReceiveFrameBytes(out hasmore);
-
-            if (bytes.Length == 4)
+            e.Socket.ReceiveFrameBytes(out bool hasmore);
+            TopicData topicData = new TopicData { };
+            if (hasmore)
             {
-                string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                if (msgString == "PING")
+                byte[] bytes = e.Socket.ReceiveFrameBytes(out hasmore);
+
+                if (bytes.Length == 4)
                 {
-                    // PING message
-                    try
+                    string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                    if (msgString == "PING")
                     {
+                        // PING message
                         socket.TrySendFrame(Encoding.UTF8.GetBytes("PONG"));
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError(ex.Message);
-                    }
-                    return;
+                }
+                else
+                {
+                    topicData.MergeFrom(bytes);
                 }
             }
-            else
-            {
-                topicData.MergeFrom(bytes);
-            }
-        }
 
-        CbHandleMessage(topicData);
+            CbHandleMessage(topicData);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
     }
 }
