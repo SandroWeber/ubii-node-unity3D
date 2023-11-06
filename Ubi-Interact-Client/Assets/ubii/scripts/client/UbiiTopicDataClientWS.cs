@@ -177,12 +177,12 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
             try
             {
-                receiveResult = await this.clientWebsocket.ReceiveAsync(arraySegment, ctsReadSocket.Token);
+                receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, ctsReadSocket.Token);
                 receiveBufferCount += receiveResult.Count;
             }
             catch (Exception ex)
             {
-                Debug.LogError("WebSocket receive exception: " + ex.ToString());
+                Debug.LogError("UBII - UbiiTopicDataClientWS.ReadSocket(): " + ex.ToString());
             }
 
             if (receiveResult.EndOfMessage)

@@ -80,7 +80,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void OnDisable()
     {
-        this.ctsInitConnection?.Cancel();
+        ctsInitConnection?.Cancel();
+        topicDataProxy?.StopPublishing();
 
         await DeregisterAllDevices();
         if (networkClient != null)

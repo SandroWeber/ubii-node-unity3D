@@ -40,6 +40,13 @@ public class TopicDataProxy : ITopicDataBuffer
         });
     }
 
+    public async void StopPublishing()
+    {
+        ctsPublish.Cancel();
+        await taskSendTopicData;
+        taskSendTopicData.Dispose();
+    }
+
     public void SetPublishDelay(int milliseconds)
     {
         msPublishDelay = milliseconds;
