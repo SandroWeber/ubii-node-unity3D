@@ -77,7 +77,7 @@ public class UbiiNetworkClient
         string hostURL = serviceAddress;
         if (serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new NetMQServiceClient(serviceAddress);
+            serviceClient = new UbiiServiceClientNetMQ(serviceAddress);
         }
         else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
@@ -166,7 +166,7 @@ public class UbiiNetworkClient
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
             int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new NetMQTopicDataClient(clientSpecification.Id, OnTopicDataMessage, topicDataAddress);
+            this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, OnTopicDataMessage, topicDataAddress);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {

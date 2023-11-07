@@ -7,8 +7,9 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Threading;
 
-class NetMQServiceClient : IUbiiServiceClient
+class UbiiServiceClientNetMQ : IUbiiServiceClient
 {
+    static string LOG_TAG = "UbiiServiceClientNetMQ";
     static int MAX_RETRIES_CALL_SERVICE = 3;
     static int TIMEOUT_SECONDS_CALLSERVICE = 5;
     static int TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE = 2;
@@ -19,7 +20,7 @@ class NetMQServiceClient : IUbiiServiceClient
 
     RequestSocket socket;
 
-    public NetMQServiceClient(string masterNodeAddress = "localhost:8101")
+    public UbiiServiceClientNetMQ(string masterNodeAddress = "localhost:8101")
     {
         this.masterNodeAddress = masterNodeAddress;
         StartSocket();
@@ -36,7 +37,7 @@ class NetMQServiceClient : IUbiiServiceClient
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII NetMQServiceClient.StartSocket(): " + ex.ToString());
+            Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
 
@@ -63,7 +64,7 @@ class NetMQServiceClient : IUbiiServiceClient
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogWarning("UBII NetMQServiceClient.CallService(): " + exception.ToString());
+                    Debug.LogWarning("UBII - " + LOG_TAG + ".CallService(): " + exception.ToString());
                     this.StartSocket();
                     Task.Delay(100).Wait(ctsCallService.Token);
                 }

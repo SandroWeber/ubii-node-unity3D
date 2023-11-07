@@ -8,8 +8,9 @@ using NetMQ.Sockets;
 using Google.Protobuf;
 using Ubii.TopicData;
 
-public class NetMQTopicDataClient : ITopicDataClient
+public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
+    static string LOG_TAG = "UbiiTopicDataClientNetMQ";
     static int TIMEOUT_SECONDS_SEND = 3;
 
     private string address;
@@ -25,7 +26,7 @@ public class NetMQTopicDataClient : ITopicDataClient
 
     private UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null;
 
-    public NetMQTopicDataClient(string clientID, UbiiNetworkClient.CbHandleTopicData cbHandleMessage, string address = "localhost:8103")
+    public UbiiTopicDataClientNetMQ(string clientID, UbiiNetworkClient.CbHandleTopicData cbHandleMessage, string address = "localhost:8103")
     {
         this.address = address;
         this.clientID = clientID; //global variable not neccesarily needed; only for socket.Options.Identity
@@ -43,7 +44,7 @@ public class NetMQTopicDataClient : ITopicDataClient
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII NetMQTopicDataClient.StartSocket(): " + ex.ToString());
+            Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
 
@@ -51,7 +52,7 @@ public class NetMQTopicDataClient : ITopicDataClient
     {
         if (CbHandleMessage == null)
         {
-            Debug.LogError("UBII - NetMQTopicDataClient has no callback for handling TopicData");
+            Debug.LogError("UBII - " + LOG_TAG + " has no callback for handling TopicData");
             return;
         }
 
