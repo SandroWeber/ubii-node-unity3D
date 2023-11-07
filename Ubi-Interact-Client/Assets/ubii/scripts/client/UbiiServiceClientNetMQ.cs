@@ -15,7 +15,6 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     static int TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE = 2;
 
     private string masterNodeAddress;
-    private int port;
     private CancellationTokenSource ctsCallService = null;
 
     RequestSocket socket;
