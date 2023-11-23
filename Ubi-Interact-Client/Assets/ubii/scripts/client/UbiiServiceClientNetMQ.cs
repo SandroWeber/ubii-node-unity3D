@@ -10,13 +10,12 @@ using System.Threading;
 class UbiiServiceClientNetMQ : IUbiiServiceClient
 {
     static string LOG_TAG = "UbiiServiceClientNetMQ";
-    static int MAX_RETRIES_CALL_SERVICE = 3;
     static int TIMEOUT_SECONDS_CALLSERVICE = 5;
-    static int TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE = 2;
 
     private string masterNodeAddress;
     private CancellationTokenSource ctsCallService = null;
 
+    private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
     RequestSocket socket;
 
     public UbiiServiceClientNetMQ(string masterNodeAddress = "localhost:8101")
@@ -30,6 +29,13 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     {
         try
         {
+            if (socket != null)
+            {
+                Debug.Log("[Ubii] Disconnect before reconnect Socket");
+                socket.Disconnect("tcp://" + masterNodeAddress);
+                socket.Dispose();
+                socket = null;
+            }
             AsyncIO.ForceDotNet.Force();
             socket = new RequestSocket();
             socket.Connect("tcp://" + masterNodeAddress);
@@ -47,19 +53,20 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
         {
             ServiceReply response = null;
             bool success = false;
-            int tries = MAX_RETRIES_CALL_SERVICE;
-            while (!success && tries > 0)
+
+            while (!success && !ctsCallService.IsCancellationRequested)
             {
-                tries--;
                 try
                 {
-                    byte[] buffer = request.ToByteArray();
-                    socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE), buffer);
-                    byte[] responseByteArray;
-                    bool received = socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE_SEND_RECEIVE), out responseByteArray);
-                    if (!received) continue;
-                    response = ServiceReply.Parser.ParseFrom(responseByteArray);
-                    success = true;
+                    _semaphoreSlim.Wait(ctsCallService.Token);
+                    {
+                        byte[] buffer = request.ToByteArray();
+                        socket.SendFrame(buffer);
+                        byte[] responseByteArray = socket.ReceiveFrameBytes();
+                        response = ServiceReply.Parser.ParseFrom(responseByteArray);
+                        success = true;
+                    }
+                    _semaphoreSlim.Release();
                 }
                 catch (Exception exception)
                 {
@@ -77,6 +84,13 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     {
         ctsCallService?.Cancel();
         socket.Close();
+        _semaphoreSlim.Wait();
+        if (socket != null)
+        {
+            socket.Disconnect("tcp://" + masterNodeAddress);
+            socket.Dispose();
+            socket = null;
+        }
         NetMQConfig.Cleanup(false);
     }
 }
