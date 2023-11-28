@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
+
 using Ubii.TopicData;
 using Ubii.Clients;
 using Ubii.Devices;
@@ -7,32 +10,37 @@ using Ubii.Services;
 using Ubii.Servers;
 using Ubii.Services.Request;
 using Google.Protobuf.Collections;
-using UnityEngine;
-using System.Threading;
 
 /// <summary>
 /// This class manages network connections based on NetMQ to the Ubi-Interact master node.
 /// </summary>
 public class UbiiNetworkClient
 {
-
     public enum SERVICE_CONNECTION_MODE
     {
         ZEROMQ = 0,
         HTTP = 1,
         HTTPS = 2
     }
-    private SERVICE_CONNECTION_MODE serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
-
     public enum TOPICDATA_CONNECTION_MODE
     {
         ZEROMQ = 0,
         HTTP = 1,
         HTTPS = 2
     }
+
+    public const SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = SERVICE_CONNECTION_MODE.HTTP;
+    public const TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = TOPICDATA_CONNECTION_MODE.HTTP;
+    public const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101",
+        DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
+        DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
+        DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+
+
     public delegate void CbHandleTopicData(TopicData topicData);
     private CbHandleTopicData CbOnTopicDataMessage = null;
 
+    private SERVICE_CONNECTION_MODE serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
     private TOPICDATA_CONNECTION_MODE topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
     private string serviceAddress = "localhost:8101";
     private string topicDataAddress = "localhost:8103";

@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Threading.Tasks;
-using UnityEngine;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
 using Ubii.Services;
 using Ubii.TopicData;
 using Ubii.Devices;
-using System.Linq;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
-    const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101",
-        DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
-        DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
-        DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
-
-    const UbiiNetworkClient.SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP;
-    const UbiiNetworkClient.TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTP;
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
@@ -47,9 +41,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public int msPublishInterval = 25;
 
     [Tooltip("Address for Master Node service connection.")]
-    public string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP;
+    public string serviceAddress = UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP;
     [Tooltip("Address for Master Node topic data connection.")]
-    public string topicDataAddress = DEFAULT_ADDRESS_TOPICDATA_WS;
+    public string topicDataAddress = UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_WS;
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -99,10 +93,10 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     #region initialization
 
     public async Task Initialize(
-        UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = DEFAULT_SERVICE_CONNECTION_MODE,
-        string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP,
-        UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = DEFAULT_TOPICDATA_CONNECTION_MODE,
-        string topicDataAddress = DEFAULT_ADDRESS_TOPICDATA_WS)
+        UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.DEFAULT_SERVICE_CONNECTION_MODE,
+        string serviceAddress = UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP,
+        UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.DEFAULT_TOPICDATA_CONNECTION_MODE,
+        string topicDataAddress = UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_WS)
     {
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();

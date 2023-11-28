@@ -1,11 +1,12 @@
 ﻿using System;
-using Ubii.Services;
-using NetMQ;
-using NetMQ.Sockets;
-using Google.Protobuf;
-using UnityEngine;
 using System.Threading.Tasks;
 using System.Threading;
+using NetMQ;
+using NetMQ.Sockets;
+using UnityEngine;
+
+using Google.Protobuf;
+using Ubii.Services;
 
 class UbiiServiceClientNetMQ : IUbiiServiceClient
 {
@@ -83,14 +84,16 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     public void TearDown()
     {
         ctsCallService?.Cancel();
-        socket.Close();
         _semaphoreSlim.Wait();
+
         if (socket != null)
         {
             socket.Disconnect("tcp://" + masterNodeAddress);
+            socket.Close();
             socket.Dispose();
             socket = null;
         }
+
         NetMQConfig.Cleanup(false);
     }
 }

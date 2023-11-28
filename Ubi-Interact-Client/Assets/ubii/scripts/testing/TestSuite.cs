@@ -9,7 +9,8 @@ public class TestSuite : MonoBehaviour
     async void Start()
     {
         UbiiNode node = GetComponent<UbiiNode>();
-        if (node == null) {
+        if (node == null)
+        {
             Debug.LogError("TestSuite could not find UbiiNode");
             return;
         }
@@ -18,9 +19,14 @@ public class TestSuite : MonoBehaviour
         tests.Add(new TestPubSubRegex(node));
         tests.Add(new TestParallelServiceCalls(node));
 
-        await node.Initialize();
+        await node.Initialize(
+            UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ,
+            UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_ZMQ,
+            UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ,
+            UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_ZMQ);
 
-        foreach (UbiiTest test in tests) {
+        foreach (UbiiTest test in tests)
+        {
             UbiiTestResult result = await test.RunTest();
             Debug.Log(result.ToString());
         }

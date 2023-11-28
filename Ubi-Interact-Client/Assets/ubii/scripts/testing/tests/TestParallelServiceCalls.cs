@@ -7,7 +7,7 @@ using Ubii.Services;
 
 public class TestParallelServiceCalls : UbiiTest
 {
-    static int NUM_TASKS = 5, TEST_DURATION_SECONDS = 5;
+    static int NUM_TASKS = 5, TEST_DURATION_SECONDS = 3;
     private List<Task> tasks = new List<Task>();
     private List<CancellationTokenSource> listCts = new List<CancellationTokenSource>();
     private bool failure = false;
