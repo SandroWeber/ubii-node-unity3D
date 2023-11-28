@@ -23,10 +23,12 @@ public abstract class UbiiTest
 {
 
     protected UbiiNode node = null;
+    protected string testName;
 
     public UbiiTest(UbiiNode node)
     {
         this.node = node;
+        this.testName = this.GetType().Name;
     }
 
     public abstract Task<UbiiTestResult> RunTest();

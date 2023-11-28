@@ -60,6 +60,16 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region unity
 
+    public string Id
+    {
+        get { return clientNodeSpecification.Id; }
+    }
+
+    public string Name
+    {
+        get { return clientName; }
+    }
+
     private async void Start()
     {
         if (autoConnect)
@@ -176,16 +186,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     }
 
     #endregion
-
-    public string Id
-    {
-        get { return clientNodeSpecification.Id; }
-    }
-
-    public string Name
-    {
-        get { return clientName; }
-    }
 
     public bool IsConnected()
     {

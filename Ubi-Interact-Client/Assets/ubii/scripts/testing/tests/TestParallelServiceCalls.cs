@@ -9,7 +9,7 @@ public class TestParallelServiceCalls : UbiiTest
 {
     static int NUM_TASKS = 5, TEST_DURATION_SECONDS = 3;
     private List<Task> tasks = new List<Task>();
-    private List<CancellationTokenSource> listCts = new List<CancellationTokenSource>();
+    private List<CancellationTokenSource> listCts;
     private bool failure = false;
 
     public TestParallelServiceCalls(UbiiNode node) : base(node) { }
@@ -18,6 +18,7 @@ public class TestParallelServiceCalls : UbiiTest
     {
         await node.WaitForConnection();
 
+        listCts = new List<CancellationTokenSource>();
         for (int i = 0; i < NUM_TASKS; i++)
         {
             CancellationTokenSource cts = new CancellationTokenSource();
@@ -69,13 +70,15 @@ public class TestParallelServiceCalls : UbiiTest
             cts.Dispose();
         }
 
+        listCts.Clear();
+
         if (failure)
         {
-            return new UbiiTestResult(false, this.GetType().Name, "service calls caused an exception");
+            return new UbiiTestResult(false, this.testName, "service calls caused an exception");
         }
         else
         {
-            return new UbiiTestResult(true, this.GetType().Name, "test completed successfully");
+            return new UbiiTestResult(true, this.testName, "test completed successfully");
         }
     }
 }

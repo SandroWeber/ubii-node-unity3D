@@ -77,16 +77,16 @@ public class TestPubSubRegex : UbiiTest
 
             if (receivedInvalidTopic)
             {
-                return new UbiiTestResult(false, this.GetType().Name, "callback for invalid regex was called");
+                return new UbiiTestResult(false, this.testName, "callback for invalid regex was called");
             }
             else
             {
-                return new UbiiTestResult(true, this.GetType().Name, "test completed successfully");
+                return new UbiiTestResult(true, this.testName, "test completed successfully");
             }
         }
         catch (OperationCanceledException e)
         {
-            return new UbiiTestResult(false, this.GetType().Name, "timeout");
+            return new UbiiTestResult(false, this.testName, "timeout");
         }
         finally
         {

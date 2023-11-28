@@ -62,11 +62,11 @@ public class TestPubSubTopic : UbiiTest
             {
                 await node.Unsubscribe(subTokens[i]);
             }
-            return new UbiiTestResult(true, this.GetType().Name, "test completed successfully");
+            return new UbiiTestResult(true, this.testName, "test completed successfully");
         }
         catch (OperationCanceledException e)
         {
-            return new UbiiTestResult(false, this.GetType().Name, "timeout");
+            return new UbiiTestResult(false, this.testName, "timeout");
         }
         finally
         {

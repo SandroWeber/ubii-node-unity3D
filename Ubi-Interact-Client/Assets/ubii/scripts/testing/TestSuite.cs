@@ -30,5 +30,17 @@ public class TestSuite : MonoBehaviour
             UbiiTestResult result = await test.RunTest();
             Debug.Log(result.ToString());
         }
+
+        await node.Initialize(
+            UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP,
+            UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP,
+            UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTP,
+            UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_WS);
+
+        foreach (UbiiTest test in tests)
+        {
+            UbiiTestResult result = await test.RunTest();
+            Debug.Log(result.ToString());
+        }
     }
 }
