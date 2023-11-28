@@ -10,10 +10,13 @@ using System.Linq;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
-    const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101";
-    const string DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary";
-    const string DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103";
-    const string DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+    const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101",
+        DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
+        DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
+        DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+
+    const UbiiNetworkClient.SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP;
+    const UbiiNetworkClient.TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTP;
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
@@ -69,7 +72,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             try
             {
-                await Initialize();
+                await Initialize(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
             }
             catch (Exception e)
             {
@@ -95,7 +98,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region initialization
 
-    public async Task Initialize()
+    public async Task Initialize(
+        UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = DEFAULT_SERVICE_CONNECTION_MODE,
+        string serviceAddress = DEFAULT_ADDRESS_SERVICE_HTTP,
+        UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = DEFAULT_TOPICDATA_CONNECTION_MODE,
+        string topicDataAddress = DEFAULT_ADDRESS_TOPICDATA_WS)
     {
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();
@@ -111,7 +118,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 while (!success && !this.ctsInitConnection.IsCancellationRequested)
                 {
                     connectionTry++;
-                    success = await InitNetworkConnection();
+                    success = await InitNetworkConnection(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
                     if (!success)
                     {
                         int delay = Math.Min(CONNECTION_RETRY_MAX_DELAY_SECONDS, connectionTry * CONNECTION_RETRY_INCREMENT_SECONDS);
@@ -153,9 +160,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
-    private async Task<bool> InitNetworkConnection()
+    private async Task<bool> InitNetworkConnection(UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
     {
-        networkClient = new UbiiNetworkClient(this.serviceConnectionMode, this.serviceAddress, this.topicDataConnectionMode, this.topicDataAddress);
+        networkClient = new UbiiNetworkClient(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
         Ubii.Clients.Client serverClientSpecs = await networkClient.Initialize(clientNodeSpecification);
         if (serverClientSpecs == null)
         {
