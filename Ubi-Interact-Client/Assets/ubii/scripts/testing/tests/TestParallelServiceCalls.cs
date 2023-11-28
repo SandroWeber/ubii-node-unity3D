@@ -74,11 +74,11 @@ public class TestParallelServiceCalls : UbiiTest
 
         if (failure)
         {
-            return new UbiiTestResult(false, this.testName, "service calls caused an exception");
+            return CreateTestResult(false, "service calls caused an exception");
         }
         else
         {
-            return new UbiiTestResult(true, this.testName, "test completed successfully");
+            return CreateTestResult(true, "test completed successfully");
         }
     }
 }

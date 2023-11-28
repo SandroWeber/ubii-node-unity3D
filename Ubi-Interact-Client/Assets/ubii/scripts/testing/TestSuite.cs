@@ -31,6 +31,7 @@ public class TestSuite : MonoBehaviour
             Debug.Log(result.ToString());
         }
 
+        await node.Disconnect();
         await node.Initialize(
             UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP,
             UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP,

@@ -113,6 +113,42 @@ public class UbiiNetworkClient
         return serviceClient;
     }
 
+    private ITopicDataClient InitTopicDataClient()
+    {
+        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
+        {
+            int port = int.Parse(serverSpecification.PortTopicDataZmq);
+            this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, OnTopicDataMessage, topicDataAddress);
+        }
+        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
+        {
+            string hostURL = topicDataAddress;
+            if (!hostURL.StartsWith("ws://"))
+            {
+                hostURL = "ws://" + hostURL;
+            }
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
+        }
+        else if (topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
+        {
+            string hostURL = topicDataAddress;
+            if (!hostURL.StartsWith("wss://"))
+            {
+                hostURL = "wss://" + hostURL;
+            }
+            int port = int.Parse(serverSpecification.PortTopicDataWs);
+            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
+        }
+
+        if (topicDataClient == null)
+        {
+            Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
+        }
+
+        return topicDataClient;
+    }
+
     private async Task<Ubii.Servers.Server> RetrieveServerConfig()
     {
         ServiceRequest serverConfigRequest = new ServiceRequest { Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.SERVER_CONFIG };
@@ -169,54 +205,25 @@ public class UbiiNetworkClient
         return null;
     }
 
-    private ITopicDataClient InitTopicDataClient()
+    public async Task<bool> ShutDown()
     {
-        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
-        {
-            int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, OnTopicDataMessage, topicDataAddress);
-        }
-        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
-        {
-            string hostURL = topicDataAddress;
-            if (!hostURL.StartsWith("ws://"))
-            {
-                hostURL = "ws://" + hostURL;
-            }
-            int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
-        }
-        else if (topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
-        {
-            string hostURL = topicDataAddress;
-            if (!hostURL.StartsWith("wss://"))
-            {
-                hostURL = "wss://" + hostURL;
-            }
-            int port = int.Parse(serverSpecification.PortTopicDataWs);
-            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
-        }
-
-        if (topicDataClient == null)
-        {
-            Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
-        }
-
-        return topicDataClient;
-    }
-
-    async public void ShutDown()
-    {
+        bool success = true;
         if (IsConnected() && clientSpecification != null)
         {
-            await CallService(new Ubii.Services.ServiceRequest
+            ServiceReply reply = await CallService(new ServiceRequest
             {
                 Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_DEREGISTRATION,
                 Client = clientSpecification
             });
+            if (reply.Error != null) {
+                Debug.LogError(reply.Error);
+                success = false;
+            }
         }
         serviceClient?.TearDown();
         topicDataClient?.TearDown();
+
+        return success;
     }
 
     #endregion

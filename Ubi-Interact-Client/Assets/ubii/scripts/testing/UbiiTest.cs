@@ -34,4 +34,8 @@ public abstract class UbiiTest
     public abstract Task<UbiiTestResult> RunTest();
 
     public abstract Task<bool> CancelTest();
+
+    public UbiiTestResult CreateTestResult(bool success, string message) {
+        return new UbiiTestResult(success, testName, message);
+    }
 }

@@ -185,6 +185,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         return true;
     }
 
+    public async Task<bool> Disconnect()
+    {
+        return await networkClient.ShutDown();
+    }
+
     #endregion
 
     public bool IsConnected()
