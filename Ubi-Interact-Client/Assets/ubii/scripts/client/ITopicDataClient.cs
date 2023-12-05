@@ -8,7 +8,7 @@ using Ubii.TopicData;
 interface ITopicDataClient
 {
     bool IsConnected();
-    void TearDown();
+    Task<bool> TearDown();
     
     Task<bool> Send(TopicData topicData, CancellationToken ct);
 }

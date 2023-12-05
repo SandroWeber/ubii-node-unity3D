@@ -47,7 +47,10 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
-
+    
+    /// <summary>
+    /// Initialize socket connection and run task to receive data.
+    /// </summary>
     private void Initialize()
     {
         if (CbHandleMessage == null)
@@ -58,11 +61,10 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
         processIncomingMessages = Task.Factory.StartNew(() =>
         {
-            // instantiate poller and socket
             poller = new NetMQPoller();
             socket = new DealerSocket();
             socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for communication Dealer-Router
-            socket.ReceiveReady += OnMessage; // event on receive data
+            socket.ReceiveReady += OnMessage;
 
             StartSocket();
 
@@ -70,8 +72,11 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             poller.RunAsync();
         }, ctsProcessIncomingMsgs.Token);
     }
-
-    public void TearDown()
+    
+    /// <summary>
+    /// Close the client.
+    /// </summary>
+    public Task<bool> TearDown()
     {
         ctsProcessIncomingMsgs.Cancel();
         connected = false;
@@ -82,6 +87,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             {
                 poller.Stop();
                 NetMQConfig.Cleanup(false);
+                return Task.FromResult(true);
             }
         }
         catch (TerminatingException) { }
@@ -89,13 +95,23 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         {
             Debug.LogError(ex.ToString());
         }
+        
+        return Task.FromResult(false);
     }
-
+    
+    /// <summary>
+    /// Get connection status.
+    /// </summary>
     public bool IsConnected()
     {
         return connected;
     }
-
+    
+    /// <summary>
+    /// Used to send TopicData to the master node.
+    /// </summary>
+    /// <param name="topicData">Data to be sent.</param>
+    /// <param name="ct">CancellationToken (not used in this implementation of interface ITopicDataClient).</param>
     public Task<bool> Send(TopicData topicData, CancellationToken ct)
     {
         try
@@ -116,23 +132,24 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         return Task.FromResult(true);
     }
 
-    // Called when data received
-    void OnMessage(object sender, NetMQSocketEventArgs e)
+    /// <summary>
+    /// Called when messages are received.
+    /// </summary>
+    private void OnMessage(object sender, NetMQSocketEventArgs eventArgs)
     {
         try
         {
-            e.Socket.ReceiveFrameBytes(out bool hasmore);
+            eventArgs.Socket.ReceiveFrameBytes(out bool hasmore);
             TopicData topicData = new TopicData { };
             if (hasmore)
             {
-                byte[] bytes = e.Socket.ReceiveFrameBytes(out hasmore);
+                byte[] bytes = eventArgs.Socket.ReceiveFrameBytes(out hasmore);
 
                 if (bytes.Length == 4)
                 {
                     string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                     if (msgString == "PING")
                     {
-                        // PING message
                         socket.TrySendFrame(Encoding.UTF8.GetBytes("PONG"));
                         return;
                     }

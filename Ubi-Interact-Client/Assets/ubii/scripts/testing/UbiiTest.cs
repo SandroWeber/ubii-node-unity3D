@@ -10,8 +10,8 @@ public struct UbiiTestResult
         this.message = message;
     }
 
-    bool success;
-    string title, message;
+    public bool success;
+    public string title, message;
 
     public string ToString()
     {

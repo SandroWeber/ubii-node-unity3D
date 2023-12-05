@@ -67,7 +67,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         connected = true;
     }
 
-    public async void TearDown()
+    public async Task<bool> TearDown()
     {
         connected = false;
         if (clientWebsocket != null)
@@ -82,6 +82,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             clientWebsocket.Dispose();
 #endif
         }
+
+        return true;
     }
 
 #if WINDOWS_UWP

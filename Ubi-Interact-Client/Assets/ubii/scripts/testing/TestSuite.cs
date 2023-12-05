@@ -19,6 +19,9 @@ public class TestSuite : MonoBehaviour
         tests.Add(new TestPubSubRegex(node));
         tests.Add(new TestParallelServiceCalls(node));
 
+        bool allTestsSuccess = true;
+
+        // run tests with ZeroMQ connection
         await node.Initialize(
             UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ,
             UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_ZMQ,
@@ -29,8 +32,10 @@ public class TestSuite : MonoBehaviour
         {
             UbiiTestResult result = await test.RunTest();
             Debug.Log(result.ToString());
+            if (!result.success) allTestsSuccess = false;
         }
 
+        // run tests with HTTP/WS connection
         await node.Disconnect();
         await node.Initialize(
             UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP,
@@ -42,6 +47,15 @@ public class TestSuite : MonoBehaviour
         {
             UbiiTestResult result = await test.RunTest();
             Debug.Log(result.ToString());
+        }
+
+        if (allTestsSuccess)
+        {
+            Debug.Log("UBII - Test Suite - all tests successful");
+        }
+        else
+        {
+            Debug.LogError("UBII - Test Suite - some test(s) failed");
         }
     }
 }

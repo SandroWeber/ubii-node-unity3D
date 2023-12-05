@@ -58,8 +58,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     private Dictionary<string, Device> registeredDevices = new Dictionary<string, Device>();
     private CancellationTokenSource ctsInitConnection = null;
 
-    #region unity
-
     public string Id
     {
         get { return clientNodeSpecification.Id; }
@@ -69,6 +67,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         get { return clientName; }
     }
+
+    #region unity
 
     private async void Start()
     {
@@ -93,7 +93,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         await DeregisterAllDevices();
         if (networkClient != null)
         {
-            networkClient.ShutDown();
+            await networkClient.ShutDown();
         }
         Debug.Log("UBII - Shutting down UbiiClient");
     }
@@ -187,7 +187,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task<bool> Disconnect()
     {
-        return await networkClient.ShutDown();
+        Debug.Log("UBII - Shutting down UbiiClient");
+        ctsInitConnection?.Cancel();
+        topicDataProxy?.StopPublishing();
+
+        await DeregisterAllDevices();
+        return await networkClient?.ShutDown();
     }
 
     #endregion
