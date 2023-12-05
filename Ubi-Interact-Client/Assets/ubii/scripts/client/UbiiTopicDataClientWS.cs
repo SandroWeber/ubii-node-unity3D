@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Google.Protobuf;
 using Ubii.TopicData;
+using System.Net.WebSockets;
 
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
@@ -24,20 +25,26 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private bool connected = false;
     private Task taskProcessIncomingMsgs = null;
     //TODO: merge cancel tokens?
-    private CancellationTokenSource ctsReadSocket;
+    private CancellationTokenSource ctsReadSocket, ctsConnect;
     private MemoryStream msReadBuffer = new MemoryStream();
     private UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null;
+    private UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null;
 
-    public UbiiTopicDataClientWS(string clientId, UbiiNetworkClient.CbHandleTopicData CbHandleMessage, string address = "https://localhost:8104")
+    public UbiiTopicDataClientWS(
+        string clientId,
+        string address = "https://localhost:8104",
+        UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null,
+        UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null)
     {
         this.clientId = clientId;
-        this.CbHandleMessage = CbHandleMessage;
         this.address = address;
+        this.CbHandleMessage = CbHandleMessage;
+        this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
 
         Initialize();
     }
 
-    private async void Initialize()
+    private async Task<bool> Initialize()
     {
         Uri uri = new Uri(this.address + "?clientID=" + this.clientId);
 
@@ -51,8 +58,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             await clientWebsocket.ConnectAsync(uri);
 #else
             clientWebsocket = new System.Net.WebSockets.ClientWebSocket();
-            CancellationToken cancelTokenConnect = new CancellationToken();
-            await clientWebsocket.ConnectAsync(uri, cancelTokenConnect);
+            ctsConnect = new CancellationTokenSource();
+            await clientWebsocket.ConnectAsync(uri, ctsConnect.Token);
 
             ctsReadSocket = new CancellationTokenSource();
             taskProcessIncomingMsgs = Task.Run(ReadSocket, ctsReadSocket.Token);
@@ -61,10 +68,11 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         catch (Exception ex)
         {
             Debug.LogError("UBII UbiiTopicDataClientWS.Initialize(): " + ex.ToString());
-            return;
+            return false;
         }
 
         connected = true;
+        return connected;
     }
 
     public async Task<bool> TearDown()
@@ -77,9 +85,16 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             clientWebsocket.Dispose();
 #else
             ctsReadSocket.Cancel();
-            CancellationToken cancellationToken = new CancellationToken();
-            await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
+            await taskProcessIncomingMsgs;
+            Debug.Log("TearDown() - clientWebsocket.State=" + clientWebsocket.State);
+            if (clientWebsocket.State == WebSocketState.Open)
+            {
+                CancellationTokenSource ctsCloseSocket = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "disconnecting unity websocket client", ctsCloseSocket.Token);
+            }
+            Debug.Log("TearDown() - after CloseOutputAsync");
             clientWebsocket.Dispose();
+            Debug.Log("TearDown() - done");
 #endif
         }
 
@@ -181,6 +196,18 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             {
                 receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, ctsReadSocket.Token);
                 receiveBufferCount += receiveResult.Count;
+            }
+            catch (WebSocketException ex)
+            {
+                if (!ctsReadSocket.IsCancellationRequested)
+                {
+                    Debug.LogError("UBII - UbiiTopicDataClientWS.ReadSocket(): " + ex.ToString());
+                    if (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                    {
+                        clientWebsocket.Dispose();
+                        CbTopicDataConnectionLost();
+                    }
+                }
             }
             catch (Exception ex)
             {

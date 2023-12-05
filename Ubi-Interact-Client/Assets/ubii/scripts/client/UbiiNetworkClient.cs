@@ -38,6 +38,7 @@ public class UbiiNetworkClient
 
 
     public delegate void CbHandleTopicData(TopicData topicData);
+    public delegate void CbTopicDataConnectionLost();
     private CbHandleTopicData CbOnTopicDataMessage = null;
 
     private SERVICE_CONNECTION_MODE serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
@@ -118,7 +119,7 @@ public class UbiiNetworkClient
         if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
         {
             int port = int.Parse(serverSpecification.PortTopicDataZmq);
-            this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, OnTopicDataMessage, topicDataAddress);
+            this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, topicDataAddress, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
         else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
         {
@@ -128,7 +129,7 @@ public class UbiiNetworkClient
                 hostURL = "ws://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
         else if (topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
         {
@@ -138,7 +139,7 @@ public class UbiiNetworkClient
                 hostURL = "wss://" + hostURL;
             }
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, OnTopicDataMessage, hostURL);
+            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
 
         if (topicDataClient == null)
@@ -288,6 +289,11 @@ public class UbiiNetworkClient
     private void OnTopicDataMessage(TopicData topicData)
     {
         this.CbOnTopicDataMessage?.Invoke(topicData);
+    }
+
+    private void OnTopicDataConnectionLost()
+    {
+        Debug.Log("OnTopicDataConnectionLost");
     }
 
     #region Devices

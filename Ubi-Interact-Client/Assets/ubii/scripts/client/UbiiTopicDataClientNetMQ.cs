@@ -25,12 +25,18 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     CancellationTokenSource ctsProcessIncomingMsgs = new CancellationTokenSource();
 
     private UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null;
+    private UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null;
 
-    public UbiiTopicDataClientNetMQ(string clientID, UbiiNetworkClient.CbHandleTopicData cbHandleMessage, string address = "localhost:8103")
+    public UbiiTopicDataClientNetMQ(
+        string clientID,
+        string address = "localhost:8103",
+        UbiiNetworkClient.CbHandleTopicData cbHandleMessage = null,
+        UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null)
     {
-        this.address = address;
         this.clientID = clientID; //global variable not neccesarily needed; only for socket.Options.Identity
+        this.address = address;
         this.CbHandleMessage = cbHandleMessage;
+        this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
 
         Initialize();
     }

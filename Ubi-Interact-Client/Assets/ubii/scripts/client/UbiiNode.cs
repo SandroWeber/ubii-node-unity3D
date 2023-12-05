@@ -100,7 +100,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #endregion
 
-    #region initialization
+    #region connection
 
     public async Task Initialize(
         UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.DEFAULT_SERVICE_CONNECTION_MODE,
@@ -194,6 +194,35 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         await DeregisterAllDevices();
         return await networkClient?.ShutDown();
     }
+
+    /*private async void Reconnect()
+    {
+        Debug.Log("Reconnect()");
+        await TearDown();
+        Debug.Log("Reconnect() after teardown");
+
+        Task.Run(async () =>
+        {
+            Debug.Log("Reconnect() task");
+            int tries = 0;
+            int msDelayNextTry = 100;
+            while (!connected && !ctsConnect.IsCancellationRequested)
+            {
+                Debug.Log("Reconnect() - try=" + tries + ", connected=" + connected + ", delay=" + msDelayNextTry);
+                tries++;
+                await Initialize();
+                if (!connected)
+                {
+                    await Task.Delay(msDelayNextTry, ctsConnect.Token);
+                    msDelayNextTry = Math.Min(10000, msDelayNextTry * 2);
+                }
+                else
+                {
+                    Debug.Log("Reconnect() - try=" + tries + ", connected=" + connected + ", delay=" + msDelayNextTry);
+                }
+            }
+        });
+    }*/
 
     #endregion
 
