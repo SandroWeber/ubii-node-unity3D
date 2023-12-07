@@ -57,13 +57,17 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
             while (!success && !ctsCallService.IsCancellationRequested)
             {
+                _semaphoreSlim.Wait(ctsCallService.Token);
                 try
                 {
-                    _semaphoreSlim.Wait(ctsCallService.Token);
+                    byte[] buffer = request.ToByteArray();
+                    if (!socket.TrySendFrame(buffer))
                     {
-                        byte[] buffer = request.ToByteArray();
-                        socket.SendFrame(buffer);
-                        byte[] responseByteArray = socket.ReceiveFrameBytes();
+                        throw new Exception("Failed to send buffer on socket.");
+                    }
+                    byte[] responseByteArray;
+                    if (socket.TryReceiveFrameBytes(TimeSpan.FromSeconds(0.5f), out responseByteArray))
+                    {
                         response = ServiceReply.Parser.ParseFrom(responseByteArray);
                         success = true;
                     }
@@ -71,6 +75,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
                 }
                 catch (Exception exception)
                 {
+                    _semaphoreSlim.Release();
                     Debug.LogWarning("UBII - " + LOG_TAG + ".CallService(): " + exception.ToString());
                     this.StartSocket();
                     Task.Delay(100).Wait(ctsCallService.Token);
