@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System;
 
-public class TestObjectMovement : MonoBehaviour
+public class TestRandomMovementWithUbii : MonoBehaviour
 {
-    [SerializeField] private int testStartDelaySeconds = 5;
+    [SerializeField] private int testStartDelaySeconds = 1;
     [SerializeField] private GameObject targetObject = null;
 
     private UbiiNode ubiiNode = null;
@@ -63,7 +63,7 @@ public class TestObjectMovement : MonoBehaviour
 
     public void OnClientInitialized()
     {
-        Invoke("StartTest", testStartDelaySeconds); //StartTest();
+        Invoke("StartTest", testStartDelaySeconds);
         return;
     }
 
