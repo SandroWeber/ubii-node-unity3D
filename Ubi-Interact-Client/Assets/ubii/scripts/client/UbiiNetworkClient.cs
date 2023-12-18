@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -16,6 +17,8 @@ using Google.Protobuf.Collections;
 /// </summary>
 public class UbiiNetworkClient
 {
+    static string LOG_TAG = "UbiiNetworkClient";
+
     public enum SERVICE_CONNECTION_MODE
     {
         ZEROMQ = 0,
@@ -28,6 +31,7 @@ public class UbiiNetworkClient
         HTTP = 1,
         HTTPS = 2
     }
+    static int TIMEOUT_SECONDS_CALLSERVICE = 5;
 
     public const SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = SERVICE_CONNECTION_MODE.HTTP;
     public const TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = TOPICDATA_CONNECTION_MODE.HTTP;
@@ -54,6 +58,7 @@ public class UbiiNetworkClient
     private ITopicDataClient topicDataClient = null;
 
     private Server serverSpecification = null;
+    private CancellationTokenSource ctsCallService = null;
 
     public UbiiNetworkClient(SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
     {
@@ -260,9 +265,34 @@ public class UbiiNetworkClient
         }, token);
     }
 
-    public async Task<ServiceReply> CallService(ServiceRequest srq)
+    public Task<ServiceReply> CallService(ServiceRequest srq)
     {
-        return await serviceClient.CallService(srq);
+        ctsCallService = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE));
+        return Task.Run(async () =>
+        {
+            ServiceReply response = null;
+            bool success = false;
+
+            while (!success && !ctsCallService.IsCancellationRequested)
+            {
+                try
+                {
+                    response = await serviceClient.CallService(srq);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning("UBII - " + LOG_TAG + ".CallService(): " + exception.ToString());
+                    //this.StartSocket();
+                    InitServiceClient();
+                    Task.Delay(100).Wait(ctsCallService.Token);
+                }
+            }
+
+            return response;
+        }, ctsCallService.Token);
+
+
+        //return await serviceClient.CallService(srq);
     }
 
     public void Send(TopicDataRecord record, CancellationToken ct)
@@ -291,9 +321,25 @@ public class UbiiNetworkClient
         this.CbOnTopicDataMessage?.Invoke(topicData);
     }
 
-    private void OnTopicDataConnectionLost()
+    private async void OnTopicDataConnectionLost()
     {
         Debug.Log("OnTopicDataConnectionLost");
+
+        // test if master node is still reachable via service calls,
+        // will automatically trigger 
+        var reply = await CallService(new ServiceRequest {
+            Topic = UbiiConstants.Instance.DEFAULT_TOPICS.SERVICES.CLIENT_GET_LIST
+        });
+    }
+
+    private void OnServiceConnectionLost()
+    {
+        Debug.Log("OnServiceConnectionLost");
+        if (!this.topicDataClient.IsConnected()) {
+            Debug.Log("Master node is not reachable! Trigger reconnect loop.");
+        } else {
+            Debug.Log("TopicData connection seems to be up? Only service calls failed.");
+        }
     }
 
     #region Devices
