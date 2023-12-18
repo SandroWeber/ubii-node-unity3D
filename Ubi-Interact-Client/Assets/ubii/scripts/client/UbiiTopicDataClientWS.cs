@@ -1,28 +1,19 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Linq;
 using System.Text;
-
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using Ubii.TopicData;
+using System.Net.WebSockets;
 
-//TODO: both NetMQ and Websocket client share too much code, merge both and keep only base
-// socket functionality separate
 public class UbiiTopicDataClientWS : ITopicDataClient
 {
     private static int RECEIVE_BUFFER_SIZE = 8192;
 
     private string clientId;
     private string address;
-
-
 
 #if WINDOWS_UWP
     //TODO: alternative would be StreamWebSocket, see if necessary for larger messages (images, etc.)
@@ -31,60 +22,60 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private System.Net.WebSockets.ClientWebSocket clientWebsocket = null;
 #endif
 
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicCallbacks = new Dictionary<string, List<Action<TopicDataRecord>>>();
-    private Dictionary<string, List<Action<TopicDataRecord>>> topicRegexCallbacks =
-        new Dictionary<string, List<Action<TopicDataRecord>>>();
-
     private bool connected = false;
-    private Task taskProcessIncomingMsgs = null, taskFlushOutgoingMsgs = null;
+    private Task taskProcessIncomingMsgs = null;
     //TODO: merge cancel tokens?
-    private CancellationToken cancelTokenReadSocket, cancelTokenWriteSocket;
-    private ConcurrentBag<TopicDataRecord> recordsToPublish = new ConcurrentBag<TopicDataRecord>();
+    private CancellationTokenSource ctsReadSocket, ctsConnect;
     private MemoryStream msReadBuffer = new MemoryStream();
+    private UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null;
+    private UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null;
 
-    private int publishInterval = 25; // milliseconds
-
-    public UbiiTopicDataClientWS(string clientId = null, string address = "https://localhost:8104")
+    public UbiiTopicDataClientWS(
+        string clientId,
+        string address = "https://localhost:8104",
+        UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null,
+        UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null)
     {
         this.clientId = clientId;
         this.address = address;
+        this.CbHandleMessage = CbHandleMessage;
+        this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
 
         Initialize();
     }
 
-    private async void Initialize()
+    private async Task<bool> Initialize()
     {
         Uri uri = new Uri(this.address + "?clientID=" + this.clientId);
 
         try
         {
 #if WINDOWS_UWP
-            this.clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
-            this.clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
-            this.clientWebsocket.MessageReceived += OnMessageReceivedUWP;
-            this.clientWebsocket.Closed += OnWebsocketCloseUWP;
+            clientWebsocket = new Windows.Networking.Sockets.MessageWebSocket();
+            clientWebsocket.Control.MessageType = Windows.Networking.Sockets.SocketMessageType.Binary;
+            clientWebsocket.MessageReceived += OnMessageReceivedUWP;
+            clientWebsocket.Closed += OnWebsocketCloseUWP;
             await clientWebsocket.ConnectAsync(uri);
 #else
             clientWebsocket = new System.Net.WebSockets.ClientWebSocket();
-            CancellationToken cancelTokenConnect = new CancellationToken();
-            await clientWebsocket.ConnectAsync(uri, cancelTokenConnect);
+            ctsConnect = new CancellationTokenSource();
+            await clientWebsocket.ConnectAsync(uri, ctsConnect.Token);
 
-            cancelTokenReadSocket = new CancellationToken();
-            taskProcessIncomingMsgs = Task.Run(ReadSocket, cancelTokenReadSocket);
+            ctsReadSocket = new CancellationTokenSource();
+            taskProcessIncomingMsgs = Task.Run(ReadSocket, ctsReadSocket.Token);
 #endif
-            cancelTokenWriteSocket = new CancellationToken();
-            taskFlushOutgoingMsgs = Task.Run(WriteSocket, cancelTokenWriteSocket);
         }
-        catch (System.Exception e)
+        catch (Exception ex)
         {
-            Debug.LogError("UBII UbiiTopicDataClientWS.Initialize(): " + e.ToString());
-            return;
+            Debug.LogError("UBII UbiiTopicDataClientWS.Initialize(): " + ex.ToString());
+            return false;
         }
 
         connected = true;
+        return connected;
     }
 
-    public async void TearDown()
+    public async Task<bool> TearDown()
     {
         connected = false;
         if (clientWebsocket != null)
@@ -93,29 +84,24 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             clientWebsocket.Close(1000, "Client Node stopped");  // constants defined somewhere?
             clientWebsocket.Dispose();
 #else
-            CancellationToken cancellationToken = new CancellationToken();
-            await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "de-initializing unity websocket client", cancellationToken);
+            ctsReadSocket.Cancel();
+            await taskProcessIncomingMsgs;
+            Debug.Log("TearDown() - clientWebsocket.State=" + clientWebsocket.State);
+            if (clientWebsocket.State == WebSocketState.Open)
+            {
+                CancellationTokenSource ctsCloseSocket = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "disconnecting unity websocket client", ctsCloseSocket.Token);
+            }
+            Debug.Log("TearDown() - after CloseOutputAsync");
             clientWebsocket.Dispose();
+            Debug.Log("TearDown() - done");
 #endif
         }
+
+        return true;
     }
 
 #if WINDOWS_UWP
-    private async void WriteSocket()
-    {
-        //TODO: introduce publish frequency settings
-        while (this.connected && !cancelTokenWriteSocket.IsCancellationRequested)
-        {
-            try
-            {
-                await FlushRecordsToPublish();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("UBII UbiiTopicDataClientWS.WriteSocket: " + ex.ToString());
-            }
-        }
-    }
 
     private async Task<CancellationToken> SendBytes(byte[] bytes)
     {
@@ -200,20 +186,32 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
         int receiveBufferCount = 0;
-        
-        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenReadSocket.IsCancellationRequested)
+
+        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !ctsReadSocket.IsCancellationRequested)
         {
             ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer, receiveBufferCount, receiveBuffer.Length - receiveBufferCount);
             System.Net.WebSockets.WebSocketReceiveResult receiveResult = null;
 
             try
             {
-                receiveResult = await this.clientWebsocket.ReceiveAsync(arraySegment, cancelTokenReadSocket);
+                receiveResult = await clientWebsocket.ReceiveAsync(arraySegment, ctsReadSocket.Token);
                 receiveBufferCount += receiveResult.Count;
+            }
+            catch (WebSocketException ex)
+            {
+                if (!ctsReadSocket.IsCancellationRequested)
+                {
+                    Debug.LogError("UBII - UbiiTopicDataClientWS.ReadSocket(): " + ex.ToString());
+                    if (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                    {
+                        clientWebsocket.Dispose();
+                        CbTopicDataConnectionLost();
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Debug.LogError("WebSocket receive exception: " + ex.ToString());
+                Debug.LogError("UBII - UbiiTopicDataClientWS.ReadSocket(): " + ex.ToString());
             }
 
             if (receiveResult.EndOfMessage)
@@ -224,7 +222,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                     string msgString = Encoding.UTF8.GetString(arraySegment.AsMemory().ToArray(), 0, receiveResult.Count);
                     if (msgString == "PING")
                     {
-                        await this.SendBytes(Encoding.UTF8.GetBytes("PONG"));
+                        await this.SendBytes(Encoding.UTF8.GetBytes("PONG"), ctsReadSocket.Token);
                     }
                 }
                 // topic data
@@ -232,64 +230,31 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                 {
                     try
                     {
-                        await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
-                        TopicData topicdata = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
-
-                        if (topicdata.TopicDataRecord != null)
-                        {
-                            this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
-                        }
-
-                        if (topicdata.TopicDataRecordList != null)
-                        {
-                            foreach (TopicDataRecord record in topicdata.TopicDataRecordList.Elements)
-                            {
-                                this.InvokeTopicCallbacks(record);
-                            }
-                        }
-
-                        if (topicdata.Error != null)
-                        {
-                            Debug.LogError(topicdata.Error.ToString());
-                        }
+                        await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, ctsReadSocket.Token);
+                        TopicData topicData = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
+                        CbHandleMessage(topicData);
                     }
                     catch (Exception ex)
                     {
                         Debug.LogError(ex.ToString());
                     }
                 }
-                    
+
                 receiveBufferCount = 0;
             }
-            else {
-                await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, cancelTokenReadSocket);
+            else
+            {
+                await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, ctsReadSocket.Token);
                 receiveBufferCount = 0;
             }
         }
     }
 
-    private async void WriteSocket()
-    {
-        //TODO: introduce publish frequency settings
-        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !cancelTokenWriteSocket.IsCancellationRequested)
-        {
-            try
-            {
-                await FlushRecordsToPublish();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("WebSocket send exception: " + ex.ToString());
-            }
-        }
-    }
-
-    private async Task<CancellationToken> SendBytes(byte[] bytes)
+    private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
-        CancellationToken cancellationToken = new CancellationToken();
-        await clientWebsocket.SendAsync(arraySegment, System.Net.WebSockets.WebSocketMessageType.Binary, true, cancellationToken);
-        return cancellationToken;
+        await clientWebsocket.SendAsync(arraySegment, System.Net.WebSockets.WebSocketMessageType.Binary, true, ct);
+        return true;
     }
 #endif
 
@@ -298,154 +263,13 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         return this.connected;
     }
 
-    public bool IsSubscribed(string topicOrRegex)
-    {
-        return this.topicCallbacks.ContainsKey(topicOrRegex) || this.topicRegexCallbacks.ContainsKey(topicOrRegex);
-    }
-
-    public bool HasTopicCallbacks(string topic)
-    {
-        if (!this.IsSubscribed(topic))
-        {
-            return false;
-        }
-
-        return this.topicCallbacks[topic].Count > 0;
-    }
-
-    public bool HasTopicRegexCallbacks(string regex)
-    {
-        if (!this.IsSubscribed(regex))
-        {
-            return false;
-        }
-
-        return this.topicRegexCallbacks[regex].Count > 0;
-    }
-
-    public List<string> GetAllSubscribedTopics()
-    {
-        return topicCallbacks.Keys.ToList();
-    }
-
-    public List<string> GetAllSubscribedRegex()
-    {
-        return topicRegexCallbacks.Keys.ToList();
-    }
-
-    public void SetPublishDelay(int millisecs)
-    {
-        publishInterval = millisecs;
-    }
-
-    public void AddTopicCallback(string topic, Action<TopicDataRecord> callback)
-    {
-        if (!this.topicCallbacks.ContainsKey(topic))
-        {
-            this.topicCallbacks.Add(topic, new List<Action<TopicDataRecord>>());
-        }
-
-        this.topicCallbacks[topic].Add(callback);
-    }
-
-    public void AddTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
-    {
-        if (!this.topicRegexCallbacks.ContainsKey(regex))
-        {
-            this.topicRegexCallbacks.Add(regex, new List<Action<TopicDataRecord>>());
-        }
-
-        this.topicRegexCallbacks[regex].Add(callback);
-    }
-
-    public void RemoveAllTopicCallbacks(string topic)
-    {
-        this.topicCallbacks.Remove(topic);
-    }
-
-    public void RemoveTopicCallback(string topic, Action<TopicDataRecord> callback)
-    {
-        this.topicCallbacks[topic].Remove(callback);
-    }
-
-    public void RemoveAllTopicRegexCallbacks(string regex)
-    {
-        this.topicRegexCallbacks.Remove(regex);
-    }
-
-    public void RemoveTopicRegexCallback(string regex, Action<TopicDataRecord> callback)
-    {
-        this.topicRegexCallbacks[regex].Remove(callback);
-    }
-
-    public void SendTopicDataRecord(TopicDataRecord record)
-    {
-        recordsToPublish.Add(record);
-    }
-
-    #region private-methods
-
-    private async Task<CancellationToken> FlushRecordsToPublish()
-    {
-        if (recordsToPublish.IsEmpty) return new CancellationToken(true);
-
-        RepeatedField<TopicDataRecord> repeatedField = new RepeatedField<TopicDataRecord>();
-        while (!recordsToPublish.IsEmpty)
-        {
-            if (recordsToPublish.TryTake(out TopicDataRecord record))
-            {
-                repeatedField.Add(record);
-            }
-        }
-
-        TopicDataRecordList recordList = new TopicDataRecordList()
-        {
-            Elements = { repeatedField },
-        };
-
-        TopicData topicData = new TopicData()
-        {
-            TopicDataRecordList = recordList
-        };
-
-        return await SendTopicDataImmediately(topicData);
-    }
-
-    public async Task<CancellationToken> SendTopicDataImmediately(TopicData topicData)
+    public async Task<bool> Send(TopicData topicData, CancellationToken ct)
     {
         MemoryStream memoryStream = new MemoryStream();
         CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
         topicData.WriteTo(codedOutputStream);
         codedOutputStream.Flush();
         var bytebuffer = memoryStream.ToArray();
-        return await this.SendBytes(bytebuffer);
+        return await this.SendBytes(bytebuffer, ct);
     }
-
-    private void InvokeTopicCallbacks(TopicDataRecord record)
-    {
-        string topic = record.Topic;
-        if (topicCallbacks.ContainsKey(topic))
-        {
-            foreach (Action<TopicDataRecord> callback in topicCallbacks[topic])
-            {
-                callback.Invoke(record);
-            }
-        }
-        else
-        {
-            foreach (KeyValuePair<string, List<Action<TopicDataRecord>>> entry in topicRegexCallbacks)
-            {
-                Match m = Regex.Match(topic, entry.Key);
-                if (m.Success)
-                {
-                    foreach (Action<TopicDataRecord> callback in entry.Value)
-                    {
-                        callback.Invoke(record);
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion private-methods
 }

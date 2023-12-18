@@ -15,7 +15,7 @@ interface IUbiiNode
     Task WaitForConnection();
 
     // configuration
-    void SetPublishDelay(int millisecs);
+    void SetPublishInterval(int millisecs);
 
     // services
     Task<ServiceReply> CallService(ServiceRequest request);
