@@ -7,6 +7,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Google.Protobuf;
 using Ubii.TopicData;
+using System.Runtime.InteropServices;
 
 public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
@@ -53,7 +54,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
-    
+
     /// <summary>
     /// Initialize socket connection and run task to receive data.
     /// </summary>
@@ -78,7 +79,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             poller.RunAsync();
         }, ctsProcessIncomingMsgs.Token);
     }
-    
+
     /// <summary>
     /// Close the client.
     /// </summary>
@@ -101,10 +102,10 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         {
             Debug.LogError(ex.ToString());
         }
-        
+
         return Task.FromResult(false);
     }
-    
+
     /// <summary>
     /// Get connection status.
     /// </summary>
@@ -112,7 +113,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     {
         return connected;
     }
-    
+
     /// <summary>
     /// Used to send TopicData to the master node.
     /// </summary>
