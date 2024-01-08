@@ -57,14 +57,14 @@ public class TopicDataProxy : ITopicDataBuffer
         recordsToPublish.AddOrUpdate(record.Topic, record, (key, oldValue) => record);
     }
 
-    public void PublishImmediately(TopicDataRecord topicDataRecord)
+    public async Task<bool> PublishImmediately(TopicDataRecord topicDataRecord)
     {
-        networkClient.Send(topicDataRecord, ctsPublish.Token);
+        return await networkClient.Send(topicDataRecord, ctsPublish.Token);
     }
 
-    public void PublishImmediately(TopicDataRecordList topicDataRecordList)
+    public async Task<bool> PublishImmediately(TopicDataRecordList topicDataRecordList)
     {
-        networkClient.Send(topicDataRecordList, ctsPublish.Token);
+        return await networkClient.Send(topicDataRecordList, ctsPublish.Token);
     }
 
     public TopicDataRecord Pull(string topic)

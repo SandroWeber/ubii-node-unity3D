@@ -86,15 +86,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 #else
             ctsReadSocket.Cancel();
             await taskProcessIncomingMsgs;
-            Debug.Log("TearDown() - clientWebsocket.State=" + clientWebsocket.State);
+
             if (clientWebsocket.State == WebSocketState.Open)
             {
                 CancellationTokenSource ctsCloseSocket = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "disconnecting unity websocket client", ctsCloseSocket.Token);
             }
-            Debug.Log("TearDown() - after CloseOutputAsync");
+
             clientWebsocket.Dispose();
-            Debug.Log("TearDown() - done");
 #endif
         }
 
@@ -187,10 +186,10 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
         int receiveBufferCount = 0;
 
-        while (clientWebsocket.State == System.Net.WebSockets.WebSocketState.Open && !ctsReadSocket.IsCancellationRequested)
+        while (clientWebsocket.State == WebSocketState.Open && !ctsReadSocket.IsCancellationRequested)
         {
             ArraySegment<byte> arraySegment = new ArraySegment<byte>(receiveBuffer, receiveBufferCount, receiveBuffer.Length - receiveBufferCount);
-            System.Net.WebSockets.WebSocketReceiveResult receiveResult = null;
+            WebSocketReceiveResult receiveResult = null;
 
             try
             {
@@ -207,6 +206,13 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         clientWebsocket.Dispose();
                         CbTopicDataConnectionLost();
                     }
+                }
+            }
+            catch (OperationCanceledException ex)
+            {
+                if (!ctsReadSocket.IsCancellationRequested)
+                {
+                    Debug.LogError("UBII - UbiiTopicDataClientWS.ReadSocket(): " + ex.ToString());
                 }
             }
             catch (Exception ex)
@@ -253,7 +259,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
-        await clientWebsocket.SendAsync(arraySegment, System.Net.WebSockets.WebSocketMessageType.Binary, true, ct);
+        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, ct);
         return true;
     }
 #endif

@@ -41,9 +41,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public int msPublishInterval = 25;
 
     [Tooltip("Address for Master Node service connection.")]
-    public string serviceAddress = UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP;
+    public string serviceAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP;
     [Tooltip("Address for Master Node topic data connection.")]
-    public string topicDataAddress = UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_WS;
+    public string topicDataAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS;
 
     private Ubii.Clients.Client clientNodeSpecification;
     private UbiiNetworkClient networkClient;
@@ -104,9 +104,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public async Task Initialize(
         UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.DEFAULT_SERVICE_CONNECTION_MODE,
-        string serviceAddress = UbiiNetworkClient.DEFAULT_ADDRESS_SERVICE_HTTP,
+        string serviceAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP,
         UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.DEFAULT_TOPICDATA_CONNECTION_MODE,
-        string topicDataAddress = UbiiNetworkClient.DEFAULT_ADDRESS_TOPICDATA_WS)
+        string topicDataAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS)
     {
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();
@@ -300,14 +300,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
-    public void PublishImmediately(TopicDataRecord record)
+    public async Task<bool> PublishImmediately(TopicDataRecord record)
     {
-        topicDataProxy.PublishImmediately(record);
+        return await topicDataProxy.PublishImmediately(record);
     }
 
-    public void PublishImmediately(TopicDataRecordList recordList)
+    public async Task<bool> PublishImmediately(TopicDataRecordList recordList)
     {
-        topicDataProxy.PublishImmediately(recordList);
+        return await topicDataProxy.PublishImmediately(recordList);
     }
 
     public void SetPublishInterval(int millisecs)

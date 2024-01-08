@@ -7,6 +7,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Google.Protobuf;
 using Ubii.TopicData;
+using System.Runtime.InteropServices;
 
 public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
@@ -19,7 +20,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Task processIncomingMessages = null;
+    private Task taskProcessIncomingMessages = null;
     NetMQPoller poller;
 
     CancellationTokenSource ctsProcessIncomingMsgs = new CancellationTokenSource();
@@ -53,7 +54,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
-    
+
     /// <summary>
     /// Initialize socket connection and run task to receive data.
     /// </summary>
@@ -65,7 +66,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             return;
         }
 
-        processIncomingMessages = Task.Factory.StartNew(() =>
+        taskProcessIncomingMessages = Task.Factory.StartNew(() =>
         {
             poller = new NetMQPoller();
             socket = new DealerSocket();
@@ -78,22 +79,22 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             poller.RunAsync();
         }, ctsProcessIncomingMsgs.Token);
     }
-    
+
     /// <summary>
     /// Close the client.
     /// </summary>
-    public Task<bool> TearDown()
+    public async Task<bool> TearDown()
     {
-        ctsProcessIncomingMsgs.Cancel();
         connected = false;
-
         try
         {
+            ctsProcessIncomingMsgs.Cancel();
+            await taskProcessIncomingMessages;
             if (poller.IsRunning)
             {
                 poller.Stop();
                 NetMQConfig.Cleanup(false);
-                return Task.FromResult(true);
+                return true;
             }
         }
         catch (TerminatingException) { }
@@ -101,10 +102,10 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         {
             Debug.LogError(ex.ToString());
         }
-        
-        return Task.FromResult(false);
+
+        return false;
     }
-    
+
     /// <summary>
     /// Get connection status.
     /// </summary>
@@ -112,7 +113,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     {
         return connected;
     }
-    
+
     /// <summary>
     /// Used to send TopicData to the master node.
     /// </summary>

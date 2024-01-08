@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Ubii.TopicData;
+using System.Linq;
 
 public class TestPubSubTopic : UbiiTest
 {
+    static bool USE_PUBLISH_IMMEDIATELY = true;
     static int TIMEOUT_SECONDS = 5, NUM_TOPICS = 5;
     private Dictionary<string, int> dictTopicToValue = new Dictionary<string, int>(NUM_TOPICS);
     private SubscriptionToken[] subTokens = new SubscriptionToken[NUM_TOPICS];
@@ -16,13 +18,14 @@ public class TestPubSubTopic : UbiiTest
     override public async Task<UbiiTestResult> RunTest()
     {
         await node.WaitForConnection();
+        dictTopicToValue.Clear();
 
         Random rnd = new Random();
         for (int i = 0; i < NUM_TOPICS; i++)
         {
             string topic = Guid.NewGuid().ToString();
             dictTopicToValue.Add(topic, rnd.Next(1, 99));
-            subTokens[i] = await node.SubscribeTopic(topic, (TopicDataRecord record) =>
+            subTokens[i] = await node.SubscribeTopic(topic, async (TopicDataRecord record) =>
                 {
                     if (record.Int32 == dictTopicToValue[topic])
                     {
@@ -31,9 +34,17 @@ public class TestPubSubTopic : UbiiTest
                 });
         }
 
-        foreach (string topic in dictTopicToValue.Keys)
+        string[] topics = dictTopicToValue.Keys.ToArray();
+        foreach (string topic in topics)
         {
-            node.Publish(new TopicDataRecord { Topic = topic, Int32 = dictTopicToValue[topic] });
+            if (USE_PUBLISH_IMMEDIATELY)
+            {
+                await node.PublishImmediately(new TopicDataRecord { Topic = topic, Int32 = dictTopicToValue[topic] });
+            }
+            else
+            {
+                node.Publish(new TopicDataRecord { Topic = topic, Int32 = dictTopicToValue[topic] });
+            }
         }
 
         return await WaitForTestToFinish();
