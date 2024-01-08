@@ -20,7 +20,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Task processIncomingMessages = null;
+    private Task taskProcessIncomingMessages = null;
     NetMQPoller poller;
 
     CancellationTokenSource ctsProcessIncomingMsgs = new CancellationTokenSource();
@@ -66,7 +66,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             return;
         }
 
-        processIncomingMessages = Task.Factory.StartNew(() =>
+        taskProcessIncomingMessages = Task.Factory.StartNew(() =>
         {
             poller = new NetMQPoller();
             socket = new DealerSocket();
@@ -83,18 +83,18 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     /// <summary>
     /// Close the client.
     /// </summary>
-    public Task<bool> TearDown()
+    public async Task<bool> TearDown()
     {
-        ctsProcessIncomingMsgs.Cancel();
         connected = false;
-
         try
         {
+            ctsProcessIncomingMsgs.Cancel();
+            await taskProcessIncomingMessages;
             if (poller.IsRunning)
             {
                 poller.Stop();
                 NetMQConfig.Cleanup(false);
-                return Task.FromResult(true);
+                return true;
             }
         }
         catch (TerminatingException) { }
@@ -103,7 +103,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             Debug.LogError(ex.ToString());
         }
 
-        return Task.FromResult(false);
+        return false;
     }
 
     /// <summary>

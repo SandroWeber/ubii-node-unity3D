@@ -300,14 +300,14 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
-    public void PublishImmediately(TopicDataRecord record)
+    public async Task<bool> PublishImmediately(TopicDataRecord record)
     {
-        topicDataProxy.PublishImmediately(record);
+        return await topicDataProxy.PublishImmediately(record);
     }
 
-    public void PublishImmediately(TopicDataRecordList recordList)
+    public async Task<bool> PublishImmediately(TopicDataRecordList recordList)
     {
-        topicDataProxy.PublishImmediately(recordList);
+        return await topicDataProxy.PublishImmediately(recordList);
     }
 
     public void SetPublishInterval(int millisecs)

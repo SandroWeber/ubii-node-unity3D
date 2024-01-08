@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Ubii.TopicData;
+using System.Linq;
 
 public class TestPerformancePubSub : UbiiTest
 {
-    static int TIMEOUT_SECONDS = 60, NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, NUM_MESSAGES = 100;
+    static int TIMEOUT_SECONDS = 30, NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, NUM_MESSAGES = 100;
     private List<SubscriptionToken> subTokens = new List<SubscriptionToken>();
 
     private List<string> topics = new List<string>();
-    private List<Task> tasks = new List<Task>();
+    private List<Task> tasksPublishing = new List<Task>();
     private Dictionary<string, int> receivedMessages = new Dictionary<string, int>();
     private Dictionary<string, Stopwatch> stopWatches = new Dictionary<string, Stopwatch>();
     private CancellationTokenSource ctsCancelTest;
@@ -21,14 +22,23 @@ public class TestPerformancePubSub : UbiiTest
 
     override public async Task<UbiiTestResult> RunTest()
     {
+        return await RunTestIteration(50, false);
+    }
+
+    override public Task<bool> CancelTest()
+    {
+        ctsCancelTest.Cancel();
+        return Task.FromResult(true);
+    }
+
+    private async Task<UbiiTestResult> RunTestIteration(int publishIntervalMs, bool publishImmediately)
+    {
         await node.WaitForConnection();
 
         ctsCancelTest = new CancellationTokenSource();
         topics.Clear();
         receivedMessages.Clear();
         stopWatches.Clear();
-
-        int publishIntervalMs = 100;
 
         for (int i = 0; i < NUM_TOPICS; i++)
         {
@@ -42,68 +52,85 @@ public class TestPerformancePubSub : UbiiTest
         {
             subTokens.Add(await node.SubscribeTopic(topic, (TopicDataRecord record) =>
             {
-                receivedMessages[record.Topic] = receivedMessages[record.Topic]++;
-                if (receivedMessages[record.Topic] == NUM_MESSAGES)
+                receivedMessages[record.Topic] = record.Int32;
+                if (record.Int32 == NUM_MESSAGES)
                 {
-                    stopWatches[topic].Stop();
+                    stopWatches[record.Topic].Stop();
                 }
             }));
-            tasks.Add(Task.Run(async () =>
+
+            tasksPublishing.Add(Task.Run(() =>
             {
                 int counter = 0;
-                while (counter < NUM_MESSAGES)
+                while (counter < NUM_MESSAGES && !ctsCancelTest.IsCancellationRequested)
                 {
                     counter++;
                     if (counter == NUM_MESSAGES)
                     {
                         stopWatches[topic].Start();
                     }
-                    node.Publish(new TopicDataRecord { Topic = topic, Int32 = counter });
-                    Task.Delay(publishIntervalMs).Wait(ctsCancelTest.Token); ;
-                }
-            }));
 
+                    TopicDataRecord record = new TopicDataRecord { Topic = topic, Int32 = counter };
+                    if (publishImmediately)
+                    {
+                        node.PublishImmediately(record);
+                    }
+                    else
+                    {
+                        node.Publish(record);
+                    }
+
+                    Task.Delay(publishIntervalMs).Wait(ctsCancelTest.Token);
+                }
+            }, ctsCancelTest.Token));
         }
 
         return await WaitForTestToFinish();
     }
 
-    override public Task<bool> CancelTest()
-    {
-        return Task.FromResult(true);
-    }
-
     private async Task<UbiiTestResult> WaitForTestToFinish()
     {
-        CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
-        /*Task task = Task.Run(() =>
-        {
-            while (dictTopicToValue.Count > 0 && !cts.IsCancellationRequested)
-            {
-                Task.Delay(100).Wait(cts.Token);
-            }
-        }, cts.Token);*/
-
+        UbiiTestResult result;
+        CancellationTokenSource ctsTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
         try
         {
+            TimeSpan sumPublishDelay = new TimeSpan();
+            await Task.Run(async () =>
+            {
+                foreach (Task taskPublishing in tasksPublishing)
+                {
+                    await taskPublishing;
+                }
 
-            foreach (Task task in tasks)
-            {
-                await task;
-            }
-            foreach (var token in subTokens)
-            {
-                await node.Unsubscribe(token);
-            }
-            return CreateTestResult(true, "test completed successfully");
+                bool allMessagesReceived = false;
+                while (!allMessagesReceived && !ctsTimeout.IsCancellationRequested)
+                {
+                    Task.Delay(500).Wait(ctsTimeout.Token);
+                    allMessagesReceived = receivedMessages.Values.All(messageCount => messageCount == NUM_MESSAGES);
+                }
+
+                foreach (var stopwatchEntry in stopWatches)
+                {
+                    sumPublishDelay += stopwatchEntry.Value.Elapsed;
+                }
+            }, ctsTimeout.Token);
+
+            result = CreateTestResult(true, "test completed, delay from last message sent to last message received: " + sumPublishDelay);
         }
         catch (OperationCanceledException e)
         {
-            return CreateTestResult(false, "timeout");
+            result = CreateTestResult(false, "timeout");
         }
         finally
         {
-            cts.Dispose();
+            ctsTimeout.Dispose();
         }
+
+        foreach (var token in subTokens)
+        {
+            await node.Unsubscribe(token);
+        }
+
+        return result;
     }
 }

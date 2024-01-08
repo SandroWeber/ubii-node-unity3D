@@ -104,7 +104,6 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
-        Debug.Log("UBII - service connection to " + hostURL);
 
         if (serviceClient == null)
         {
@@ -265,17 +264,17 @@ public class UbiiNetworkClient
         return await serviceClient.CallService(srq);
     }
 
-    public void Send(TopicDataRecord record, CancellationToken ct)
+    public async Task<bool> Send(TopicDataRecord record, CancellationToken ct)
     {
-        topicDataClient?.Send(new Ubii.TopicData.TopicData
+        return await topicDataClient?.Send(new TopicData
         {
             TopicDataRecord = record
         }, ct);
     }
 
-    public void Send(TopicDataRecordList recordList, CancellationToken ct)
+    public async Task<bool> Send(TopicDataRecordList recordList, CancellationToken ct)
     {
-        topicDataClient?.Send(new Ubii.TopicData.TopicData
+        return await topicDataClient?.Send(new TopicData
         {
             TopicDataRecordList = recordList
         }, ct);

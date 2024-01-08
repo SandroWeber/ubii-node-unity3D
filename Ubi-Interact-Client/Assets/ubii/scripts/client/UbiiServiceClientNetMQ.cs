@@ -14,10 +14,11 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     static int TIMEOUT_SECONDS_CALLSERVICE = 5;
 
     private string masterNodeAddress;
+    private RequestSocket socket;
     private CancellationTokenSource ctsCallService = null;
+    private Task<ServiceReply> taskCallService = null;
 
     private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
-    RequestSocket socket;
 
     public UbiiServiceClientNetMQ(string masterNodeAddress = "localhost:8101")
     {
@@ -50,7 +51,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
     public Task<ServiceReply> CallService(ServiceRequest request)
     {
         ctsCallService = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_CALLSERVICE));
-        return Task.Run(() =>
+        taskCallService = Task.Run(() =>
         {
             ServiceReply response = null;
             bool success = false;
@@ -84,21 +85,30 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
             return response;
         }, ctsCallService.Token);
+
+        return taskCallService;
     }
 
-    public void TearDown()
+    public async void TearDown()
     {
-        ctsCallService?.Cancel();
-        _semaphoreSlim.Wait();
-
-        if (socket != null)
+        try
         {
-            socket.Disconnect("tcp://" + masterNodeAddress);
-            socket.Close();
-            socket.Dispose();
-            socket = null;
-        }
+            ctsCallService?.Cancel();
+            await taskCallService;
+            _semaphoreSlim.Dispose();
 
-        NetMQConfig.Cleanup(false);
+            if (socket != null)
+            {
+                socket.Disconnect("tcp://" + masterNodeAddress);
+                socket.Close();
+                socket.Dispose();
+                socket = null;
+            }
+
+            NetMQConfig.Cleanup(false);
+        }
+        catch (Exception ex) {
+            Debug.LogError(ex.ToString());
+        }
     }
 }

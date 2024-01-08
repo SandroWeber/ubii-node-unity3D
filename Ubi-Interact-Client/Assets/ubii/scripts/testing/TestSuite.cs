@@ -20,6 +20,7 @@ public class TestSuite : MonoBehaviour
         tests.Add(new TestPubSubTopic(node));
         tests.Add(new TestPubSubRegex(node));
         tests.Add(new TestParallelServiceCalls(node));
+        tests.Add(new TestPerformancePubSub(node));
 
         bool allTestsSuccess = true;
 
