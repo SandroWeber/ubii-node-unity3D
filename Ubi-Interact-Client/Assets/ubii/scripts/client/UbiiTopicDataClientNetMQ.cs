@@ -27,6 +27,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
     private UbiiNetworkClient.CbHandleTopicData CbHandleMessage = null;
     private UbiiNetworkClient.CbTopicDataConnectionLost CbTopicDataConnectionLost = null;
+    private SemaphoreSlim semaphoreSend = new SemaphoreSlim(1, 1);
 
     public UbiiTopicDataClientNetMQ(
         string clientID,
@@ -124,7 +125,9 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         try
         {
             byte[] buffer = topicData.ToByteArray();
+            semaphoreSend.Wait();
             bool success = socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_SEND), buffer);
+            semaphoreSend.Release();
             if (!success)
             {
                 Debug.LogError("UBII - TopicData could not be sent: " + topicData.ToString());
@@ -132,6 +135,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         }
         catch (Exception ex)
         {
+            semaphoreSend.Release();
             Debug.LogError(ex.ToString());
             return Task.FromResult(false);
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class TestSuite : MonoBehaviour
 {
     [SerializeField]
-    protected bool testOverZeroMQ = true, testOverHTTP = true;
+    protected bool testOverZeroMQ = true, testOverHTTP = true, runBasicTests = true, runPerformanceTests = true;
     public List<UbiiTest> tests = new List<UbiiTest>();
 
     // Start is called before the first frame update
@@ -17,10 +17,17 @@ public class TestSuite : MonoBehaviour
             return;
         }
 
-        tests.Add(new TestPubSubTopic(node));
-        tests.Add(new TestPubSubRegex(node));
-        tests.Add(new TestParallelServiceCalls(node));
-        tests.Add(new TestPerformancePubSub(node));
+        if (runBasicTests)
+        {
+            tests.Add(new TestPubSubTopic(node));
+            tests.Add(new TestPubSubRegex(node));
+            tests.Add(new TestParallelServiceCalls(node));
+        }
+
+        if (runPerformanceTests)
+        {
+            tests.Add(new TestPerformancePubSub(node));
+        }
 
         bool allTestsSuccess = true;
 
@@ -55,8 +62,9 @@ public class TestSuite : MonoBehaviour
             {
                 UbiiTestResult result = await test.RunTest();
                 Debug.Log(result.ToString());
+                if (!result.success) allTestsSuccess = false;
             }
-            
+
             await node.Disconnect();
         }
 
