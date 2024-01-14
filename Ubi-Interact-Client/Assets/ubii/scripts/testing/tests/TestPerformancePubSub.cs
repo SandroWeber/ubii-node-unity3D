@@ -42,6 +42,7 @@ public class TestPerformancePubSub : UbiiTest
     private async Task<UbiiTestResult> RunTestIteration(int publishIntervalMs, bool publishImmediately)
     {
         await node.WaitForConnection();
+        UnityEngine.Debug.Log("TestPerformancePubSub - started - publish interval (ms): " + publishIntervalMs + ", using publish immediately: " + publishImmediately);
 
         ctsCancelTest = new CancellationTokenSource();
         topics.Clear();
