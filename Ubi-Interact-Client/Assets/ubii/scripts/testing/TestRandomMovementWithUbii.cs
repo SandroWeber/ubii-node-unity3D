@@ -91,6 +91,12 @@ public class TestRandomMovementWithUbii : MonoBehaviour
                 testPosition.Set((float)record.Vector3.X, (float)record.Vector3.Y, (float)record.Vector3.Z);
             });
 
+        await ubiiNode.SubscribeTopic("test/topic",
+            (Ubii.TopicData.TopicDataRecord record) =>
+            {
+                Debug.Log(record);
+            });
+
         testRunning = true;
     }
 

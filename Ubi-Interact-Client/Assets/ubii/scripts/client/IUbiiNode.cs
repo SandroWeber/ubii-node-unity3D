@@ -25,8 +25,8 @@ interface IUbiiNode
     // topic data
     void Publish(TopicDataRecord record);
     void Publish(TopicDataRecordList recordList);
-    void PublishImmediately(TopicDataRecord record);
-    void PublishImmediately(TopicDataRecordList recordList);
+    Task<bool> PublishImmediately(TopicDataRecord record);
+    Task<bool> PublishImmediately(TopicDataRecordList recordList);
     Task<SubscriptionToken> SubscribeTopic(string topic, Action<TopicDataRecord> callback);
     Task<SubscriptionToken> SubscribeRegex(string regex, Action<TopicDataRecord> callback);
     Task<bool> Unsubscribe(SubscriptionToken token);

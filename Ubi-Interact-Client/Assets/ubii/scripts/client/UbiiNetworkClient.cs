@@ -35,10 +35,10 @@ public class UbiiNetworkClient
 
     public const SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = SERVICE_CONNECTION_MODE.HTTP;
     public const TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = TOPICDATA_CONNECTION_MODE.HTTP;
-    public const string DEFAULT_ADDRESS_SERVICE_ZMQ = "localhost:8101",
-        DEFAULT_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
-        DEFAULT_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
-        DEFAULT_ADDRESS_TOPICDATA_WS = "localhost:8104";
+    public const string DEFAULT_LOCALHOST_ADDRESS_SERVICE_ZMQ = "localhost:8101",
+        DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
+        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
+        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS = "localhost:8104";
 
 
     public delegate void CbHandleTopicData(TopicData topicData);
@@ -109,7 +109,6 @@ public class UbiiNetworkClient
             }
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
-        Debug.Log("UBII - service connection to " + hostURL);
 
         if (serviceClient == null)
         {
@@ -295,17 +294,17 @@ public class UbiiNetworkClient
         //return await serviceClient.CallService(srq);
     }
 
-    public void Send(TopicDataRecord record, CancellationToken ct)
+    public async Task<bool> Send(TopicDataRecord record, CancellationToken ct)
     {
-        topicDataClient?.Send(new Ubii.TopicData.TopicData
+        return await topicDataClient?.Send(new TopicData
         {
             TopicDataRecord = record
         }, ct);
     }
 
-    public void Send(TopicDataRecordList recordList, CancellationToken ct)
+    public async Task<bool> Send(TopicDataRecordList recordList, CancellationToken ct)
     {
-        topicDataClient?.Send(new Ubii.TopicData.TopicData
+        return await topicDataClient?.Send(new TopicData
         {
             TopicDataRecordList = recordList
         }, ct);
