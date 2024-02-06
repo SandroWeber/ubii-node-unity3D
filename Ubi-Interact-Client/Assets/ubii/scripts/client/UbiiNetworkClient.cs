@@ -37,6 +37,7 @@ public class UbiiNetworkClient
         DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS = "localhost:8104";
 
 
+
     public delegate void CbHandleTopicData(TopicData topicData);
     public delegate void CbTopicDataConnectionLost();
     private CbHandleTopicData CbOnTopicDataMessage = null;
@@ -221,9 +222,15 @@ public class UbiiNetworkClient
             }
         }
         serviceClient?.TearDown();
-        topicDataClient?.TearDown();
+        bool successTopicData = await topicDataClient?.ShutDownGracefully();
 
         return success;
+    }
+
+    public bool ShutDownImmediately()
+    {
+        bool topicDataSuccess = topicDataClient.ShutDownImmediately();
+        return topicDataSuccess;
     }
 
     #endregion
@@ -236,27 +243,6 @@ public class UbiiNetworkClient
     public bool IsConnected()
     {
         return clientSpecification != null && clientSpecification.Id != null && topicDataClient != null && topicDataClient.IsConnected();
-    }
-
-    public Task WaitForConnection()
-    {
-        CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
-        return Task.Run(() =>
-        {
-            int maxRetries = 100;
-            int currentTry = 1;
-            while (!IsConnected() && currentTry <= maxRetries)
-            {
-                currentTry++;
-                Thread.Sleep(100);
-            }
-
-            if (currentTry > maxRetries)
-            {
-                cts.Cancel();
-            }
-        }, token);
     }
 
     public async Task<ServiceReply> CallService(ServiceRequest srq)

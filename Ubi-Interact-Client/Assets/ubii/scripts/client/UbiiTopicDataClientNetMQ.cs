@@ -46,6 +46,11 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         Initialize();
     }
 
+    void OnApplicationQuit()
+    {
+        Debug.Log("UbiiTopicDataClientNetMQ.OnApplicationQuit()");
+    }
+
     private void StartSocket()
     {
         try
@@ -70,7 +75,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             return;
         }
 
-        taskProcessIncomingMessages = Task.Factory.StartNew(() =>
+        /*taskProcessIncomingMessages = Task.Factory.StartNew(() =>
         {
             socket = new DealerSocket();
             socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router communication
@@ -78,33 +83,93 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             socket.SendReady += EmptySendQueue;
             StartSocket();
 
-            //netMQQueue = new NetMQQueue<byte[]>();
-            //netMQQueueString = new NetMQQueue<string>();
-            //netMQQueue.ReceiveReady += (sender, args) => OnMessageNetMQQueue(sender, netMQQueue.Dequeue());
-            //netMQQueueString.ReceiveReady += (sender, args) => OnMessagePing(sender, netMQQueueString.Dequeue());
-
             poller = new NetMQPoller();
             poller.Add(socket);
-            //poller.Add(netMQQueue);
-            //poller.Add(netMQQueueString);
             poller.RunAsync();
-        }, ctsProcessIncomingMsgs.Token);
+        }, ctsProcessIncomingMsgs.Token);*/
+        socket = new DealerSocket();
+        socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router communication
+        socket.ReceiveReady += OnMessage;
+        socket.SendReady += EmptySendQueue;
+        StartSocket();
+
+        poller = new NetMQPoller();
+        poller.Add(socket);
+        poller.RunAsync();
     }
 
     /// <summary>
     /// Close the client.
     /// </summary>
-    public async Task<bool> TearDown()
+    /*public async Task<bool> TearDown()
     {
+        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown()");
         connected = false;
         try
         {
             ctsProcessIncomingMsgs.Cancel();
             await taskProcessIncomingMessages;
+            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - taskProcessIncomingMessages done");
             if (poller.IsRunning)
             {
-                poller.Stop();
+                //poller.Stop();
+                poller.StopAsync();
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - poller stopped");
                 NetMQConfig.Cleanup(false);
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - netmq config cleanup done");
+                return true;
+            }
+        }
+        catch (TerminatingException) { }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
+
+        return false;
+    }*/
+
+    public async Task<bool> ShutDownGracefully()
+    {
+        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully()");
+        connected = false;
+        try
+        {
+            ctsProcessIncomingMsgs.Cancel();
+            await taskProcessIncomingMessages;
+            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - taskProcessIncomingMessages done");
+            if (poller.IsRunning)
+            {
+                //poller.Stop();
+                poller.StopAsync();
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - poller stopped");
+                NetMQConfig.Cleanup(false);
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - netmq config cleanup done");
+                return true;
+            }
+        }
+        catch (TerminatingException) { }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
+
+        return false;
+    }
+
+    public bool ShutDownImmediately()
+    {
+        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately()");
+        connected = false;
+        try
+        {
+            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - taskProcessIncomingMessages done");
+            if (poller.IsRunning)
+            {
+                poller.StopAsync();
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - poller stopped");
+                NetMQConfig.Cleanup(false);
+                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - netmq config cleanup done");
                 return true;
             }
         }
