@@ -7,7 +7,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Google.Protobuf;
 using Ubii.TopicData;
-using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
 
 public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
@@ -22,6 +22,9 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
     private Task taskProcessIncomingMessages = null;
     NetMQPoller poller;
+    //NetMQQueue<byte[]> netMQQueue;
+    //NetMQQueue<string> netMQQueueString;
+    ConcurrentBag<byte[]> concurrentBagSendData;
 
     CancellationTokenSource ctsProcessIncomingMsgs = new CancellationTokenSource();
 
@@ -38,6 +41,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         this.address = address;
         this.CbHandleMessage = cbHandleMessage;
         this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
+        concurrentBagSendData = new ConcurrentBag<byte[]>();
 
         Initialize();
     }
@@ -68,14 +72,21 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
         taskProcessIncomingMessages = Task.Factory.StartNew(() =>
         {
-            poller = new NetMQPoller();
             socket = new DealerSocket();
-            socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for communication Dealer-Router
+            socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router communication
             socket.ReceiveReady += OnMessage;
-
+            socket.SendReady += EmptySendQueue;
             StartSocket();
 
+            //netMQQueue = new NetMQQueue<byte[]>();
+            //netMQQueueString = new NetMQQueue<string>();
+            //netMQQueue.ReceiveReady += (sender, args) => OnMessageNetMQQueue(sender, netMQQueue.Dequeue());
+            //netMQQueueString.ReceiveReady += (sender, args) => OnMessagePing(sender, netMQQueueString.Dequeue());
+
+            poller = new NetMQPoller();
             poller.Add(socket);
+            //poller.Add(netMQQueue);
+            //poller.Add(netMQQueueString);
             poller.RunAsync();
         }, ctsProcessIncomingMsgs.Token);
     }
@@ -121,6 +132,87 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     /// <param name="ct">CancellationToken (not used in this implementation of interface ITopicDataClient).</param>
     public Task<bool> Send(TopicData topicData, CancellationToken ct)
     {
+        //return this.SendViaQueue(topicData);
+        try
+        {
+            byte[] buffer = topicData.ToByteArray();
+            AddToSendQueue(buffer);
+            //SendViaNetMQQueue(topicData);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(true);
+    }
+
+    /*public Task<bool> SendViaNetMQQueue(TopicData topicData)
+    {
+        try
+        {
+            byte[] buffer = topicData.ToByteArray();
+            netMQQueue.Enqueue(buffer);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(true);
+    }*/
+
+    public void AddToSendQueue(byte[] data)
+    {
+        this.concurrentBagSendData.Add(data);
+    }
+
+    private void EmptySendQueue(object sender, NetMQSocketEventArgs e)
+    {
+        //Debug.Log("EmptySendQueue() - items queued: " + concurrentBagSendData.Count);
+        while (!concurrentBagSendData.IsEmpty)
+        {
+            try
+            {
+                byte[] data;
+                concurrentBagSendData.TryTake(out data);
+                SendBinary(data);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.ToString());
+            }
+        }
+    }
+
+    private bool SendBinary(byte[] buffer)
+    {
+        try
+        {
+            bool success = socket.TrySendFrame(TimeSpan.FromSeconds(TIMEOUT_SECONDS_SEND), buffer);
+            if (!success)
+            {
+                Debug.LogError("UBII - SendBinary() failed");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Used to send TopicData to the master node.
+    /// </summary>
+    /// <param name="topicData">Data to be sent.</param>
+    /// <param name="ct">CancellationToken (not used in this implementation of interface ITopicDataClient).</param>
+    /*public Task<bool> SendDirectly(TopicData topicData, CancellationToken ct)
+    {
         try
         {
             byte[] buffer = topicData.ToByteArray();
@@ -137,7 +229,46 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         }
 
         return Task.FromResult(true);
-    }
+    }*/
+
+    /// <summary>
+    /// Called when messages are received from queue.
+    /// </summary>
+    /*private void OnMessageNetMQQueue(object sender, byte[] bytes)
+    {
+        Debug.Log("OnMessageNetMQQueue() - bytes.Length=" + bytes.Length);
+        Debug.Log(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
+        try
+        {
+            if (bytes.Length == 4)
+            {
+                string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                Debug.Log(msgString);
+                if (msgString == "PING")
+                {
+                    //netMQQueue.Enqueue(Encoding.UTF8.GetBytes("PONG"));
+                    AddToSendQueue(Encoding.UTF8.GetBytes("PONG"));
+                    return;
+                }
+            }
+            else
+            {
+                TopicData topicData = new TopicData { };
+                topicData.MergeFrom(bytes);
+                CbHandleMessage(topicData);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
+    }*/
+
+    /*private void OnMessagePing(object sender, string message)
+    {
+        Debug.Log("OnMessagePing() - " + message);
+        netMQQueueString.Enqueue("PONG");
+    }*/
 
     /// <summary>
     /// Called when messages are received.
@@ -147,7 +278,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         try
         {
             eventArgs.Socket.ReceiveFrameBytes(out bool hasmore);
-            TopicData topicData = new TopicData { };
             if (hasmore)
             {
                 byte[] bytes = eventArgs.Socket.ReceiveFrameBytes(out hasmore);
@@ -163,11 +293,11 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
                 }
                 else
                 {
+                    TopicData topicData = new TopicData { };
                     topicData.MergeFrom(bytes);
+                    CbHandleMessage(topicData);
                 }
             }
-
-            CbHandleMessage(topicData);
         }
         catch (Exception ex)
         {

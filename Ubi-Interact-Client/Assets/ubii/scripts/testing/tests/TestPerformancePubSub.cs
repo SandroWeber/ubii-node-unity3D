@@ -9,7 +9,8 @@ using System.Linq;
 
 public class TestPerformancePubSub : UbiiTest
 {
-    static int TIMEOUT_SECONDS = 30, NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, NUM_MESSAGES = 100;
+    const int TIMEOUT_SECONDS = 30, DEFAULT_NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, DEFAULT_PUBLISH_INTERVAL_MS = 10, NUM_MESSAGES = 100;
+    const bool DEFAULT_PUBLISH_IMMEDIATELY = false;
     private List<SubscriptionToken> subTokens = new List<SubscriptionToken>();
 
     private List<string> topics = new List<string>();
@@ -17,12 +18,19 @@ public class TestPerformancePubSub : UbiiTest
     private Dictionary<string, int> receivedMessages = new Dictionary<string, int>();
     private Dictionary<string, Stopwatch> stopWatches = new Dictionary<string, Stopwatch>();
     private CancellationTokenSource ctsCancelTest;
+    private int publishIntervalMs, numTopics;
+    private bool publishImmediately;
 
-    public TestPerformancePubSub(UbiiNode node) : base(node) { }
+    public TestPerformancePubSub(UbiiNode node, int publishIntervalMs = DEFAULT_PUBLISH_INTERVAL_MS, int numTopics = DEFAULT_NUM_TOPICS, bool publishImmediately = DEFAULT_PUBLISH_IMMEDIATELY) : base(node)
+    {
+        this.publishIntervalMs = publishIntervalMs;
+        this.numTopics = numTopics;
+        this.publishImmediately = publishImmediately;
+    }
 
     override public async Task<UbiiTestResult> RunTest()
     {
-        return await RunTestIteration(50, false);
+        return await RunTestIteration(publishIntervalMs, publishImmediately);
     }
 
     override public Task<bool> CancelTest()
@@ -34,13 +42,14 @@ public class TestPerformancePubSub : UbiiTest
     private async Task<UbiiTestResult> RunTestIteration(int publishIntervalMs, bool publishImmediately)
     {
         await node.WaitForConnection();
+        UnityEngine.Debug.Log("TestPerformancePubSub - started - publish interval (ms): " + publishIntervalMs + ", using publish immediately: " + publishImmediately);
 
         ctsCancelTest = new CancellationTokenSource();
         topics.Clear();
         receivedMessages.Clear();
         stopWatches.Clear();
 
-        for (int i = 0; i < NUM_TOPICS; i++)
+        for (int i = 0; i < DEFAULT_NUM_TOPICS; i++)
         {
             string topic = Guid.NewGuid().ToString();
             topics.Add(topic);
@@ -115,11 +124,16 @@ public class TestPerformancePubSub : UbiiTest
                 }
             }, ctsTimeout.Token);
 
-            result = CreateTestResult(true, "test completed, delay from last message sent to last message received: " + sumPublishDelay);
+            result = CreateTestResult(
+                true,
+                "test completed (pub interval ms: " + publishIntervalMs + ", num topics: " + numTopics + ", publish immediately: " + publishImmediately +
+                "), delay from last message sent to last message received: " + sumPublishDelay);
         }
         catch (OperationCanceledException e)
         {
-            result = CreateTestResult(false, "timeout");
+            result = CreateTestResult(
+                false,
+                "timeout(pub interval ms: " + publishIntervalMs + ", num topics: " + numTopics + ", publish immediately: " + publishImmediately + ")");
         }
         finally
         {

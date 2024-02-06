@@ -361,4 +361,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   testOverZeroMQ: 1
-  testOverHTTP: 1
+  testOverHTTP: 0
+  runBasicTests: 1
+  runPerformanceTests: 1
