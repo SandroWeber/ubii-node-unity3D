@@ -89,21 +89,11 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void OnDisable()
     {
-        Debug.Log("UbiiNode.OnDisable()");
-        ctsInitConnection?.Cancel();
-        topicDataProxy?.StopPublishing();
-
-        await DeregisterAllDevices();
-        if (networkClient != null)
-        {
-            await networkClient.ShutDown();
-        }
-        Debug.Log("UBII - Shutting down UbiiClient");
+        Disconnect();
     }
 
     void OnApplicationQuit()
     {
-        Debug.Log("UbiiNode.OnApplicationQuit()");
         this.networkClient.ShutDownImmediately();
     }
 
@@ -190,18 +180,21 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy = new TopicDataProxy(topicData, networkClient);
         topicDataProxy.SetPublishDelay(msPublishInterval);
 
-        Debug.Log("UBII - client connected: " + clientNodeSpecification);
+        Debug.Log("UBII - client node connected: " + clientNodeSpecification);
         return true;
     }
 
     public async Task<bool> Disconnect()
     {
-        Debug.Log("UBII - Shutting down UbiiClient");
+        if (!networkClient.IsConnected()) return false;
+
         ctsInitConnection?.Cancel();
         topicDataProxy?.StopPublishing();
-
         await DeregisterAllDevices();
-        return await networkClient?.ShutDown();
+        await networkClient?.ShutDown();
+        Debug.Log("UBII - Shut down client node: " + clientNodeSpecification);
+
+        return true;
     }
 
     /*private async void Reconnect()

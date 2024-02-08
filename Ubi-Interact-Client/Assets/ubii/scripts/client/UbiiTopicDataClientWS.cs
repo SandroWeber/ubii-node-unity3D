@@ -75,31 +75,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         return connected;
     }
 
-    /*public async Task<bool> TearDown()
-    {
-        connected = false;
-        if (clientWebsocket != null)
-        {
-#if WINDOWS_UWP
-            clientWebsocket.Close(1000, "Client Node stopped");  // constants defined somewhere?
-            clientWebsocket.Dispose();
-#else
-            ctsReadSocket.Cancel();
-            await taskProcessIncomingMsgs;
-
-            if (clientWebsocket.State == WebSocketState.Open)
-            {
-                CancellationTokenSource ctsCloseSocket = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-                await clientWebsocket.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "disconnecting unity websocket client", ctsCloseSocket.Token);
-            }
-
-            clientWebsocket.Dispose();
-#endif
-        }
-
-        return true;
-    }*/
-
     public async Task<bool> ShutDownGracefully()
     {
         connected = false;
@@ -144,7 +119,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 #endif
 
         }
-        
+
         return true;
     }
 
@@ -307,7 +282,16 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
-        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, ct);
+        try
+        {
+            await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, ct);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
+            return false;
+        }
+
         return true;
     }
 #endif

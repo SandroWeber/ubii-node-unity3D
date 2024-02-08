@@ -20,7 +20,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     private DealerSocket socket;
     private bool connected = false;
 
-    private Task taskProcessIncomingMessages = null;
     NetMQPoller poller;
     //NetMQQueue<byte[]> netMQQueue;
     //NetMQQueue<string> netMQQueueString;
@@ -44,11 +43,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         concurrentBagSendData = new ConcurrentBag<byte[]>();
 
         Initialize();
-    }
-
-    void OnApplicationQuit()
-    {
-        Debug.Log("UbiiTopicDataClientNetMQ.OnApplicationQuit()");
     }
 
     private void StartSocket()
@@ -75,18 +69,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             return;
         }
 
-        /*taskProcessIncomingMessages = Task.Factory.StartNew(() =>
-        {
-            socket = new DealerSocket();
-            socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router communication
-            socket.ReceiveReady += OnMessage;
-            socket.SendReady += EmptySendQueue;
-            StartSocket();
-
-            poller = new NetMQPoller();
-            poller.Add(socket);
-            poller.RunAsync();
-        }, ctsProcessIncomingMsgs.Token);*/
         socket = new DealerSocket();
         socket.Options.Identity = Encoding.UTF8.GetBytes(clientID); // socket needs clientID for Dealer-Router communication
         socket.ReceiveReady += OnMessage;
@@ -98,53 +80,16 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         poller.RunAsync();
     }
 
-    /// <summary>
-    /// Close the client.
-    /// </summary>
-    /*public async Task<bool> TearDown()
-    {
-        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown()");
-        connected = false;
-        try
-        {
-            ctsProcessIncomingMsgs.Cancel();
-            await taskProcessIncomingMessages;
-            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - taskProcessIncomingMessages done");
-            if (poller.IsRunning)
-            {
-                //poller.Stop();
-                poller.StopAsync();
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - poller stopped");
-                NetMQConfig.Cleanup(false);
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.TearDown() - netmq config cleanup done");
-                return true;
-            }
-        }
-        catch (TerminatingException) { }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-        }
-
-        return false;
-    }*/
-
     public async Task<bool> ShutDownGracefully()
     {
-        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully()");
         connected = false;
         try
         {
             ctsProcessIncomingMsgs.Cancel();
-            await taskProcessIncomingMessages;
-            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - taskProcessIncomingMessages done");
             if (poller.IsRunning)
             {
-                //poller.Stop();
                 poller.StopAsync();
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - poller stopped");
                 NetMQConfig.Cleanup(false);
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownGracefully() - netmq config cleanup done");
                 return true;
             }
         }
@@ -159,17 +104,13 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
     public bool ShutDownImmediately()
     {
-        UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately()");
         connected = false;
         try
         {
-            UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - taskProcessIncomingMessages done");
             if (poller.IsRunning)
             {
                 poller.StopAsync();
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - poller stopped");
                 NetMQConfig.Cleanup(false);
-                UnityEngine.Debug.Log("UbiiTopicDataClientNetMQ.ShutDownImmediately() - netmq config cleanup done");
                 return true;
             }
         }
@@ -197,12 +138,10 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     /// <param name="ct">CancellationToken (not used in this implementation of interface ITopicDataClient).</param>
     public Task<bool> Send(TopicData topicData, CancellationToken ct)
     {
-        //return this.SendViaQueue(topicData);
         try
         {
             byte[] buffer = topicData.ToByteArray();
             AddToSendQueue(buffer);
-            //SendViaNetMQQueue(topicData);
         }
         catch (Exception ex)
         {
@@ -212,22 +151,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
         return Task.FromResult(true);
     }
-
-    /*public Task<bool> SendViaNetMQQueue(TopicData topicData)
-    {
-        try
-        {
-            byte[] buffer = topicData.ToByteArray();
-            netMQQueue.Enqueue(buffer);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-            return Task.FromResult(false);
-        }
-
-        return Task.FromResult(true);
-    }*/
 
     public void AddToSendQueue(byte[] data)
     {
@@ -236,7 +159,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
 
     private void EmptySendQueue(object sender, NetMQSocketEventArgs e)
     {
-        //Debug.Log("EmptySendQueue() - items queued: " + concurrentBagSendData.Count);
         while (!concurrentBagSendData.IsEmpty)
         {
             try
@@ -297,45 +219,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     }*/
 
     /// <summary>
-    /// Called when messages are received from queue.
-    /// </summary>
-    /*private void OnMessageNetMQQueue(object sender, byte[] bytes)
-    {
-        Debug.Log("OnMessageNetMQQueue() - bytes.Length=" + bytes.Length);
-        Debug.Log(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
-        try
-        {
-            if (bytes.Length == 4)
-            {
-                string msgString = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                Debug.Log(msgString);
-                if (msgString == "PING")
-                {
-                    //netMQQueue.Enqueue(Encoding.UTF8.GetBytes("PONG"));
-                    AddToSendQueue(Encoding.UTF8.GetBytes("PONG"));
-                    return;
-                }
-            }
-            else
-            {
-                TopicData topicData = new TopicData { };
-                topicData.MergeFrom(bytes);
-                CbHandleMessage(topicData);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-        }
-    }*/
-
-    /*private void OnMessagePing(object sender, string message)
-    {
-        Debug.Log("OnMessagePing() - " + message);
-        netMQQueueString.Enqueue("PONG");
-    }*/
-
-    /// <summary>
     /// Called when messages are received.
     /// </summary>
     private void OnMessage(object sender, NetMQSocketEventArgs eventArgs)
@@ -364,6 +247,7 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
                 }
             }
         }
+        catch (NetMQ.TerminatingException ex) {}
         catch (Exception ex)
         {
             Debug.LogError(ex.ToString());
