@@ -14,6 +14,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
+    const int TIMEOUT_SECONDS_INIT_CONNECTION = 10;
+    const int TIMEOUT_SECONDS_AWAIT_CONNECTION = 10;
 
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
@@ -87,6 +89,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void OnDisable()
     {
+        Debug.Log("UbiiNode.OnDisable()");
         ctsInitConnection?.Cancel();
         topicDataProxy?.StopPublishing();
 
@@ -96,6 +99,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             await networkClient.ShutDown();
         }
         Debug.Log("UBII - Shutting down UbiiClient");
+    }
+
+    void OnApplicationQuit()
+    {
+        Debug.Log("UbiiNode.OnApplicationQuit()");
+        this.networkClient.ShutDownImmediately();
     }
 
     #endregion
@@ -111,7 +120,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();
 
-        this.ctsInitConnection = new CancellationTokenSource();
+        this.ctsInitConnection = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_INIT_CONNECTION));
         bool connected = false;
         try
         {
@@ -233,7 +242,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public Task WaitForConnection()
     {
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_AWAIT_CONNECTION));
         CancellationToken token = cts.Token;
         return Task.Run(() =>
         {
