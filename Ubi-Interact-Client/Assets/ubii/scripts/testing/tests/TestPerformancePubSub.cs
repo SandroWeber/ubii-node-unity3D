@@ -9,8 +9,8 @@ using System.Linq;
 
 public class TestPerformancePubSub : UbiiTest
 {
-    const int TIMEOUT_SECONDS = 30, DEFAULT_NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, DEFAULT_PUBLISH_INTERVAL_MS = 10, NUM_MESSAGES = 100;
-    const bool DEFAULT_PUBLISH_IMMEDIATELY = false;
+    const int TIMEOUT_SECONDS = 100000, DEFAULT_NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, DEFAULT_PUBLISH_INTERVAL_MS = 5, NUM_MESSAGES = 100000;
+    const bool DEFAULT_PUBLISH_IMMEDIATELY = true;
     private List<SubscriptionToken> subTokens = new List<SubscriptionToken>();
 
     private List<string> topics = new List<string>();

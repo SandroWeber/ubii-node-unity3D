@@ -1,26 +1,28 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Ubii.TopicData;
+
 using UnityEngine;
 
 public class TopicDataBuffer : ITopicDataBuffer
 {
-    private Dictionary<string, TopicDataRecord> localTopics;
-    private Dictionary<string, List<SubscriptionToken>> dictTopicSubscriptionTokens;
-    private Dictionary<string, List<SubscriptionToken>> dictRegexSubscriptionTokens;
-    private Dictionary<string, List<string>> dictTopic2RegexMatches;
+    static string LOG_TAG = "TopicDataBuffer";
+    private ConcurrentDictionary<string, TopicDataRecord> localTopics;
+    private ConcurrentDictionary<string, List<SubscriptionToken>> dictTopicSubscriptionTokens;
+    private ConcurrentDictionary<string, List<SubscriptionToken>> dictRegexSubscriptionTokens;
+    private ConcurrentDictionary<string, List<string>> dictTopic2RegexMatches;
 
     private int currentTokenId = -1;
 
     public TopicDataBuffer()
     {
-        localTopics = new Dictionary<string, TopicDataRecord>();
-        dictTopicSubscriptionTokens = new Dictionary<string, List<SubscriptionToken>>();
-        dictRegexSubscriptionTokens = new Dictionary<string, List<SubscriptionToken>>();
-        dictTopic2RegexMatches = new Dictionary<string, List<string>>();
+        localTopics = new ConcurrentDictionary<string, TopicDataRecord>();
+        dictTopicSubscriptionTokens = new ConcurrentDictionary<string, List<SubscriptionToken>>();
+        dictRegexSubscriptionTokens = new ConcurrentDictionary<string, List<SubscriptionToken>>();
+        dictTopic2RegexMatches = new ConcurrentDictionary<string, List<string>>();
     }
 
     /// <summary>
@@ -30,7 +32,7 @@ public class TopicDataBuffer : ITopicDataBuffer
     /// <param name="record">The topic data to publish</param>
     public void Publish(TopicDataRecord record)
     {
-        if (!localTopics.ContainsKey(record.Topic))
+        /*if (!localTopics.ContainsKey(record.Topic))
         {
             localTopics.Add(record.Topic, record);
             foreach (var entry in dictRegexSubscriptionTokens)
@@ -48,7 +50,41 @@ public class TopicDataBuffer : ITopicDataBuffer
         else
         {
             localTopics[record.Topic] = record;
-        }
+        }*/
+
+        localTopics.AddOrUpdate(
+            record.Topic,
+            // add
+            (string topic) =>
+            {
+                foreach (var entry in dictRegexSubscriptionTokens)
+                {
+                    string regex = entry.Key;
+                    Match match = Regex.Match(record.Topic, regex);
+                    if (match.Success)
+                    {
+                        bool successAddRegexMatch = false;
+                        while (!successAddRegexMatch)
+                        {
+                            try
+                            {
+                                if (!dictTopic2RegexMatches.ContainsKey(record.Topic))
+                                    dictTopic2RegexMatches.TryAdd(record.Topic, new List<string>());
+                                dictTopic2RegexMatches[record.Topic].Add(regex);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError(LOG_TAG + " - failed to check for regex matches of new topic: " + ex.ToString());
+                            }
+                        }
+
+                    }
+                }
+
+                return record;
+            },
+            // update
+            (string topic, TopicDataRecord oldRecord) => record);
 
         NotifySubscribers(record);
         // TODO: universalSubs?
