@@ -9,7 +9,7 @@ using System.Linq;
 
 public class TestPerformancePubSub : UbiiTest
 {
-    const int TIMEOUT_SECONDS = 30, DEFAULT_NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, DEFAULT_PUBLISH_INTERVAL_MS = 10, NUM_MESSAGES = 100;
+    public const int TIMEOUT_SECONDS = 30, DEFAULT_NUM_TOPICS = 5, MIN_PUBLISH_INTERVAL_MS = 5, DEFAULT_PUBLISH_INTERVAL_MS = 10, NUM_MESSAGES = 100;
     const bool DEFAULT_PUBLISH_IMMEDIATELY = false;
     private List<SubscriptionToken> subTokens = new List<SubscriptionToken>();
 
@@ -35,7 +35,7 @@ public class TestPerformancePubSub : UbiiTest
 
     override public Task<bool> CancelTest()
     {
-        ctsCancelTest.Cancel();
+        ctsCancelTest?.Cancel();
         return Task.FromResult(true);
     }
 

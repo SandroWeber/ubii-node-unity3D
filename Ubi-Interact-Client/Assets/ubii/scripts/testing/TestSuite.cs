@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using UnityEngine;
 
 public class TestSuite : MonoBehaviour
@@ -7,10 +9,12 @@ public class TestSuite : MonoBehaviour
     protected bool testOverZeroMQ = true, testOverHTTP = true, runBasicTests = true, runPerformanceTests = true;
     public List<UbiiTest> tests = new List<UbiiTest>();
 
+    private UbiiNode node = null;
+
     // Start is called before the first frame update
     async void Start()
     {
-        UbiiNode node = GetComponent<UbiiNode>();
+        node = GetComponent<UbiiNode>();
         if (node == null)
         {
             Debug.LogError("TestSuite could not find UbiiNode");
@@ -23,12 +27,25 @@ public class TestSuite : MonoBehaviour
             tests.Add(new TestPubSubRegex(node));
             tests.Add(new TestParallelServiceCalls(node));
         }
-
         if (runPerformanceTests)
         {
-            tests.Add(new TestPerformancePubSub(node));
+            bool usePublishImmediately = true;
+            tests.Add(new TestPerformancePubSub(node, TestPerformancePubSub.DEFAULT_PUBLISH_INTERVAL_MS, TestPerformancePubSub.DEFAULT_NUM_TOPICS, usePublishImmediately));
         }
 
+        PerformAllTests();
+    }
+
+    void OnDisable()
+    {
+        foreach (UbiiTest test in tests)
+        {
+            test.CancelTest();
+        }
+    }
+
+    private async void PerformAllTests()
+    {
         bool allTestsSuccess = true;
 
         if (testOverZeroMQ)
@@ -41,8 +58,7 @@ public class TestSuite : MonoBehaviour
 
             foreach (UbiiTest test in tests)
             {
-                UbiiTestResult result = await test.RunTest();
-                Debug.Log(result.ToString());
+                UbiiTestResult result = await PerformTest(test);
                 if (!result.success) allTestsSuccess = false;
             }
 
@@ -60,8 +76,7 @@ public class TestSuite : MonoBehaviour
 
             foreach (UbiiTest test in tests)
             {
-                UbiiTestResult result = await test.RunTest();
-                Debug.Log(result.ToString());
+                UbiiTestResult result = await PerformTest(test);
                 if (!result.success) allTestsSuccess = false;
             }
 
@@ -76,5 +91,20 @@ public class TestSuite : MonoBehaviour
         {
             Debug.LogError("UBII - Test Suite - some test(s) failed");
         }
+    }
+
+    private async Task<UbiiTestResult> PerformTest(UbiiTest test)
+    {
+        UbiiTestResult result = await test.RunTest();
+        if (result.success)
+        {
+            Debug.Log(result.ToString());
+        }
+        else
+        {
+            Debug.LogError(result.ToString());
+        }
+
+        return result;
     }
 }

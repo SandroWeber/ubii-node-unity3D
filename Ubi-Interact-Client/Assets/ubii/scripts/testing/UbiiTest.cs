@@ -15,7 +15,7 @@ public struct UbiiTestResult
 
     public string ToString()
     {
-        return "Test '" + title + "': success = " + success + ", message = '" + message + "'";
+        return "Test results for '" + title + "': success = " + success + ", message = '" + message + "'";
     }
 }
 

@@ -75,7 +75,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         return connected;
     }
 
-    public async Task<bool> TearDown()
+    public async Task<bool> ShutDownGracefully()
     {
         connected = false;
         if (clientWebsocket != null)
@@ -95,6 +95,29 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
             clientWebsocket.Dispose();
 #endif
+        }
+
+        return true;
+    }
+
+    public bool ShutDownImmediately()
+    {
+        if (clientWebsocket != null)
+        {
+#if WINDOWS_UWP
+            clientWebsocket.Close(1000, "Client Node stopped");  // constants defined somewhere?
+            clientWebsocket.Dispose();
+#else
+            ctsReadSocket.Cancel();
+
+            if (clientWebsocket.State == WebSocketState.Open)
+            {
+                clientWebsocket.Abort();
+            }
+
+            clientWebsocket.Dispose();
+#endif
+
         }
 
         return true;
@@ -259,7 +282,16 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
-        await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, ct);
+        try
+        {
+            await clientWebsocket.SendAsync(arraySegment, WebSocketMessageType.Binary, true, ct);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
+            return false;
+        }
+
         return true;
     }
 #endif

@@ -14,6 +14,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
+    const int TIMEOUT_SECONDS_INIT_CONNECTION = 10;
+    const int TIMEOUT_SECONDS_AWAIT_CONNECTION = 10;
 
     public delegate void InitializedEventHandler();
     public static event InitializedEventHandler OnInitialized;
@@ -87,15 +89,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     private async void OnDisable()
     {
-        ctsInitConnection?.Cancel();
-        topicDataProxy?.StopPublishing();
+        Disconnect();
+    }
 
-        await DeregisterAllDevices();
-        if (networkClient != null)
-        {
-            await networkClient.ShutDown();
-        }
-        Debug.Log("UBII - Shutting down UbiiClient");
+    void OnApplicationQuit()
+    {
+        this.networkClient.ShutDownImmediately();
     }
 
     #endregion
@@ -111,7 +110,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();
 
-        this.ctsInitConnection = new CancellationTokenSource();
+        this.ctsInitConnection = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_INIT_CONNECTION));
         bool connected = false;
         try
         {
@@ -181,18 +180,21 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy = new TopicDataProxy(topicData, networkClient);
         topicDataProxy.SetPublishDelay(msPublishInterval);
 
-        Debug.Log("UBII - client connected: " + clientNodeSpecification);
+        Debug.Log("UBII - client node connected: " + clientNodeSpecification);
         return true;
     }
 
     public async Task<bool> Disconnect()
     {
-        Debug.Log("UBII - Shutting down UbiiClient");
+        if (!networkClient.IsConnected()) return false;
+
         ctsInitConnection?.Cancel();
         topicDataProxy?.StopPublishing();
-
         await DeregisterAllDevices();
-        return await networkClient?.ShutDown();
+        await networkClient?.ShutDown();
+        Debug.Log("UBII - Shut down client node: " + clientNodeSpecification);
+
+        return true;
     }
 
     /*private async void Reconnect()
@@ -233,7 +235,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     public Task WaitForConnection()
     {
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(TIMEOUT_SECONDS_AWAIT_CONNECTION));
         CancellationToken token = cts.Token;
         return Task.Run(() =>
         {
