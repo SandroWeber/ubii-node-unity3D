@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ubii/scenes/TestObjectMovementHTTP.unity
     guid: 1a402138b9de14f4489ae3788e2333d6
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 42a1e68df439d164ea06c6d2e9043def,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7105f5194b1ba1c4ba824989fc0617bc,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 3a1800022decaf640afea91f48f27a6f,
+      type: 2}

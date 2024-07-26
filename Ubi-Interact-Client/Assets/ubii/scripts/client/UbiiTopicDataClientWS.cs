@@ -102,7 +102,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
 #if WINDOWS_UWP
 
-    private async Task<CancellationToken> SendBytes(byte[] bytes)
+    private async Task<bool> SendBytes(byte[] bytes)
     {
         using (var dataWriter = new Windows.Storage.Streams.DataWriter(this.clientWebsocket.OutputStream))
         {
@@ -111,7 +111,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
             dataWriter.DetachStream();
         }
 
-        return new CancellationToken();
+        return true;
     }
 
     private async void OnMessageReceivedUWP(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
@@ -143,14 +143,14 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
                         if (topicdata.TopicDataRecord != null)
                         {
-                            this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
+                            //this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
                         }
 
                         if (topicdata.TopicDataRecordList != null)
                         {
                             foreach (TopicDataRecord record in topicdata.TopicDataRecordList.Elements)
                             {
-                                this.InvokeTopicCallbacks(record);
+                                //this.InvokeTopicCallbacks(record);
                             }
                         }
 
@@ -268,6 +268,7 @@ public class UbiiTopicDataClientWS : ITopicDataClient
     {
         return this.connected;
     }
+#if WINDOWS_UWP
 
     public async Task<bool> Send(TopicData topicData, CancellationToken ct)
     {
@@ -276,6 +277,17 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         topicData.WriteTo(codedOutputStream);
         codedOutputStream.Flush();
         var bytebuffer = memoryStream.ToArray();
+        return await this.SendBytes(bytebuffer);
+    }
+#else
+public async Task<bool> Send(TopicData topicData, CancellationToken ct)
+    {
+        MemoryStream memoryStream = new MemoryStream();
+        CodedOutputStream codedOutputStream = new CodedOutputStream(memoryStream);
+        topicData.WriteTo(codedOutputStream);
+        codedOutputStream.Flush();
+        var bytebuffer = memoryStream.ToArray();
         return await this.SendBytes(bytebuffer, ct);
     }
+#endif
 }
