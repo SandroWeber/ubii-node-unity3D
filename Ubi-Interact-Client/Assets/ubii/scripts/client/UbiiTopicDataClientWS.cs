@@ -102,18 +102,6 @@ public class UbiiTopicDataClientWS : ITopicDataClient
 
 #if WINDOWS_UWP
 
-    private async Task<CancellationToken> SendBytes(byte[] bytes)
-    {
-        using (var dataWriter = new Windows.Storage.Streams.DataWriter(this.clientWebsocket.OutputStream))
-        {
-            dataWriter.WriteBytes(bytes);
-            await dataWriter.StoreAsync();
-            dataWriter.DetachStream();
-        }
-
-        return new CancellationToken();
-    }
-
     private async void OnMessageReceivedUWP(Windows.Networking.Sockets.MessageWebSocket sender, Windows.Networking.Sockets.MessageWebSocketMessageReceivedEventArgs args)
     {
         try
@@ -141,23 +129,12 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         dataReader.ReadBytes(receiveBuffer);
                         topicdata = TopicData.Parser.ParseFrom(receiveBuffer, 0, (int)messageLength);
 
-                        if (topicdata.TopicDataRecord != null)
-                        {
-                            this.InvokeTopicCallbacks(topicdata.TopicDataRecord);
-                        }
-
-                        if (topicdata.TopicDataRecordList != null)
-                        {
-                            foreach (TopicDataRecord record in topicdata.TopicDataRecordList.Elements)
-                            {
-                                this.InvokeTopicCallbacks(record);
-                            }
-                        }
-
                         if (topicdata.Error != null)
                         {
                             Debug.LogError(topicdata.Error.ToString());
                         }
+
+                        CbHandleMessage(topicData);
 
                         msReadBuffer.Position = 0;
                     }
@@ -180,7 +157,9 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         Debug.LogError("OnWebsocketCloseUWP; Code: " + args.Code + ", Reason: \"" + args.Reason + "\"");
         this.connected = false;
     }
+
 #else
+
     private async void ReadSocket()
     {
         byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
@@ -256,6 +235,20 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         }
     }
 
+    //TODO: check if methods can be merged
+#if WINDOWS_UWP
+    private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
+    {
+        using (var dataWriter = new Windows.Storage.Streams.DataWriter(this.clientWebsocket.OutputStream))
+        {
+            dataWriter.WriteBytes(bytes);
+            await dataWriter.StoreAsync();
+            dataWriter.DetachStream();
+        }
+
+        return true;
+    }
+#else
     private async Task<bool> SendBytes(byte[] bytes, CancellationToken ct)
     {
         var arraySegment = new ArraySegment<Byte>(bytes);
@@ -276,6 +269,10 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         topicData.WriteTo(codedOutputStream);
         codedOutputStream.Flush();
         var bytebuffer = memoryStream.ToArray();
+#if WINDOWS_UWP
         return await this.SendBytes(bytebuffer, ct);
+#else
+        return await this.SendBytes(bytebuffer);
+#endif
     }
 }
