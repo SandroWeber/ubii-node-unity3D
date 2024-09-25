@@ -238,7 +238,7 @@ public class ProcessingModule : IProcessingModule
         return this.specs;
     }
 
-    public string ToString()
+    override public string ToString()
     {
         return "ProcessingModule '" + this.Name + "' (ID " + this.Id + ")";
     }

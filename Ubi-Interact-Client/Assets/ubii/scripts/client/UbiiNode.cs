@@ -40,7 +40,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Range(1, 5000)]
     public int msPublishInterval = 25;
 
-    [Tooltip("Address for Master Node service connection.")]
+    [Tooltip("Address for Master Node service connection. IMPORTANT: UWP can only connect via the binary endpoint (NOT json).")]
     public string serviceAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP;
     [Tooltip("Address for Master Node topic data connection.")]
     public string topicDataAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS;

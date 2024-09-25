@@ -13,7 +13,7 @@ public struct UbiiTestResult
     public bool success;
     public string title, message;
 
-    public string ToString()
+    override public string ToString()
     {
         return "Test '" + title + "': success = " + success + ", message = '" + message + "'";
     }

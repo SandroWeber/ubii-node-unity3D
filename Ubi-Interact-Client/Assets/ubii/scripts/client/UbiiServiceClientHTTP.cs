@@ -15,8 +15,11 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Net.Http;
 #endif
 
+
 class UbiiServiceClientHTTP : IUbiiServiceClient
 {
+    const string LOG_TAG = "[UBII] ServiceClientHTTP - ";
+    
 #if WINDOWS_UWP
     private Windows.Web.Http.HttpClient httpClient;
 #else
@@ -31,6 +34,7 @@ class UbiiServiceClientHTTP : IUbiiServiceClient
     {
 #if WINDOWS_UWP
         this.httpClient = new Windows.Web.Http.HttpClient();
+        Debug.Warn(LOG_TAG + "make sure to use the binary message format endpoint, JSON does currently NOT work.");
 #else
         this.httpClient = new System.Net.Http.HttpClient();
 #endif
@@ -66,7 +70,7 @@ class UbiiServiceClientHTTP : IUbiiServiceClient
         HttpBufferContent content = new HttpBufferContent(bytebuffer.AsBuffer());
         content.Headers.Add("Content-Type", "application/octet-stream");
         HttpResponseMessage httpResponseMessage = await this.httpClient.PostAsync(uri, content);
-        Debug.LogError("UBII UbiiServiceClientHTTP.CallService() StatusCode: " + httpResponseMessage.StatusCode);
+        Debug.LogError(LOG_TAG + "CallService() StatusCode: " + httpResponseMessage.StatusCode);
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -93,7 +97,7 @@ class UbiiServiceClientHTTP : IUbiiServiceClient
         }
         catch (Exception e)
         {
-            Debug.LogError("UBII UbiiServiceClientHTTP.CallService() - " + e.ToString());
+            Debug.LogError(LOG_TAG + "CallService() - " + e.ToString());
         }
         
         return reply;
