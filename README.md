@@ -6,8 +6,9 @@ Import "ubii.unitypackage" to get all scripts and plugins. Create a gameobject a
 
 # How to use
 
-- Add an object with the [UbiiNode.cs](https://github.com/SandroWeber/ubii-node-unity3D/blob/develop/Ubi-Interact-Client/Assets/ubii/scripts/client/UbiiNode.cs) script attached
-- in the script's configuration, change Service and TopicData URLs according to master node configuration. IMPORTANT: service communication over HTTP(S) only works with the ".../binary" endpoint for now
+- from Unity3D editor, choose Menu -> Assets -> Import Package -> Custom Package... and select ubii.unitypackage from this repository
+- In the scene, have an object with the [UbiiNode.cs](https://github.com/SandroWeber/ubii-node-unity3D/blob/develop/Ubi-Interact-Client/Assets/ubii/scripts/client/UbiiNode.cs) script attached - e.g. an empty object called "UbiiNode"
+- in the script's configuration, change Service and TopicData URLs according to master node configuration. IMPORTANT: service communication over HTTP(S) only works with the ".../binary" endpoint for now under C#
 
 
 ## Example Unity project
