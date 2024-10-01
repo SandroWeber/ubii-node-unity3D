@@ -33,11 +33,7 @@ public class TestSuite : MonoBehaviour
 
         if (testOverZeroMQ)
         {
-            await node.Initialize(
-                       UbiiNetworkClient.SERVICE_CONNECTION_MODE.ZEROMQ,
-                       UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_ZMQ,
-                       UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.ZEROMQ,
-                       UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_ZMQ);
+            await node.Initialize();
 
             foreach (UbiiTest test in tests)
             {
@@ -53,9 +49,7 @@ public class TestSuite : MonoBehaviour
         {
             // run tests with HTTP/WS connection
             await node.Initialize(
-                UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTP,
                 UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP,
-                UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTP,
                 UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS);
 
             foreach (UbiiTest test in tests)

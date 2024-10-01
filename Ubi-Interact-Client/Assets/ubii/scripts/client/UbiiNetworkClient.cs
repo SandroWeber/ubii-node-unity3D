@@ -16,6 +16,8 @@ using Google.Protobuf.Collections;
 /// </summary>
 public class UbiiNetworkClient
 {
+    const string LOG_TAG = "[UBII] NetworkClient - ";
+
     public enum SERVICE_CONNECTION_MODE
     {
         ZEROMQ = 0,
@@ -31,10 +33,10 @@ public class UbiiNetworkClient
 
     public const SERVICE_CONNECTION_MODE DEFAULT_SERVICE_CONNECTION_MODE = SERVICE_CONNECTION_MODE.HTTP;
     public const TOPICDATA_CONNECTION_MODE DEFAULT_TOPICDATA_CONNECTION_MODE = TOPICDATA_CONNECTION_MODE.HTTP;
-    public const string DEFAULT_LOCALHOST_ADDRESS_SERVICE_ZMQ = "localhost:8101",
-        DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP = "localhost:8102/services/binary",
-        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_ZMQ = "localhost:8103",
-        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS = "localhost:8104";
+    public const string DEFAULT_LOCALHOST_ADDRESS_SERVICE_ZMQ = "tcp://localhost:8101",
+        DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP = "http://localhost:8102/services/binary",
+        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_ZMQ = "tcp://localhost:8103",
+        DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS = "ws://localhost:8104";
 
 
     public delegate void CbHandleTopicData(TopicData topicData);
@@ -55,11 +57,9 @@ public class UbiiNetworkClient
 
     private Server serverSpecification = null;
 
-    public UbiiNetworkClient(SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
+    public UbiiNetworkClient(string serviceAddress, string topicDataAddress)
     {
-        this.serviceConnectionMode = serviceConnectionMode;
         this.serviceAddress = serviceAddress;
-        this.topicDataConnectionMode = topicDataConnectionMode;
         this.topicDataAddress = topicDataAddress;
     }
 
@@ -83,31 +83,28 @@ public class UbiiNetworkClient
 
     private IUbiiServiceClient InitServiceClient()
     {
-        string hostURL = serviceAddress;
-        if (serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
+        if (serviceAddress.StartsWith("tcp://"))
         {
+            serviceConnectionMode = SERVICE_CONNECTION_MODE.ZEROMQ;
             serviceClient = new UbiiServiceClientNetMQ(serviceAddress);
         }
-        else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
+        else if (serviceAddress.StartsWith("http://"))
         {
-            if (!hostURL.StartsWith("http://"))
-            {
-                hostURL = "http://" + hostURL;
-            }
-            serviceClient = new UbiiServiceClientHTTP(hostURL);
+            serviceConnectionMode = SERVICE_CONNECTION_MODE.HTTP;
+            serviceClient = new UbiiServiceClientHTTP(serviceAddress);
         }
-        else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
+        else if (serviceAddress.StartsWith("https://"))
         {
-            if (!hostURL.StartsWith("https://"))
-            {
-                hostURL = "https://" + hostURL;
-            }
-            serviceClient = new UbiiServiceClientHTTP(hostURL);
+            serviceConnectionMode = SERVICE_CONNECTION_MODE.HTTPS;
+            serviceClient = new UbiiServiceClientHTTP(serviceAddress);
+        }
+        else{
+            Debug.LogError(LOG_TAG + "InitServiceClient(): service address is missing protocol! Choose tcp://..., http://... or https://...");
         }
 
         if (serviceClient == null)
         {
-            Debug.LogError("UBII - service connection client could not be created");
+            Debug.LogError(LOG_TAG + "service connection client could not be created");
         }
 
         return serviceClient;
@@ -115,35 +112,32 @@ public class UbiiNetworkClient
 
     private ITopicDataClient InitTopicDataClient()
     {
-        if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.ZEROMQ)
+        if (topicDataAddress.StartsWith("tcp://"))
         {
+            this.topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.ZEROMQ;
             int port = int.Parse(serverSpecification.PortTopicDataZmq);
             this.topicDataClient = new UbiiTopicDataClientNetMQ(clientSpecification.Id, topicDataAddress, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
-        else if (this.topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTP)
+        else if (topicDataAddress.StartsWith("ws://"))
         {
-            string hostURL = topicDataAddress;
-            if (!hostURL.StartsWith("ws://"))
-            {
-                hostURL = "ws://" + hostURL;
-            }
+            this.topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.HTTP;
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, OnTopicDataMessage, OnTopicDataConnectionLost);
+            this.topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, topicDataAddress, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
-        else if (topicDataConnectionMode == TOPICDATA_CONNECTION_MODE.HTTPS)
+        else if (topicDataAddress.StartsWith("wss://"))
         {
-            string hostURL = topicDataAddress;
-            if (!hostURL.StartsWith("wss://"))
-            {
-                hostURL = "wss://" + hostURL;
-            }
+            topicDataConnectionMode = TOPICDATA_CONNECTION_MODE.HTTPS;
             int port = int.Parse(serverSpecification.PortTopicDataWs);
-            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, hostURL, OnTopicDataMessage, OnTopicDataConnectionLost);
+            topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, topicDataAddress, OnTopicDataMessage, OnTopicDataConnectionLost);
+        }
+        else 
+        {
+            Debug.LogError(LOG_TAG + "InitServiceClient(): TopicData address is missing protocol! Choose tcp://..., ws://... or wss://...");
         }
 
         if (topicDataClient == null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.InitTopicDataClient() - topic data client connection null");
+            Debug.LogError(LOG_TAG + "InitTopicDataClient() - topic data client connection null");
         }
 
         return topicDataClient;
@@ -156,7 +150,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(serverConfigRequest);
         if (reply == null)
         {
-            Debug.LogError("UBII - could not retrieve server configuration, reply is null");
+            Debug.LogError(LOG_TAG + "could not retrieve server configuration, reply is null");
             return null;
         }
 
@@ -166,11 +160,11 @@ public class UbiiNetworkClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError(reply.Error.ToString());
+            Debug.LogError(LOG_TAG + "RetrieveServerConfig(): " + reply.Error.ToString());
         }
         else
         {
-            Debug.LogError("UBII UbiiNetworkClient - unkown server response during server specification retrieval");
+            Debug.LogError(LOG_TAG + "unkown server response during server specification retrieval");
         }
 
         return null;
@@ -189,7 +183,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(clientRegistration);
         if (reply == null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - could not register client, response null");
+            Debug.LogError(LOG_TAG + "RegisterAsClient(): could not register client, response null");
             return null;
         }
 
@@ -199,7 +193,7 @@ public class UbiiNetworkClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.RegisterAsClient() - server error:" + reply);
+            Debug.LogError(LOG_TAG + "RegisterAsClient(): server error:" + reply.Error.ToString());
         }
 
         return null;
@@ -216,7 +210,7 @@ public class UbiiNetworkClient
                 Client = clientSpecification
             });
             if (reply.Error != null) {
-                Debug.LogError(reply.Error);
+                Debug.LogError(LOG_TAG + "ShutDown(): " + reply.Error.ToString());
                 success = false;
             }
         }
@@ -292,7 +286,7 @@ public class UbiiNetworkClient
 
     private void OnTopicDataConnectionLost()
     {
-        Debug.Log("OnTopicDataConnectionLost");
+        Debug.Log(LOG_TAG + "OnTopicDataConnectionLost");
     }
 
     #region Devices
@@ -317,7 +311,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.DeregisterDevice() - Deregister Device Error: " + reply.Error.Message);
+            Debug.LogError(LOG_TAG + "DeregisterDevice(): " + reply.Error.ToString());
         }
 
         return reply;
@@ -345,7 +339,7 @@ public class UbiiNetworkClient
         if (topicDataClient == null) return false;
         if (CbOnTopicDataMessage == null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - callback is NULL!");
+            Debug.LogError(LOG_TAG + "SubscribeTopic(): callback is NULL!");
             return false;
         }
 
@@ -366,7 +360,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(topicSubscription);
         if (reply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.SubscribeTopic() - Server Error: " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + "SubscribeTopic(): " + reply.Error.ToString());
             return false;
         }
 
@@ -395,7 +389,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(topicUnsubscription);
         if (reply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeTopic() - Server Error: " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + "UnsubscribeTopic(): " + reply.Error.ToString());
             return false;
         }
 
@@ -417,7 +411,7 @@ public class UbiiNetworkClient
         ServiceReply subReply = await CallService(subscriptionRequest);
         if (subReply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.SubscribeRegex() - Server Error: " + subReply.Error.ToString());
+            Debug.LogError(LOG_TAG + "SubscribeRegex(): " + subReply.Error.ToString());
             return false;
         }
 
@@ -442,7 +436,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError("UBII UbiiNetworkClient.UnsubscribeRegex() - Server Error: " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + "UnsubscribeRegex(): " + reply.Error.ToString());
             return false;
         }
 

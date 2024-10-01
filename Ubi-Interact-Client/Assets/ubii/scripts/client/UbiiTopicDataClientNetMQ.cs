@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 
 public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
-    static string LOG_TAG = "UbiiTopicDataClientNetMQ";
+    static string LOG_TAG = "[UBII] UbiiTopicDataClientNetMQ";
     static int TIMEOUT_SECONDS_SEND = 3;
 
     private string address;
@@ -50,12 +50,12 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     {
         try
         {
-            socket.Connect("tcp://" + this.address);
+            socket.Connect(this.address);
             connected = true;
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
+            Debug.LogError(LOG_TAG + "StartSocket(): " + ex.ToString());
         }
     }
 

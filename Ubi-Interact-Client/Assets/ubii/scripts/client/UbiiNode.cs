@@ -11,6 +11,7 @@ using Ubii.Devices;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
+    const string LOG_TAG = "[UBII] Node - ";
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
@@ -25,11 +26,6 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     public string clientName = "Unity3D Client Node";
 
     [Header("Network configuration")]
-
-    [Tooltip("Which method to use for service connection.")]
-    public UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.SERVICE_CONNECTION_MODE.HTTPS;
-    [Tooltip("Which method to use for topic data connection.")]
-    public UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.TOPICDATA_CONNECTION_MODE.HTTPS;
 
     [Tooltip("Automatically connect on start.")]
     public bool autoConnect = true;
@@ -76,7 +72,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             try
             {
-                await Initialize(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
+                await Initialize(serviceAddress, topicDataAddress);
             }
             catch (Exception e)
             {
@@ -102,11 +98,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
 
     #region connection
 
-    public async Task Initialize(
-        UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode = UbiiNetworkClient.DEFAULT_SERVICE_CONNECTION_MODE,
-        string serviceAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP,
-        UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode = UbiiNetworkClient.DEFAULT_TOPICDATA_CONNECTION_MODE,
-        string topicDataAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS)
+    public async Task Initialize()
+    {
+        this.Initialize(UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP, UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS);
+    }
+
+    public async Task Initialize(string serviceAddress, string topicDataAddress)
     {
         UbiiConstants constants = UbiiConstants.Instance;  // needs to be instantiated on main thread
         this.InitClientSpecification();
@@ -122,7 +119,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 while (!success && !this.ctsInitConnection.IsCancellationRequested)
                 {
                     connectionTry++;
-                    success = await InitNetworkConnection(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
+                    success = await InitNetworkConnection(serviceAddress, topicDataAddress);
                     if (!success)
                     {
                         int delay = Math.Min(CONNECTION_RETRY_MAX_DELAY_SECONDS, connectionTry * CONNECTION_RETRY_INCREMENT_SECONDS);
@@ -164,9 +161,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
     }
 
-    private async Task<bool> InitNetworkConnection(UbiiNetworkClient.SERVICE_CONNECTION_MODE serviceConnectionMode, string serviceAddress, UbiiNetworkClient.TOPICDATA_CONNECTION_MODE topicDataConnectionMode, string topicDataAddress)
+    private async Task<bool> InitNetworkConnection(string serviceAddress, string topicDataAddress)
     {
-        networkClient = new UbiiNetworkClient(serviceConnectionMode, serviceAddress, topicDataConnectionMode, topicDataAddress);
+        networkClient = new UbiiNetworkClient(serviceAddress, topicDataAddress);
         Ubii.Clients.Client serverClientSpecs = await networkClient.Initialize(clientNodeSpecification);
         if (serverClientSpecs == null)
         {
@@ -181,13 +178,13 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy = new TopicDataProxy(topicData, networkClient);
         topicDataProxy.SetPublishDelay(msPublishInterval);
 
-        Debug.Log("UBII - client connected: " + clientNodeSpecification);
+        Debug.Log(LOG_TAG + "client connected: " + clientNodeSpecification);
         return true;
     }
 
     public async Task<bool> Disconnect()
     {
-        Debug.Log("UBII - Shutting down UbiiClient");
+        Debug.Log(LOG_TAG + "disconnecting ...");
         ctsInitConnection?.Cancel();
         topicDataProxy?.StopPublishing();
 
@@ -344,9 +341,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
         if (!registeredDevices.Remove(ubiiDevice.Id))
-            Debug.LogError("UBII UbiiNode.DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
+            Debug.LogError(LOG_TAG + "DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
         else
-            Debug.Log("UBII - Deregistering " + ubiiDevice + " successful!");
+            Debug.Log(LOG_TAG + "Deregistering " + ubiiDevice + " successful!");
         return deviceDeregReply;
     }
 
@@ -415,7 +412,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.OnStartSession() - " + e.ToString());
+                Debug.LogError(LOG_TAG + "OnStartSession(): " + e.ToString());
             }
         }
         else
