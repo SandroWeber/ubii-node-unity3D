@@ -239,6 +239,8 @@ public class UbiiTopicDataClientWS : ITopicDataClient
                         await msReadBuffer.WriteAsync(receiveBuffer, 0, receiveBufferCount, ctsReadSocket.Token);
                         TopicData topicData = TopicData.Parser.ParseFrom(msReadBuffer.GetBuffer(), 0, (int)msReadBuffer.Position);
                         CbHandleMessage(topicData);
+                        
+                        msReadBuffer.Position = 0;
                     }
                     catch (Exception ex)
                     {
