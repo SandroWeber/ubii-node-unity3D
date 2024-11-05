@@ -86,22 +86,17 @@ public class UbiiNetworkClient
         string hostURL = serviceAddress;
         if (serviceConnectionMode == SERVICE_CONNECTION_MODE.ZEROMQ)
         {
-            serviceClient = new UbiiServiceClientNetMQ(serviceAddress);
+            hostURL = hostURL.StartsWith("tcp://") ? hostURL : "tcp://" + hostURL;
+            serviceClient = new UbiiServiceClientNetMQ(hostURL);
         }
         else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTP)
         {
-            if (!hostURL.StartsWith("http://"))
-            {
-                hostURL = "http://" + hostURL;
-            }
+            hostURL = hostURL.StartsWith("http://") ? hostURL : "http://" + hostURL;
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
         else if (serviceConnectionMode == SERVICE_CONNECTION_MODE.HTTPS)
         {
-            if (!hostURL.StartsWith("https://"))
-            {
-                hostURL = "https://" + hostURL;
-            }
+            hostURL = hostURL.StartsWith("https://") ? hostURL : "https://" + hostURL;
             serviceClient = new UbiiServiceClientHTTP(hostURL);
         }
 

@@ -10,7 +10,7 @@ using Ubii.Services;
 
 class UbiiServiceClientNetMQ : IUbiiServiceClient
 {
-    static string LOG_TAG = "UbiiServiceClientNetMQ";
+    static string LOG_TAG = "[UBII] UbiiServiceClientNetMQ";
     static int TIMEOUT_SECONDS_CALLSERVICE = 5;
 
     private string masterNodeAddress;
@@ -22,7 +22,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
     public UbiiServiceClientNetMQ(string masterNodeAddress = "localhost:8101")
     {
-        this.masterNodeAddress = masterNodeAddress;
+        this.masterNodeAddress = masterNodeAddress.StartsWith("tcp://") ? masterNodeAddress : "tcp://" + masterNodeAddress;
         StartSocket();
     }
 
@@ -33,18 +33,18 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
         {
             if (socket != null)
             {
-                Debug.Log("[Ubii] Disconnect before reconnect Socket");
-                socket.Disconnect("tcp://" + masterNodeAddress);
+                //Debug.Log("[Ubii] Disconnect before reconnect Socket");
+                socket.Disconnect(masterNodeAddress);
                 socket.Dispose();
                 socket = null;
             }
             AsyncIO.ForceDotNet.Force();
             socket = new RequestSocket();
-            socket.Connect("tcp://" + masterNodeAddress);
+            socket.Connect(masterNodeAddress);
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
+            Debug.LogError(LOG_TAG + ".StartSocket(): " + ex.ToString());
         }
     }
 
@@ -77,7 +77,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
                 catch (Exception exception)
                 {
                     _semaphoreSlim.Release();
-                    Debug.LogWarning("UBII - " + LOG_TAG + ".CallService(): " + exception.ToString());
+                    Debug.LogWarning(LOG_TAG + ".CallService(): " + exception.ToString());
                     this.StartSocket();
                     Task.Delay(100).Wait(ctsCallService.Token);
                 }
@@ -99,7 +99,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
             if (socket != null)
             {
-                socket.Disconnect("tcp://" + masterNodeAddress);
+                socket.Disconnect(masterNodeAddress);
                 socket.Close();
                 socket.Dispose();
                 socket = null;
@@ -107,8 +107,9 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
             NetMQConfig.Cleanup(false);
         }
-        catch (Exception ex) {
-            Debug.LogError(ex.ToString());
+        catch (Exception ex)
+        {
+            Debug.LogError(LOG_TAG + " " + ex.ToString());
         }
     }
 }

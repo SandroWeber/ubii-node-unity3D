@@ -40,9 +40,12 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     [Range(1, 5000)]
     public int msPublishInterval = 25;
 
-    [Tooltip("Address for Master Node service connection. IMPORTANT: UWP can only connect via the binary endpoint (NOT json).")]
+    [Tooltip("Address for Master Node service connection (check master node). " + 
+    "IMPORTANT: UWP can only connect via the binary endpoint (NOT json). " +
+    "Examples: https://my-ubii-server-url.xyz/ubii/services/json, tcp://localhost:8101.")]
     public string serviceAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP;
-    [Tooltip("Address for Master Node topic data connection.")]
+    [Tooltip("Address for Master Node topic data connection (check master node). " +
+    "Examples: https://my-ubii-server-url.xyz/ubii/topicdata, tcp://localhost:8103.")]
     public string topicDataAddress = UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS;
 
     private Ubii.Clients.Client clientNodeSpecification;

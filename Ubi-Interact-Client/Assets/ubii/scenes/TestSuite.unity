@@ -327,13 +327,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientName: Unity3D Client Node
-  serviceConnectionMode: 0
-  topicDataConnectionMode: 0
+  serviceConnectionMode: 2
+  topicDataConnectionMode: 2
   autoConnect: 0
   isDedicatedProcessingNode: 0
-  msPublishInterval: 25
-  serviceAddress: localhost:8101
-  topicDataAddress: localhost:8103
+  msPublishInterval: 15
+  serviceAddress: vmklinker15.in.tum.de/ubii/services/json
+  topicDataAddress: vmklinker15.in.tum.de/ubii/topicdata
 --- !u!4 &1023497284
 Transform:
   m_ObjectHideFlags: 0
