@@ -5,6 +5,13 @@ public class TestSuite : MonoBehaviour
 {
     [SerializeField]
     protected bool testOverZeroMQ = true, testOverHTTP = true, runBasicTests = true, runPerformanceTests = true;
+    
+    [SerializeField]
+    protected string  ServiceAdressZMQ = "tcp://localhost:8101",
+    ServiceAdressHTTP = "http://localhost:8102",
+    TopicDataAdressZMQ = "tcp://localhost:8103",
+    TopicDataAdressWS = "ws://localhost:8104";
+
     public List<UbiiTest> tests = new List<UbiiTest>();
 
     // Start is called before the first frame update
@@ -33,7 +40,7 @@ public class TestSuite : MonoBehaviour
 
         if (testOverZeroMQ)
         {
-            await node.Initialize();
+            await node.Initialize(ServiceAdressZMQ, TopicDataAdressZMQ);
 
             foreach (UbiiTest test in tests)
             {
@@ -48,9 +55,7 @@ public class TestSuite : MonoBehaviour
         if (testOverHTTP)
         {
             // run tests with HTTP/WS connection
-            await node.Initialize(
-                UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_SERVICE_HTTP,
-                UbiiNetworkClient.DEFAULT_LOCALHOST_ADDRESS_TOPICDATA_WS);
+            await node.Initialize(ServiceAdressHTTP, TopicDataAdressWS);
 
             foreach (UbiiTest test in tests)
             {
