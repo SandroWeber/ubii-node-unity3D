@@ -11,6 +11,7 @@ using Ubii.Devices;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
+    static string LOG_TAG = "[UBII] UbiiNode";
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
@@ -83,7 +84,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.Initialize(): " + e.ToString());
+                Debug.LogError(LOG_TAG + ".Initialize(): " + e.ToString());
             }
         }
     }
@@ -98,7 +99,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             await networkClient.ShutDown();
         }
-        Debug.Log("UBII - Shutting down UbiiClient");
+        Debug.Log(LOG_TAG + " - Shutting down UbiiClient");
     }
 
     #endregion
@@ -129,7 +130,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                     if (!success)
                     {
                         int delay = Math.Min(CONNECTION_RETRY_MAX_DELAY_SECONDS, connectionTry * CONNECTION_RETRY_INCREMENT_SECONDS);
-                        Debug.LogError("UBII - failed to establish network connection to master node, retrying in " + delay + "s");
+                        Debug.LogError(LOG_TAG + " - failed to establish network connection to master node, retrying in " + delay + "s");
                         Task.Delay(delay * 1000).Wait(this.ctsInitConnection.Token);
                     }
                 }
@@ -139,7 +140,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII - connection task exception: " + ex.ToString());
+            Debug.LogError(LOG_TAG + " - connection task exception: " + ex.ToString());
         }
 
         if (connected)
@@ -184,13 +185,13 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         topicDataProxy = new TopicDataProxy(topicData, networkClient);
         topicDataProxy.SetPublishDelay(msPublishInterval);
 
-        Debug.Log("UBII - client connected: " + clientNodeSpecification);
+        Debug.Log(LOG_TAG + " - client connected: " + clientNodeSpecification);
         return true;
     }
 
     public async Task<bool> Disconnect()
     {
-        Debug.Log("UBII - Shutting down UbiiClient");
+        Debug.Log(LOG_TAG + " - Shutting down UbiiClient");
         ctsInitConnection?.Cancel();
         topicDataProxy?.StopPublishing();
 
@@ -347,9 +348,9 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
     {
         var deviceDeregReply = await networkClient.DeregisterDevice(ubiiDevice);
         if (!registeredDevices.Remove(ubiiDevice.Id))
-            Debug.LogError("UBII UbiiNode.DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
+            Debug.LogError(LOG_TAG + ".DeregisterDevice() - Device " + ubiiDevice.Name + " could not be removed from local list.");
         else
-            Debug.Log("UBII - Deregistering " + ubiiDevice + " successful!");
+            Debug.Log(LOG_TAG + " - Deregistering " + ubiiDevice + " successful!");
         return deviceDeregReply;
     }
 
@@ -382,9 +383,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             if (pm.NodeId == this.Id)
             {
-                //Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
-                //Debug.Log("UbiiNode.OnStartSession() - created instance: " + newModule.ToString());
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
@@ -402,10 +401,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 Elements = { elements }
             }
         };
-        //Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
 
         ServiceReply reply = await CallService(pmRuntimeAddRequest);
-        //Debug.Log("start session runtime add PMs reply: " + reply);
         if (reply.Success != null)
         {
             try
@@ -418,7 +415,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.OnStartSession() - " + e.ToString());
+                Debug.LogError(LOG_TAG + ".OnStartSession() - " + e.ToString());
             }
         }
         else

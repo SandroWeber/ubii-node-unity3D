@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 
 public class UbiiTopicDataClientNetMQ : ITopicDataClient
 {
-    static string LOG_TAG = "UbiiTopicDataClientNetMQ";
+    static string LOG_TAG = "[UBII] UbiiTopicDataClientNetMQ";
     static int TIMEOUT_SECONDS_SEND = 3;
 
     private string address;
@@ -62,12 +62,12 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     /// <summary>
     /// Initialize socket connection and run task to receive data.
     /// </summary>
-    private void Initialize()
+    public async Task<bool> Initialize()
     {
         if (CbHandleMessage == null)
         {
-            Debug.LogError("UBII - " + LOG_TAG + " has no callback for handling TopicData");
-            return;
+            Debug.LogError(LOG_TAG + " has no callback for handling TopicData");
+            return false;
         }
 
         taskProcessIncomingMessages = Task.Factory.StartNew(() =>
@@ -89,6 +89,8 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
             //poller.Add(netMQQueueString);
             poller.RunAsync();
         }, ctsProcessIncomingMsgs.Token);
+
+        return true;
     }
 
     /// <summary>
