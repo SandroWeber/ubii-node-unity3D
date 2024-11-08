@@ -326,14 +326,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e950835de3e8f4ca36e81f776c62e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clientName: Unity3D Client Node
-  serviceConnectionMode: 2
-  topicDataConnectionMode: 2
+  clientName: Unity3D Test Suite
   autoConnect: 0
   isDedicatedProcessingNode: 0
   msPublishInterval: 15
-  serviceAddress: vmklinker15.in.tum.de/ubii/services/json
-  topicDataAddress: vmklinker15.in.tum.de/ubii/topicdata
+  serviceAddress: https://vmklinker15.in.tum.de/ubii/services/binary
+  topicDataAddress: wss://vmklinker15.in.tum.de/ubii/topicdata
 --- !u!4 &1023497284
 Transform:
   m_ObjectHideFlags: 0
@@ -364,3 +362,7 @@ MonoBehaviour:
   testOverHTTP: 1
   runBasicTests: 1
   runPerformanceTests: 1
+  ServiceAdressZMQ: tcp://localhost:8101
+  ServiceAdressHTTP: http://localhost:8102/services/binary
+  TopicDataAdressZMQ: tcp://localhost:8103
+  TopicDataAdressWS: ws://localhost:8104

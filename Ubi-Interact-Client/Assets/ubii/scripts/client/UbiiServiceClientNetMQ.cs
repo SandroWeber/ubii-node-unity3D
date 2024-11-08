@@ -20,7 +20,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
     private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
-    public UbiiServiceClientNetMQ(string masterNodeAddress = "localhost:8101")
+    public UbiiServiceClientNetMQ(string masterNodeAddress = "tcp://localhost:8101")
     {
         this.masterNodeAddress = masterNodeAddress.StartsWith("tcp://") ? masterNodeAddress : "tcp://" + masterNodeAddress;
         StartSocket();
@@ -33,7 +33,7 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
         {
             if (socket != null)
             {
-                //Debug.Log("[Ubii] Disconnect before reconnect Socket");
+                //Debug.Log(LOG_TAG + "disconnecting before reconnecting socket ...");
                 socket.Disconnect(masterNodeAddress);
                 socket.Dispose();
                 socket = null;
@@ -107,9 +107,8 @@ class UbiiServiceClientNetMQ : IUbiiServiceClient
 
             NetMQConfig.Cleanup(false);
         }
-        catch (Exception ex)
-        {
-            Debug.LogError(LOG_TAG + " " + ex.ToString());
+        catch (Exception ex) {
+            Debug.LogError(LOG_TAG + ".TearDown(): " + ex.ToString());
         }
     }
 }

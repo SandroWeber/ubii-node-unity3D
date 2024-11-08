@@ -48,12 +48,12 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
     {
         try
         {
-            socket.Connect("tcp://" + this.address);
+            socket.Connect(this.address);
             connected = true;
         }
         catch (Exception ex)
         {
-            Debug.LogError("UBII - " + LOG_TAG + ".StartSocket(): " + ex.ToString());
+            Debug.LogError(LOG_TAG + "StartSocket(): " + ex.ToString());
         }
     }
 
