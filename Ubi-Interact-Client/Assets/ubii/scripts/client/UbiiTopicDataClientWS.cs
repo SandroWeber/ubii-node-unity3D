@@ -40,11 +40,9 @@ public class UbiiTopicDataClientWS : ITopicDataClient
         this.address = address;
         this.CbHandleMessage = CbHandleMessage;
         this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
-
-        Initialize();
     }
 
-    private async Task<bool> Initialize()
+    public async Task<bool> Initialize()
     {
         Uri uri = new Uri(this.address + "?clientID=" + this.clientId);
 

@@ -16,7 +16,7 @@ using Google.Protobuf.Collections;
 /// </summary>
 public class UbiiNetworkClient
 {
-    const string LOG_TAG = "[UBII] NetworkClient - ";
+    static string LOG_TAG = "[UBII] UbiiNetworkClient";
 
     public enum SERVICE_CONNECTION_MODE
     {
@@ -76,7 +76,7 @@ public class UbiiNetworkClient
         clientSpecification = await RegisterAsClient(clientSpecs);
         if (clientSpecification == null) return null;
 
-        InitTopicDataClient();
+        await InitTopicDataClient();
 
         return clientSpecification;
     }
@@ -104,13 +104,13 @@ public class UbiiNetworkClient
 
         if (serviceClient == null)
         {
-            Debug.LogError(LOG_TAG + "service connection client could not be created");
+            Debug.LogError(LOG_TAG + " - service connection client could not be created");
         }
 
         return serviceClient;
     }
 
-    private ITopicDataClient InitTopicDataClient()
+    private async Task<ITopicDataClient> InitTopicDataClient()
     {
         if (topicDataAddress.StartsWith("tcp://"))
         {
@@ -130,17 +130,22 @@ public class UbiiNetworkClient
             int port = int.Parse(serverSpecification.PortTopicDataWs);
             topicDataClient = new UbiiTopicDataClientWS(clientSpecification.Id, topicDataAddress, OnTopicDataMessage, OnTopicDataConnectionLost);
         }
-        else 
+        else
         {
-            Debug.LogError(LOG_TAG + "InitServiceClient(): TopicData address is missing protocol! Choose tcp://..., ws://... or wss://...");
+            Debug.LogError(LOG_TAG + ".InitTopicDataClient(): TopicData address is missing protocol! Choose tcp://..., ws://... or wss://...");
         }
 
-        if (topicDataClient == null)
+        if (this.topicDataClient == null)
         {
-            Debug.LogError(LOG_TAG + "InitTopicDataClient() - topic data client connection null");
+            Debug.LogError(LOG_TAG + ".InitTopicDataClient(): topic data client connection null");
         }
+        else
+        {
+            await this.topicDataClient.Initialize();
+        }
+        
 
-        return topicDataClient;
+        return this.topicDataClient;
     }
 
     private async Task<Ubii.Servers.Server> RetrieveServerConfig()
@@ -150,7 +155,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(serverConfigRequest);
         if (reply == null)
         {
-            Debug.LogError(LOG_TAG + "could not retrieve server configuration, reply is null");
+            Debug.LogError(LOG_TAG + " - could not retrieve server configuration, reply is null");
             return null;
         }
 
@@ -160,11 +165,11 @@ public class UbiiNetworkClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "RetrieveServerConfig(): " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".RetrieveServerConfig(): " + reply.Error.ToString());
         }
         else
         {
-            Debug.LogError(LOG_TAG + "unkown server response during server specification retrieval");
+            Debug.LogError(LOG_TAG + " - unkown server response during server specification retrieval");
         }
 
         return null;
@@ -183,7 +188,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(clientRegistration);
         if (reply == null)
         {
-            Debug.LogError(LOG_TAG + "RegisterAsClient(): could not register client, response null");
+            Debug.LogError(LOG_TAG + ".RegisterAsClient() - could not register client, response null");
             return null;
         }
 
@@ -193,7 +198,7 @@ public class UbiiNetworkClient
         }
         else if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "RegisterAsClient(): server error:" + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".RegisterAsClient() - server error:" + reply);
         }
 
         return null;
@@ -210,7 +215,7 @@ public class UbiiNetworkClient
                 Client = clientSpecification
             });
             if (reply.Error != null) {
-                Debug.LogError(LOG_TAG + "ShutDown(): " + reply.Error.ToString());
+                Debug.LogError(LOG_TAG + ".ShutDown(): " + reply.Error);
                 success = false;
             }
         }
@@ -286,7 +291,7 @@ public class UbiiNetworkClient
 
     private void OnTopicDataConnectionLost()
     {
-        Debug.Log(LOG_TAG + "OnTopicDataConnectionLost");
+        Debug.Log(LOG_TAG + ".OnTopicDataConnectionLost()");
     }
 
     #region Devices
@@ -311,7 +316,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "DeregisterDevice(): " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".DeregisterDevice(): " + reply.Error.ToString());
         }
 
         return reply;
@@ -339,7 +344,7 @@ public class UbiiNetworkClient
         if (topicDataClient == null) return false;
         if (CbOnTopicDataMessage == null)
         {
-            Debug.LogError(LOG_TAG + "SubscribeTopic(): callback is NULL!");
+            Debug.LogError(LOG_TAG + ".SubscribeTopic() - callback is NULL!");
             return false;
         }
 
@@ -360,7 +365,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(topicSubscription);
         if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "SubscribeTopic(): " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".SubscribeTopic() - Server Error: " + reply.Error.ToString());
             return false;
         }
 
@@ -389,7 +394,7 @@ public class UbiiNetworkClient
         ServiceReply reply = await CallService(topicUnsubscription);
         if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "UnsubscribeTopic(): " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".UnsubscribeTopics() - Server Error: " + reply.Error.ToString());
             return false;
         }
 
@@ -411,7 +416,7 @@ public class UbiiNetworkClient
         ServiceReply subReply = await CallService(subscriptionRequest);
         if (subReply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "SubscribeRegex(): " + subReply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".SubscribeRegexes() - Server Error: " + subReply.Error.ToString());
             return false;
         }
 
@@ -436,7 +441,7 @@ public class UbiiNetworkClient
 
         if (reply.Error != null)
         {
-            Debug.LogError(LOG_TAG + "UnsubscribeRegex(): " + reply.Error.ToString());
+            Debug.LogError(LOG_TAG + ".UnsubscribeRegexes() - Server Error: " + reply.Error.ToString());
             return false;
         }
 

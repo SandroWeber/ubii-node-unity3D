@@ -11,7 +11,7 @@ using Ubii.Devices;
 
 public class UbiiNode : MonoBehaviour, IUbiiNode
 {
-    const string LOG_TAG = "[UBII] UbiiNode";
+    static string LOG_TAG = "[UBII] UbiiNode";
 
     const int CONNECTION_RETRY_INCREMENT_SECONDS = 5;
     const int CONNECTION_RETRY_MAX_DELAY_SECONDS = 30;
@@ -79,7 +79,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
             }
             catch (Exception e)
             {
-                Debug.LogError("UBII UbiiNode.Initialize(): " + e.ToString());
+                Debug.LogError(LOG_TAG + ".Initialize(): " + e.ToString());
             }
         }
     }
@@ -94,7 +94,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             await networkClient.ShutDown();
         }
-        Debug.Log("UBII - Shutting down UbiiClient");
+        Debug.Log(LOG_TAG + " - Shutting down UbiiClient");
     }
 
     #endregion
@@ -380,9 +380,7 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
         {
             if (pm.NodeId == this.Id)
             {
-                //Debug.Log("UbiiNode.OnStartSession() - applicable pm: " + pm);
                 ProcessingModule newModule = this.processingModuleManager.CreateModule(pm);
-                //Debug.Log("UbiiNode.OnStartSession() - created instance: " + newModule.ToString());
                 if (newModule != null) localPMs.Add(newModule);
             }
         }
@@ -400,10 +398,8 @@ public class UbiiNode : MonoBehaviour, IUbiiNode
                 Elements = { elements }
             }
         };
-        //Debug.Log(nameof(OnStartSession) + " - runtime add request: " + pmRuntimeAddRequest);
 
         ServiceReply reply = await CallService(pmRuntimeAddRequest);
-        //Debug.Log("start session runtime add PMs reply: " + reply);
         if (reply.Success != null)
         {
             try
