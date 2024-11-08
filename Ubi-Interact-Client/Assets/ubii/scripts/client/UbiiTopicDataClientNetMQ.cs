@@ -42,8 +42,6 @@ public class UbiiTopicDataClientNetMQ : ITopicDataClient
         this.CbHandleMessage = cbHandleMessage;
         this.CbTopicDataConnectionLost = CbTopicDataConnectionLost;
         concurrentBagSendData = new ConcurrentBag<byte[]>();
-
-        Initialize();
     }
 
     private void StartSocket()

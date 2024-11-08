@@ -78,7 +78,7 @@ public class UbiiNetworkClient
         clientSpecification = await RegisterAsClient(clientSpecs);
         if (clientSpecification == null) return null;
 
-        InitTopicDataClient();
+        await InitTopicDataClient();
 
         return clientSpecification;
     }
