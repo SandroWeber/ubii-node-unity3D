@@ -20,6 +20,8 @@ public sealed class UbiiConstants
         public string DEVICE_GET;
         public string DEVICE_GET_LIST;
 
+        public string COMPONENT_GET_LIST;
+
         public string PM_DATABASE_SAVE;
         public string PM_DATABASE_DELETE;
         public string PM_DATABASE_GET;
